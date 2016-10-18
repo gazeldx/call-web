@@ -1,0 +1,29 @@
+= title t('charge_agent_share_minfee.management')
+
+= content_for :header do
+  = t('charge_agent_share_minfee.management')
+  
+  = link_to t(:new_), new_admin_charge_agent_share_minfee_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('charge_agent_share_minfee.id')
+        th = t('charge_agent_share_minfee.kind')
+        th = t('charge_agent_share_minfee.name')
+        th = t('charge_agent_share_minfee.min_fee')
+        th = t('charge_agent_share_minfee.price')
+        th
+
+    tbody
+      - @charges.each_with_index do |charge, i|
+        tr *odd_even(i)
+          td = charge.id
+          td = t("charge_agent_share_minfee.kind_#{charge.kind}")
+          td = charge.name
+          td = charge.min_fee
+          td = charge.price
+          td
+            div *css_ops
+              = edit edit_admin_charge_agent_share_minfee_path(charge)

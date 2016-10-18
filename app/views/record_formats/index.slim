@@ -1,0 +1,27 @@
+= titled
+
+= content_for :header do
+  = t('record_format.management')
+
+h4 class='green'
+  | 当前录音文件名
+.bigger-110
+  | 格式：
+  = record_formats_description
+  br
+  | 示例：
+  = record_formats_sample
+br
+h4 class='purple'
+  | 变更录音文件名
+.bigger-110
+  | 加内容：
+  - (RecordFormat::NAMES - current_company.record_formats.map(&:name)).each do |name|
+    = t("record_format.#{name}")
+    a href="record_formats/add_#{name}" title="点击后，“#{t("record_format.#{name}")}”将被加入到录音文件名中" data-rel='tooltip'
+      | 加入
+    | &nbsp;
+  br
+  - unless current_company.record_formats.blank?
+    | 删内容：
+    = record_formats_with_operations

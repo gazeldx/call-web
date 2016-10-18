@@ -1,0 +1,16 @@
+= title(t('task.test_numbers'))
+
+= banner({ t('task.test_numbers') => nil })
+
+= header(t('task.test_numbers'))
+
+= content_for :form do
+  = form_tag do_test_numbers_path, method: :post
+    | 电话号码：
+    span
+      = text_field_tag :numbers, params[:numbers], placeholder: '多个号码之间以空格分隔', style: 'vertical-align: middle; width: 770px'
+    | &nbsp;
+    = content_tag(:button, raw("搜 索 #{content_tag(:i, nil, class: 'icon-search icon-on-right bigger-110')}"), type: 'submit', class: 'btn btn-purple btn-sm')
+    br
+    span.purple
+      | 说明：输入被测试电话号码后，点击“搜索”，系统会返回号码在销售线索中的状态，以及当前所在的任务号码库。

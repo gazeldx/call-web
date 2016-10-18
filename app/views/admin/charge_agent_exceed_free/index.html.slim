@@ -1,0 +1,31 @@
+= title t('charge_agent_exceed_free.management')
+
+= content_for :header do
+  = t('charge_agent_exceed_free.management')
+  
+  = link_to t(:new_), new_admin_charge_agent_exceed_free_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('charge_agent_exceed_free.id')
+        th = t('charge_agent_exceed_free.kind')
+        th = t('charge_agent_exceed_free.name')
+        th = t('charge_agent_exceed_free.max_fee')
+        th = t('charge_agent_exceed_free.min_fee')
+        th = t('charge_agent_exceed_free.price')
+        th
+
+    tbody
+      - @charges.each_with_index do |charge, i|
+        tr *odd_even(i)
+          td = charge.id
+          td = t("charge_agent_exceed_free.kind_#{charge.kind}")
+          td = charge.name
+          td = charge.max_fee
+          td = charge.min_fee
+          td = charge.price
+          td
+            div *css_ops
+              = edit edit_admin_charge_agent_exceed_free_path(charge)

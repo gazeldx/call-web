@@ -1,0 +1,25 @@
+- configuration_notice = @company.task_config.blank? ? t(:not_configured) : nil
+= title "#{t('task.config')}#{configuration_notice}"
+
+= banner({ t('company.management') => admin_companies_path, "#{t('task.config')}#{configuration_notice}" => nil })
+
+= header "#{t('task.config')} - #{@company.name} #{configuration_notice}"
+
+= content_for :form do
+  = form_for [:admin, @task_config], form_options(url: task_config_create_or_update_admin_company_path, method: :post) do |f|
+    = error_msg @task_config
+
+    = input_text :long_idle_time, required: true, range: [TaskConfig::MIN_LONG_IDLE_TIME, TaskConfig::MAX_LONG_IDLE_TIME], title: t('digits_range', w1: TaskConfig::MIN_LONG_IDLE_TIME, w2: TaskConfig::MAX_LONG_IDLE_TIME), help_text: t(:second)
+
+    = radios_for_boolean :long_checkin
+
+    = input_text :predict_max_ratio, required: true, range: [0.1, 6], title: t('number_range', w1: 0.1, w2: 6)
+
+    .hidden
+      = input_text :voice_max_ratio, required: true, range: [8, 30], title: t('number_range', w1: 8, w2: 30)
+
+      = input_text :voice_max_duration, required: true, help_text: t(:second), range: [3, 40], title: t('number_range', w1: 15, w2: 40)
+
+      = input_text :keypress_max_concurrency, required: true, range: [100, 1000], title: t('digits_range', w1: 100, w2: 1000)
+
+    = submit_form

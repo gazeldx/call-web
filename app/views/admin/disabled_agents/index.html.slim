@@ -1,0 +1,42 @@
+= titled
+
+= content_for :header do
+  = "#{t('disabled_agent.management')} "
+
+  - if current_user.admin?
+    a<> href=admin_disable_eom_agents_path class='btn btn-sm btn-danger'
+      | 禁用已处理的座席
+
+= content_for :grid do
+  .row
+    = form_tag admin_disabled_agents_path, method: :get
+      span#company_id_container class=hide_or_show_css(:company_id)
+        = text_field_tag :company_id, params[:company_id], placeholder: t('company.id'), style: 'vertical-align: middle; width: 70px'
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t('company.id')
+          = checkbox_for_search(:company_id)
+        th = t(:company_name)
+        th = t('agent.id')
+        th = t('disabled_agent.processed')
+        th = t('disabled_agent.created_at')
+        th
+
+    tbody
+      - @disabled_agents.each_with_index do |disabled_agent, i|
+        tr *odd_even(i)
+          td = disabled_agent.company_id
+          td = disabled_agent.company.name
+          td = disabled_agent.agent_id
+          td = t("disabled_agent.processed_#{disabled_agent.processed}")
+          td = disabled_agent.created_at.strftime(t(:time_without_year))
+          td
+            - unless disabled_agent.processed
+              a> class='red' href=admin_disabled_agent_path(disabled_agent) data-method='delete' data-confirm=t(:delete_confirm) *tip(:delete)
+                = icon :trash
+
+  = pagination @disabled_agents

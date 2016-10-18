@@ -1,0 +1,126 @@
+= title t(:new, w: t('bundle.library'))
+
+= header t(:new, w: t('bundle.library'))
+
+= content_for :form do
+  = form_for [@bundle, @task], form_options(multipart: true) do |f|
+    = error_msg @task
+
+    .form-group
+      = labeled 'import_method', required: true
+      .col-sm-9
+        div
+          label
+            = radio_button_tag :import_method, 1, checked: true
+            span< class='lbl' for='import_method_1' data-original-title='根据您填写的城市名，系统自动生成该地区1万个号码' data-rel='tooltip'
+              = t('task.import_automatically')
+
+        div
+          label
+            = radio_button_tag :import_method, 3
+            span< class='lbl' for='import_method_3'
+              = t('task.number_segment')
+
+        div
+          label
+            = radio_button_tag :import_method, 2
+            span< class='lbl' for='import_method_2'
+              = t('task.import_from_file')
+
+    hr
+
+    = input_text :name, required: true, class: 'col-sm-2', minlength: 2
+
+    = input_text_tag 'start_phone', required: true, class: 'col-sm-2', digits: true, minlength: 11, maxlength: 11, title: '请输入11位手机号码'
+
+    = input_text_tag 'phone_count', required: true, class: 'col-sm-2', digits: true, minlength: 1, maxlength: 4, range: [1, 9999], title: '请输入数量。起始号码(含)向后顺延“您输入的数量”个号码'
+
+    .form-group#form_group_mobile_operator
+      = labeled t(:mobile_operator), required: true
+      .col-sm-9
+        = select_tag :mobile_operator, options_for_select([['中国移动', '移动'], ['中国电信', '电信'], ['中国联通', '联通']].unshift([t(:please_select), nil])), { class: 'required' }
+
+    = render 'import_csv_file'
+
+    = input_text :remark
+
+    #help_notice
+      .form-group
+        = labeled t(:tip)
+        .col-sm-9.grey
+          | (1) “自动智能”所获取到的号码，只能精确到地级市；“号码段”方式导入的号码，经常可以
+          span.red
+            | 精确到区县
+          | 。
+          br
+          | #{nbsp(6)}如果您公司客户主要是本地的，收集本地号码段将是您每天的重要工作。手机前7位数字是号段，本地号码段可以通过
+          span.blue
+            | 手机通讯录、运营商营业厅选号、分类信息网站等
+          | 多种途径找到。也可以让公司销售员参与本地号码段收集。
+          br
+          | (2) 系统会自动去除部分“空号”、“停机”和“违禁”号码，老客户号码也不会被导入，所以实际取得的号码数量会比您指定的少一些。
+
+    = submit_form
+
+    coffee:
+      $ ->
+        $('#form_group_task_phones_file').hide()
+        $('#form_group_remark').hide()
+        $('#form_group_name').find('label').html('城市名')
+        $('#form_group_start_phone').hide()
+        $('#form_group_phone_count').hide()
+        $('#form_group_extract_method').hide()
+
+      $('input[name="import_method"]:radio').change () ->
+        if $(this).val() == '1'
+          $('#form_group_name').show()
+          $('#form_group_name').find('label').html('城市名')
+          $('#form_group_mobile_operator').show()
+          $('#form_group_task_phones_file').hide()
+          $('#form_group_remark').hide()
+          $('#form_group_start_phone').hide()
+          $('#form_group_phone_count').hide()
+          $('#form_group_extract_method').hide()
+          $('#help_notice').show()
+
+        else if $(this).val() == '2'
+          $('#form_group_task_phones_file').show()
+          $('#form_group_name').show()
+          $('#form_group_name').find('label').html('号码库名称')
+          $('#form_group_remark').show()
+          $('#form_group_extract_method').show()
+          $('#form_group_mobile_operator').hide()
+          $('#form_group_start_phone').hide()
+          $('#form_group_phone_count').hide()
+          $('#help_notice').hide()
+
+        else if $(this).val() == '3'
+          $('#form_group_start_phone').show()
+          $('#form_group_phone_count').show()
+          $('#form_group_remark').show()
+          $('#form_group_name').hide()
+          $('#form_group_mobile_operator').hide()
+          $('#form_group_task_phones_file').hide()
+          $('#form_group_extract_method').hide()
+          $('#help_notice').show()
+
+    javascript:
+      var customized_validation = {
+        rules: {
+          start_phone: {
+            mobileCN: true
+          }
+        },
+        submitHandler: function (form) {
+          if ($('input[name="extract_method"]:checked').val() == 'full_detail' && $('input[name="import_method"]:checked').val() == '2') {
+            $('#new_task').attr('action', '/customers/do_import');
+            $('#task_phones_file').attr('name', 'customers_file');
+          } else {
+            $('#new_task').attr('action', "#{bundle_tasks_path(@bundle)}");
+            $('#task_phones_file').attr('name', 'task_phones_file');
+          }
+
+          $('#submit_button').attr('disabled', true);
+          form.submit();
+        }
+      };

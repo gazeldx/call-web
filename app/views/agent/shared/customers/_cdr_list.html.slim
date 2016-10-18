@@ -1,0 +1,106 @@
+= render '/shared/javascript/play_audio'
+
+table *css_table
+  thead
+    tr
+      th = t('cdr.time')
+      th = t('cdr.call_type')
+      th = t(:caller_number)
+      th = t(:callee_number)
+      th
+        = t('cdr.duration')
+        |  -&nbsp;#{t('cdr.fee')}
+      th = t(:agent_)
+      th = t(:salesman_)
+      th
+
+  tbody#tbody
+    tr
+
+script type='text/javascript' src="http://#{Settings.faye.domain}:#{Settings.faye.port}/faye/client.js"
+javascript:
+  function showCustomerCdrs() {
+    if ($('#tbody').html() === '<tr></tr>') {
+      var can_obtain_records = "#{obtain_records? ? 1 : 0}";
+      $.ajax({
+        url: '/cdr/customer_cdrs',
+        data: "customer_id=#{@customer.id}",
+        success: function (data) {
+          var cdrsHtml = "<tr><td colspan='50'>#{t(:no_data)}</td></tr>";
+
+          var cdrs = _.map(data.cdrs, function (cdr) {
+            return _.extend(cdr, {
+              play_record: cdr.duration > 0 ? new Handlebars.SafeString("<a class='" + (isAudioFile(cdr.record_url) ? 'green' : 'blue') + "' id='play_button_" + cdr.id + "' data-audio-id='" + cdr.id + "' data-audio-url='http://#{Settings.ucweb.domain}:#{Settings.ucweb.port}" + cdr.record_url + "' data-audio-path='" + cdr.record_url + "' title='#{t(:play_record)}' onclick='playUnknownAudio.call(this)' rel='nofollow'><i class='icon-music bigger-130'></i></a>") : '',
+              download_audio: new Handlebars.SafeString((cdr.duration > 0 && isAudioFile(cdr.record_url)) ? "<a class='pink2' href='/cdr/download_record/" + cdr.id + "' title='#{t(:download_record)}' rel='nofollow'><i class='icon-cloud-download bigger-130'></i></a>" : "<span id='download_record_" + cdr.id + "'></span>")
+            });
+          });
+
+          if (!_.isEmpty(cdrs)) {
+            var source = "{{#items}}<tr><td>{{start_stamp_formatted}}</td><td>{{call_type_name}}<div id='player_{{id}}'></div></td><td>{{caller_number}}</td><td>{{refined_phone}}</td><td>{{duration_as_words}} - {{cost}}元</td><td>{{agent.code}}</td><td>{{salesman.name}}</td><td>{{play_record}}&nbsp;&nbsp;{{download_audio}}</td></tr>{{/items}}";
+            if (can_obtain_records == '0') {
+              source = "{{#items}}<tr><td>{{start_stamp_formatted}}</td><td>{{call_type_name}}</td><td>{{caller_number}}</td><td>{{refined_phone}}</td><td>{{duration_as_words}} - {{cost}}元</td><td>{{agent.code}}</td><td>{{salesman.name}}</td><td>&nbsp;</td></tr>{{/items}}";
+            }
+            var template = Handlebars.compile(source);
+            cdrsHtml = template({items: cdrs});
+
+            var should_subscribe = existNeedMixinRecord(cdrs);
+            if (should_subscribe) {
+              //TODO: 这里可以考虑垂构下
+              var client = new Faye.Client("http://#{Settings.faye.domain}:#{Settings.faye.port}/faye", {timeout: 120});
+              client.subscribe("/record_mixin_#{current_company.id}", function (message) {
+                console.log(message);
+                $('#play_button_' + message.uuid).attr('data-audio-url', "http://#{Settings.ucweb.domain}:#{Settings.ucweb.port}" + message.record_path);
+                $('#play_button_' + message.uuid).attr('class', 'blue');
+                var audioUrl = $('#play_button_' + message.uuid).attr('data-audio-url');
+                var audioType = 'mpeg';
+                if ((audioUrl || '').slice(-3) === 'wav') {
+                  audioType = 'wav'
+                }
+                var playerHtml = "<span class='text-danger'>" + messageErrorInfo(message) + "</span>";
+                var downloadHtml = '';
+                if (message.result == 'success') {
+                  playerHtml += "<audio controls='controls'><source src='" + audioUrl + "' type='audio/" + audioType + "'></audio>";
+                  downloadHtml += "<a class='pink2' data-original-title='下载录音' data-rel='tooltip' href='/cdr/download_record/" + message.uuid + "' rel='nofollow'><i class='icon-cloud-download bigger-130'></i></a>";
+                  $('#download_record_' + message.uuid).html(downloadHtml);
+                }
+                $('#player_' + message.uuid).html(playerHtml);
+                $('#player_' + message.uuid).show();
+              });
+            }
+          }
+
+          $('#tbody').html(cdrsHtml);
+        }
+      });
+    }
+  }
+
+  //TODO: 这里可以考虑垂构下
+  function messageErrorInfo(message) {
+    if (message.result == 'fail') {
+      if (message.error_code == 'original_file_not_exist') {
+        message.remark = '最新录音5分钟后才能合成，请稍等';
+      } else if (message.error_code == 'fs_encode_in_error') {
+        message.remark = '处理录音输入编码失败';
+      } else if (message.error_code == 'fs_encode_out_error') {
+        message.remark = '处理录音输出编码失败';
+      } else if (message.error_code == 'sox_error') {
+        message.remark = '初步合成录音失败';
+      } else if (message.error_code == 'lame_error') {
+        message.remark = '最终合成录音失败';
+      }
+    }
+    return message.remark;
+  }
+
+  function isAudioFile(file) {
+    var ext = file.slice(-4);
+    return (ext == '.mp3' || ext == '.wav');
+  }
+
+  function existNeedMixinRecord(cdrs) {
+    var _cdrs = _.reject(cdrs, function(cdr) { return !(cdr.duration > 0); });
+    return _.some(_cdrs, function(cdr) {
+      return !isAudioFile(cdr.record_url);
+    });
+  }

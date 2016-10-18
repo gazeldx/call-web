@@ -1,0 +1,21 @@
+= title_banner_header
+
+= content_for :form do
+  = form_for @agent, form_options do |f|
+    = error_msg @agent
+
+    = input_text :code, readonly: true
+
+    = display_show_number(f)
+
+    .form-group
+      = labeled 'salesman'
+      .col-sm-9
+        = f.select :salesman_id, options_for_select(current_user.salesmen.includes(:agent).map { |salesman| ["#{salesman.name}（#{salesman.agent.nil? ? '可以绑定' : '已绑定到' + t(:agent_) + salesman.agent.code.to_s + '、' + t('agent.extension') + salesman.agent.extension_names}）", salesman.id] }.unshift(['暂不绑定', nil]), @agent.salesman.try(:id)), {}, { class: 'select2' }
+
+    = submit_form
+
+    javascript:
+      jQuery(function ($) {
+        $('.select2').css('width', '400px').select2({allowClear: true});
+      });

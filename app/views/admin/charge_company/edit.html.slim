@@ -1,0 +1,106 @@
+- new_or_create = @charge_company.id.nil?
+
+= title t('charge_company.management')
+
+= banner({ t('company.management') => admin_companies_path, t('charge_company.management') => nil })
+
+= header "#{t('charge_company.management')} - #{@company.name}"
+
+= content_for :form do
+  = form_for [:admin, @charge_company], form_options(url: charge_company_create_or_update_admin_company_path, method: :post) do |f|
+    = error_msg @charge_company
+
+    - if new_or_create
+      .form-group
+        = labeled t('recharge.amount'), required: true
+        .col-sm-9
+          = f.text_field :balance, class: 'col-sm-1', required: true, range: [1, 99999], number: true
+          | #{t(:yuan)} (#{t('charge_company.current_balance')}：
+          span.red
+            | #{@charge_company.try(:balance_shown)}#{t(:yuan)}
+          | ，必须先充够足够的金额才能配置计费)
+
+    hr
+    = input_radios :charge_mode, [ChargeCompany::CHARGE_MODE_AGENT, ChargeCompany::CHARGE_MODE_COMPANY], required: true
+
+    = input_radios :kind, [ChargeCompany::KIND_MONTHLY, ChargeCompany::KIND_FLOW, ChargeCompany::KIND_BOTH], required: true
+
+    .form-group
+      = labeled :charge_company_outbound, required: true
+      .col-sm-9
+        - if new_or_create || @charge_company.charge_company_outbound_id == ChargeCompanyOutbound::TRIAL_ID
+          = f.select :charge_company_outbound_id, options_for_select(ChargeCompanyOutbound.all.map{ |charge_company_outbound| [charge_company_outbound.name, charge_company_outbound.id] }.unshift([t(:please_select), nil]), @charge_company.charge_company_outbound.try(:id)), {}, {class: 'required'}
+        - else
+          = "#{@charge_company.charge_company_outbound_id} - #{@charge_company.charge_company_outbound.name}"
+
+    - if new_or_create
+      = input_text :outbound_min_fee, required: true, range: [ChargeCompany::OUTBOUND_MIN_FEE_LEAST, 99999], title: t('number_range', w1: ChargeCompany::OUTBOUND_MIN_FEE_LEAST, w2: 99999), help_text: t(:unit_yuan)
+    - else
+      .form-group
+        = labeled :outbound_min_fee, required: true
+        .col-sm-9
+          = @charge_company.outbound_min_fee
+
+    = input_text :number_fee, required: true, number: true, range: [0, 9999], help_text: t('charge_company.number_fee_help')
+
+    hr
+    = help_info(t('charge_company.inbound_charge_must_choose'))
+
+    .form-group
+      = labeled :charge_company400
+      .col-sm-9
+        - if new_or_create
+          = f.select :charge_company_400_id, options_for_select(ChargeCompany400.all.map { |charge_company400| [charge_company400.name, charge_company400.id] }.unshift([t(:unselected), nil]), @charge_company.charge_company400.try(:id)), {}, {}
+        - else
+          = "#{@charge_company.charge_company_400_id} - #{@charge_company.charge_company400.try(:name)}"
+
+    - if new_or_create
+      = input_text :min_fee_400, range: [0, 99999], title: t('number_range', w1: 0, w2: 99999), help_text: t(:unit_yuan)
+    - else
+      .form-group
+        = labeled :min_fee_400
+        .col-sm-9
+          = @charge_company.min_fee_400
+
+    hr
+    .form-group
+      = labeled :charge_company400_month
+      .col-sm-9
+        - if new_or_create
+          = f.select :charge_company_400_month_id, options_for_select(ChargeCompany400Month.all.map { |charge_company400_month| [charge_company400_month.name, charge_company400_month.id] }.unshift([t(:unselected), nil]), @charge_company.charge_company400_month.try(:id)), {}
+        - else
+          = "#{@charge_company.charge_company_400_month_id} - #{@charge_company.charge_company400_month.try(:name)}"
+
+    .form-group
+      = labeled :effective_date_400
+      .col-sm-9
+        - if new_or_create
+          = f.date_select :effective_date_400
+        - else
+          = @charge_company.effective_date_400
+
+    - submit_button = submit_form(new_or_create ? { button_text: t('charge_company.recharge_and_submit') } : {})
+    - if @charge_company.charge_company_outbound_id == ChargeCompanyOutbound::TRIAL_ID
+      - none_charge_agents = ChargeAgent.where(agent_id: @company.agents.pluck(:id)).select { |charge_agent| charge_agent.charge_id.blank? }
+      - if none_charge_agents.blank?
+        = submit_button
+      - else
+        h1.red
+          | 提交按钮已被隐藏。
+          br
+          | 因为座席[#{none_charge_agents.map { |charge_agent| charge_agent.agent_id.to_s.slice(5, 9) }.join(', ')}]还没有设置计费套餐，请先设置后再到本页面继续操作！
+    - else
+      = submit_button
+
+    - if new_or_create
+      javascript:
+        $('#submit_button').click(function (event) {
+          if (Number($('#charge_company_charge_company_400_id').val()) > 0 && Number($('#charge_company_charge_company_400_month_id').val()) > 0) {
+            alert('400呼入费率和400呼入包月不可以同时选择！');
+
+            event.preventDefault();
+          }
+        });
+
+
+

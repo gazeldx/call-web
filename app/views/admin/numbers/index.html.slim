@@ -1,0 +1,41 @@
+= titled
+
+= content_for :header do
+  = t('number.management')
+
+  = link_to t('number.new'), new_admin_number_path, css_new
+
+= content_for :grid do
+  .row
+    = form_tag admin_numbers_path, method: :get
+      = company_container
+      span#number_container class=hide_or_show_css(:number)
+        = text_field_tag :number, params[:number], placeholder: t('number.number'), style: 'vertical-align: middle; width: 110px'
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t('company.id')
+          = checkbox_for_search(:company_id)
+        th = t('number.company')
+        th
+          = t('number.number')
+          = checkbox_for_search(:number)
+        th = t('number.inbound_max_lines')
+        th
+
+    tbody
+      - @numbers.each_with_index do |number, i|
+        tr *odd_even(i)
+          td = number.company_id
+          td = number.company.try(:name)
+          td
+            span title="ID:#{number.id}" = number.number
+          td = "#{number.inbound_max_lines == 0 ? '不限制' : (number.inbound_max_lines.nil? ? '呼入尚未配置' : '最多' + number.inbound_max_lines.to_s + '线')}"
+          td
+            div *css_ops
+              = edit edit_admin_number_path(number)
+
+  = pagination @numbers

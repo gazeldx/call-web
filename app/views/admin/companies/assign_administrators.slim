@@ -1,0 +1,13 @@
+= title(@company.name + t('company.assign_administrators'))
+
+= banner({ index_i18_text => "/#{controller_path}", t('company.assign_administrators') => nil })
+
+= header("#{t('company.assign_administrators')} - #{@company.name}")
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: do_assign_administrators_admin_company_path) do |f|
+    = error_msg @company
+
+    = render 'choose_administrators', f: f
+
+    = submit_form

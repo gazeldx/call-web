@@ -1,0 +1,45 @@
+= title t('report_agent_daily.monthly')
+
+= content_for :header do
+  = t('report_agent_daily.monthly')
+  = report_agent_dailies_header_links
+
+= content_for :grid do
+  .row
+    = form_tag report_agent_monthlies_path, method: :get
+      = select_tag :month, options_for_select((0..12).to_a.map { |i| [(Time.now - i.months).strftime("%Y年%-m月"), (Time.now - i.months).strftime("%Y%m")] }, params[:month])
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th = t(:month)
+        th = t(:salesman_)
+        th = t(:agent_)
+        th = t('report_agent_daily.trigger_count')
+        - if policy(:menu2).has_ivr?
+          th = t('report_agent_daily.answer_count')
+        th = t('report_agent_daily.talk_count')
+        th = t('report_agent_daily.talk_duration')
+        th = t('report_agent_daily.average_duration')
+        th = t('report_agent_daily.talk_minutes')
+        th = t('report_agent_daily.cost')
+        th = checkin_duration_and_average
+        th = t('report_agent_daily.checkin_count')
+
+    tbody
+      - @report_agent_monthlies.each_with_index do |monthly, i|
+        tr *odd_even(i)
+          td = monthly.target_month.strftime(t(:year_month))
+          td = monthly.salesman.try(:name)
+          td = monthly.agent.try(:code)
+          td = monthly.trigger_count
+          - if policy(:menu2).has_ivr?
+            td = "#{monthly.answer_count} / #{monthly.answer_ratio}"
+          td = "#{monthly.talk_count} / #{ratio(monthly.talk_count, monthly.trigger_count)}"
+          td = DateTime.seconds_to_words(monthly.talk_duration)
+          td = DateTime.seconds_to_words(monthly.talk_count.to_i == 0 ? 0 : monthly.talk_duration / monthly.talk_count)
+          td = "#{monthly.talk_minutes}#{t(:minute)}"
+          td = "#{monthly.cost}#{t(:yuan)}"
+          td = checkin_duration_average(monthly.checkin_duration, monthly.checkin_count)
+          td = monthly.checkin_count

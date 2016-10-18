@@ -1,0 +1,20 @@
+div id="modal-batch-delete" class="modal fade" tabindex="-1" aria-hidden="true" style="display: none;"
+  div class="modal-dialog"
+    div class="modal-content"
+      div class="modal-header no-padding"
+        div class="table-header"
+          button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+            span class="white"
+              | ×
+          = t('customer.batch_delete_title')
+
+      div class="modal-body no-padding"
+        .row
+          div class='col-xs-12'
+            h3
+              | 第一步：建议您在批量删除前，先
+              = export_button if policy(:user2).export_customers?
+              | 进行备份。
+            h3
+              | 第二步：本次共有#{@customers.count}条数据（不区分销售线索和客户名单）将被删除，
+              = content_tag(:button, raw("确定批量删除 #{content_tag(:i, nil, class: 'bigger-110')}"), type: 'submit', class: 'hidden_when_submit btn btn-danger btn-sm', onclick: "$('#target_method').val('batch_delete');", data: {confirm: t('customer.batch_delete_confirm', w: @customers.count)})

@@ -1,0 +1,72 @@
+= titled
+
+= content_for :header do
+  = "#{t('agent.management')} "
+  small
+    i.icon-double-angle-right
+    |  #{@company.name_and_id}
+
+  - if @company.charge_company.present?
+    = link_to t('agent.batch_charge'), batch_charge_agents_admin_company_path(@company), { class: 'btn btn-sm btn-primary' }
+    | &nbsp;
+    = link_to t('agent.batch_charge_change'), batch_charge_change_admin_company_path(@company), { class: 'btn btn-sm btn-danger' }
+    | &nbsp;
+    = link_to t('agent.batch_disable_eom'), batch_disable_eom_admin_company_path(@company), {class: 'btn btn-sm btn-warning'}
+    | &nbsp;
+    = link_to t('agent.batch_new'), batch_new_agents_admin_company_path(@company), css_new
+  - else
+    = link_to '设置计费方案', charge_company_admin_company_path(@company), css_new.merge(title: '设置完计费方案后才可以添加座席', 'data-rel' => 'tooltip')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='7%' = t('agent.code')
+        th width='8%' = t('agent.extension')
+        th width='8%' = t('agent.show_number')
+        th width='7%' = t('agent.transfer')
+        th width='8%' = t('agent.private_phone')
+        th width='8%' = t(:group_)
+        th width='6%' = t(:salesman_)
+        th width='29%' = t('charge_agent.show')
+        th width='9%' = t('agent.state')
+        th width='10%'
+
+    tbody
+      - @agents.each_with_index do |agent, i|
+        tr *odd_even(i)
+          td = agent.code
+          td = agent.extension_names
+          td = agent.show_number
+          td = boolean_value(agent, :transfer)
+          td = agent.private_phone
+          td = value_more(agent.groups.state_ok.order('created_at').map(&:name).to_split, 7)
+          td = agent.salesman.try(:name)
+          td
+            = charge_agent_info(agent)
+            = agent_charge_change_info(agent)
+          td == "#{agent_state(agent)} #{agent_out(agent.id)}"
+          td
+            div *css_ops
+              - if agent.ok?
+                = edit edit_admin_agent_path(agent)
+
+                - if policy(agent).disable_eom?
+                  a> class='orange' href=disable_eom_admin_agent_path(agent) data-method='post' data-confirm=t('agent.disable_eom_confirm') *tip('agent.disable_eom')
+                    = icon :fire
+                - else
+                  | &nbsp;#{icon(:fire, class: 'text-muted', title: t('agent.disabled_eom_wait'), 'data-rel' => 'tooltip')}&nbsp;&nbsp;
+
+                = render 'disable_agent_button', agent: agent
+
+                a> class=(agent.try(:charge_agent).try(:charge_id).nil? ? 'dark' : 'blue') href=edit_charge_agent_admin_agent_path(agent) *tip('charge_agent.settings')
+                  = icon :cny
+
+              - elsif agent.disabled_eom?
+                = render 'disable_agent_button', agent: agent
+
+              - elsif policy(agent).enable?
+                a> class='light-blue' href=enable_admin_agent_path(agent) data-method='patch' data-confirm=t(:enable_confirm) *tip(:enable)
+                  = icon 'youtube-play'
+
+  = pagination @agents

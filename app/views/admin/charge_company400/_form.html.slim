@@ -1,0 +1,11 @@
+= content_for :form do
+  = form_for [:admin, @charge_company400], form_options(url: (new_or_create? ? admin_charge_company400_index_path : admin_charge_company400_path)) do |f|
+    = error_msg @charge_company400
+
+    = input_text :id, {digits: true, required: true, range: [4001, 4999], help_text: "#{t(:charge_id_tip, min: 4001, max: 4999)}，#{t(:can_not_be_changed)}" }.merge(new_or_create? ? {} : {readonly: true})
+
+    = input_text :name, required: true
+
+    = input_text :price, number: true, required: true
+
+    = submit_form

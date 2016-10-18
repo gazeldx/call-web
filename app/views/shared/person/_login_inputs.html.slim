@@ -1,0 +1,7 @@
+- if new_or_create?
+  .form-group
+    = labeled :passwd, required: true
+    .col-sm-9
+      = f.password_field :passwd, required: true, title: t(:required), class: 'col-sm-5'
+
+= input_text :name, required: true

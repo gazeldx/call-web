@@ -1,0 +1,7 @@
+- kind_to_column = { Administrator::KIND_HELPER.to_s => 'helper_id', Administrator::KIND_TECHNICIAN.to_s => 'technician_id', Administrator::KIND_SELLER.to_s => 'seller_id' }
+
+.form-group
+  = labeled "administrator.kind_#{kind}", required: true
+  .col-sm-9
+    .col-sm-2
+      = f.select kind_to_column[kind.to_s], options_for_select(Administrator.where(kind: kind).order(:name).map { |administrator| [administrator.name, administrator.id] }, @company.try(kind_to_column[kind.to_s]))

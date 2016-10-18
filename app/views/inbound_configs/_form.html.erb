@@ -1,0 +1,102 @@
+<%= form_for @inbound_config, html: { class: "form-horizontal", role: "form"}  do |f| %>
+    <%= error_msg @inbound_config %>
+    <%= f.hidden_field :company_id %>
+    <div class="space-4"></div>
+    <div class="form-group">
+      <%= f.label "呼入号码", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <% if action_name == "edit" %>
+            <span class="editable" > &nbsp; <%= @inbound_number %></span>
+        <% else %>
+            <select class="select2" id="inbound_config_inbound_number_id" name="inbound_config[inbound_number_id]" >
+              <% @inbound_numbers.each do |e| %>
+                  <option value='<%= e.id %>' ><%= e.number %></option>
+              <% end %>
+            </select>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+      <%= f.label "配置类型", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <select id="inbound_config_config_type" name="inbound_config[config_type]" class="select2" >
+          <option value='0'>转IVR</option>
+          <option value='1'>转企业彩铃</option>
+          <option value='2'>转企业总机</option>
+          <option value='3'>转号码策略</option>
+        </select>
+      </div>
+    </div>
+    <div class="space-4"></div>
+    <div class="form-group" id="ivr_div">
+      <%= f.label "IVR", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <select class="select2" id="inbound_config_ivr_id" name="inbound_config[ivr_id]" >
+          <% @ivrs.each do |e| %>
+              <option value='<%= e.id %>' ><%= e.name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="exchange_div">
+      <%= f.label "企业总机", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <select class="select2" id="exchange" name="exchange" >
+          <% @exchanges.each do |e| %>
+              <option value='<%= e.id %>' ><%= e.name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="CRBT_div">
+      <%= f.label "企业彩铃", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <select class="select2" id="color_ring" name="color_ring" >
+          <% @color_rings.each do |e| %>
+              <option value='<%= e.id %>' ><%= e.name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="strategy_div">
+      <%= f.label "策略组", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <select class="select2" id="strategy_group_id" name="strategy_group_id" >
+          <% @strategy_group.each do |e| %>
+              <option value='<%= e.group_id %>' ><%= e.group_name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="space-4"></div>
+    <div class="form-group">
+      <%= f.label "是否允许VIP特权", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <input name="inbound_config[has_vip]" id="inbound_config_has_vip" class="ace ace-switch ace-switch-7" type="checkbox" <% if @inbound_config.has_vip == 1 %> checked <% end %> />
+        <span class="lbl"></span>
+      </div>
+    </div>
+    <div class="space-4"></div>
+    <div class="form-group">
+      <%= f.label "是否开启服务评价", class: "col-sm-3 control-label no-padding-right"%>
+      <div class="col-xs-12 col-sm-9">
+        <input name="inbound_config[has_rate]" id="inbound_config_has_rate" class="ace ace-switch ace-switch-7" type="checkbox" <% if @inbound_config.has_rate == 1 %> checked <% end %> />
+        <span class="lbl"></span>
+      </div>
+    </div>
+    <div class="clearfix form-actions">
+      <div class="col-md-offset-3 col-md-9">
+        <button class="btn btn-info" type="submit">
+          <i class="icon-ok bigger-110"></i>
+          确定
+        </button>
+        &nbsp; &nbsp; &nbsp;
+        <%= link_to(inbound_configs_path, class: "btn") do %>
+            <i class="icon-undo bigger-110"></i>
+            返回
+        <% end %>
+      </div>
+    </div>
+<% end %>

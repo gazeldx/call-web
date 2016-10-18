@@ -1,0 +1,28 @@
+= titled
+
+= content_for :header do
+  = faq_header
+
+  = link_to t('team.new'), new_team_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='10%' = t('team.name')
+        th width='70%' = t('team.salesmen')
+        th width='15%' = t('team.users')
+        th width='5%'
+
+    tbody
+      - @teams.each_with_index do |team, i|
+        tr *odd_even(i)
+          td
+            span title="ID:#{team.id}" = team.name
+          td = value_more(team.salesmen.map(&:name).to_split, 280)
+          td = value_more(team.users.map(&:name).to_split, 50)
+          td
+            div *css_ops
+              = edit edit_team_path(team)
+
+  = pagination @teams

@@ -1,0 +1,27 @@
+= title t('company.recharge', w: @company.name)
+
+= banner({ index_i18_text => "/#{controller_path}", t('company.recharge', w: @company.name) => nil })
+
+= header t('company.recharge', w: @company.name)
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: update_balance_admin_company_path) do |f|
+    = error_msg @company
+
+    .form-group
+      = labeled t('recharge.amount'), required: true
+      .col-sm-9
+        /TODO: 最好加一个验证，不应该允许填写0
+        = text_field_tag :amount, 0, class: 'col-sm-1', required: true, range: [-99999, 99999], number: true
+        | #{t(:yuan)} (#{t('charge_company.current_balance')}：
+        span.red
+          | #{@company.charge_company.try(:balance_shown)}#{t(:yuan)}
+        | )
+
+    .form-group
+      = labeled t('recharge.remark')
+      .col-sm-9
+        = text_field_tag :remark, nil, class: 'col-sm-7'
+
+    = submit_form
+

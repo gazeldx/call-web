@@ -1,0 +1,17 @@
+span#created_at_start_container class=hide_or_show_css(:created_at_start)
+  br
+  = "#{t(:created_at)}：从"
+  = text_field_tag(:created_at_start, (params[:created_at_start] ? params[:created_at_start] : nil), class: 'date-picker')
+  = time_select("created_at", "start", include_seconds: true, default: params[:created_at] ? {hour: params[:created_at]['start(4i)'], minute: params[:created_at]['start(5i)'], second: params[:created_at]['start(6i)']} : Time.now)
+  | 至&nbsp;
+  = text_field_tag(:created_at_end, (params[:created_at_end] ? params[:created_at_end] : Time.now.strftime(t(:date_format_))), class: 'date-picker')
+  = time_select("created_at", "end", include_seconds: true, default: params[:created_at] ? {hour: params[:created_at]['end(4i)'], minute: params[:created_at]['end(5i)'], second: params[:created_at]['end(6i)']} : Time.now)
+
+span#updated_at_start_container class=hide_or_show_css(:updated_at_start)
+  br
+  = "#{t(:updated_at)}：从"
+  = text_field_tag(:updated_at_start, (params[:updated_at_start] ? params[:updated_at_start] : nil), class: 'date-picker')
+  = time_select("updated_at", "start", include_seconds: true, default: params[:updated_at] ? { hour: params[:updated_at]['start(4i)'], minute: params[:updated_at]['start(5i)'], second: params[:updated_at]['start(6i)'] } : Time.now)
+  | 至&nbsp;
+  = text_field_tag(:updated_at_end, (params[:updated_at_end] ? params[:updated_at_end] : Time.now.strftime(t(:date_format_))), class: 'date-picker')
+  = time_select("updated_at", "end", include_seconds: true, default: params[:updated_at] ? { hour: params[:updated_at]['end(4i)'], minute: params[:updated_at]['end(5i)'], second: params[:updated_at]['end(6i)'] } : Time.now)

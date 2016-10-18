@@ -1,0 +1,15 @@
+= content_for :form do
+  = form_for [:admin, @charge_agent_share_minfee], form_options(url: (new_or_create? ? admin_charge_agent_share_minfee_index_path : admin_charge_agent_share_minfee_path)) do |f|
+    = error_msg @charge_agent_share_minfee
+
+    = input_text :id, {digits: true, required: true, range: [7001, 7999], help_text: "#{t(:charge_id_tip, min: 7001, max: 7999)}，#{t(:can_not_be_changed)}" }.merge(new_or_create? ? {} : {readonly: true})
+
+    = input_radios :kind, [ChargeAgentShareMinfee::KIND_MANUAL, ChargeAgentShareMinfee::KIND_TASK, ChargeAgentShareMinfee::KIND_MANUAL_AND_TASK], required: true
+
+    = input_text :name, required: true
+
+    = input_text :min_fee, number: true, required: true
+
+    = input_text :price, number: true, required: true
+
+    = submit_form

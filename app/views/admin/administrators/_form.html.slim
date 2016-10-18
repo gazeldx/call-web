@@ -1,0 +1,26 @@
+= content_for :form do
+  = form_for [:admin, @administrator], form_options do |f|
+    = error_msg @administrator
+
+    = input_text :username, {required: true, placeholder: '用于登录，设置后不可修改'}.merge(edit_or_update? ? {readonly: true} : {help_text: '设置后不可修改'})
+
+    = render '/shared/person/login_inputs', f: f
+
+    = input_radios :kind, [Administrator::KIND_HELPER, Administrator::KIND_TECHNICIAN, Administrator::KIND_SELLER, Administrator::KIND_OTHER], required: true
+
+    = render 'point_tree' if new_or_create?
+
+    h3 class="header smaller lighter green"
+      = t('administrator.contact_info')
+
+    = input_text :extension, digits: true
+
+    = input_text :phone, digits: true, class: 'col-sm-2', minlength: 11, maxlength: 11, title: '请输入合法的手机号，客户页面可能会点击呼叫。'
+
+    = input_text :qq, digits: true, class: 'col-sm-2'
+
+    = input_text :weixin
+
+    = input_text :email
+
+    = submit_form

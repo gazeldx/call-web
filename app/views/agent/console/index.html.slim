@@ -1,0 +1,24 @@
+= title t(:message_box)
+
+| 工作期间，本页请保持打开，且只打开一个，用于接收实时弹屏消息 ^_^
+br
+br
+- agent_bound = false
+- if policy(:company_config2).popup?
+  - if current_user.agent.try(:id).present?
+    - agent_bound = true
+  - else
+    span.red
+      | 您还没有绑定座席。只有先绑定了座席，才可以在通话前弹出客户信息窗口。
+
+span#messages
+
+script type='text/javascript' src="http://#{Settings.faye.domain}:#{Settings.faye.port}/faye/client.js"
+
+javascript:
+  var client = new Faye.Client("http://#{Settings.faye.domain}:#{Settings.faye.port}/faye", { timeout: 120 });
+
+  #{render 'subscribe_popup_agent' if agent_bound}
+
+  #{render '/box/subscribe_popup_issue' if current_company.have_menu?('issue.management')}
+

@@ -1,0 +1,53 @@
+= render '/shared/javascript/datepicker'
+
+= title t('invalid_cdr.list')
+
+= content_for :header do
+  = faq_header(t('invalid_cdr.list'))
+
+  = content_for :grid do
+    .row
+      = form_tag invalid_cdrs_path, method: :get
+        = hidden_field_tag(:target_method, '')
+        = render '/shared/invalid_cdr/search_inputs'
+        - if SystemConfig.free_time?
+          = search_button
+          = export_button
+        - else
+          | 搜索和导出#{t(:operate_at_free_time)}
+        | （数据保留五天）
+
+    #player
+
+    table *css_table
+      thead
+        tr
+          th
+            = t('task.short_name')
+            = checkbox_for_search(:task_id)
+          th
+            = t('cdr.time')
+            = checkbox_for_search_with_value(:start_stamp_start, Time.now.strftime(t(:date_format_)))
+          th
+            = t(:caller_number)
+            = checkbox_for_search(:caller_number)
+          th
+            = t(:callee_number)
+            = checkbox_for_search(:callee_number)
+          th
+            = t('invalid_cdr.kind')
+            /= checkbox_for_search(:kind)
+
+      - if @invalid_cdrs
+        tbody
+          - @invalid_cdrs.each_with_index do |invalid_cdr, i|
+            tr *odd_even(i)
+              td = invalid_cdr.try(:task).try(:name)
+              td = invalid_cdr.start_stamp.strftime(t('time_without_year'))
+              td = invalid_cdr.caller_number
+              td = invalid_cdr.callee_number
+              td = invalid_cdr_kind(invalid_cdr.kind)
+      - else
+        span.red
+          | 请勾选下面的筛选条件复选框后，再点击搜索。
+    = pagination @invalid_cdrs if @invalid_cdrs

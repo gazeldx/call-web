@@ -1,0 +1,119 @@
+= titled
+
+= content_for :header do
+  = t('company.management')
+  = link_to t('company.new'), new_admin_company_path, css_new
+
+= content_for :grid do
+  .row
+    = form_tag admin_companies_path, method: :get
+      span#id_container class=hide_or_show_css(:id)
+        = text_field_tag :id, params[:id], placeholder: t('company.id'), style: 'vertical-align: middle; width: 70px'
+      span#name_container class=hide_or_show_css(:name)
+        = text_field_tag :name, params[:name], placeholder: t('company.name'), style: 'vertical-align: middle; width: 110px'
+      span#state_container class=hide_or_show_css(:state)
+        = select_tag :state, options_for_select(Company::STATES.map { |state| [t("company.state_#{state}"), state] }.unshift([t('company.state'), nil]), params[:state])
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t('company.id')
+          = checkbox_for_search(:id)
+        th
+          = t('company.name')
+          = checkbox_for_search(:name)
+        th = t('user.username')
+        th = t(:balance)
+        th
+          = t('company.state')
+          = checkbox_for_search(:state)
+        th = t('company.license')
+        th 请按图标从左到右顺序完成开户，莫漏做
+
+    tbody
+      - @companies.each_with_index do |company, i|
+        tr *odd_even(i)
+          td = company.id
+          td
+            span title="创建于：#{company.created_at.strftime(t(:time_format))}" data-rel='tooltip'
+              = company.name
+          td = value_more(company.admin.username, 7)
+          td = "#{company.charge_company.try(:balance_shown)}#{t(:yuan)}"
+          td
+            = company_state_info(company)
+            - if current_user.admin?
+              - if company.state == Company::STATE_APPLY_FOR_VACUUM
+                a<> class='label label-sm label-primary arrowed arrowed-right' href=verify_for_vacuum_application_admin_company_path(company) data-method='patch' data-confirm=t('company.verify_for_vacuum_application_confirm')
+                  | 同意下线
+                a<> class='label label-sm label-success arrowed arrowed-left' href=refuse_for_vacuum_application_admin_company_path(company) data-method='patch'
+                  | 驳回请求
+              - if company.state == Company::STATE_APPLY_FOR_VACUUM_VERIFIED
+                - if Time.now - company.updated_at < Company::CAN_VACUUM_HOURS_AFTER_VERIFIED.hours
+                  a<> class='label label-sm label-mute arrowed arrowed-right' href='#'
+                    | #{Company::CAN_VACUUM_HOURS_AFTER_VERIFIED - ((Time.now - company.updated_at) / 1.hour).round}小时后可执行下线
+                - elsif !SystemConfig.free_time?
+                  a<> class='label label-sm label-mute arrowed arrowed-right' href='#' data-content="#{t(:operate_at_free_time)}" data-rel='popover' data-trigger='hover' data-placement='bottom' data-html='true'
+                    | 执行下线
+                - else
+                  a<> class='label label-sm label-warning arrowed arrowed-right' href=start_vacuum_admin_company_path(company) data-method='patch' data-confirm=t('company.start_vacuum_confirm')
+                    | 执行下线
+
+          td = link_to company.license, admin_company_agents_path(company), tip('agent.management')
+          td
+            div *css_ops
+              - if company.state == Company::STATE_OK
+                a> class='red' href="#modal-vacuum-#{company.id}" role='button' data-toggle='modal' *tip('company.apply_for_vacuum')
+                  = icon :trash
+                = render 'works_should_done_before_vacuum', company: company
+              - elsif company.state == Company::STATE_APPLY_FOR_VACUUM
+                a.text-muted> href='#' *tip('company.applied_for_vacuum')
+                  = icon :trash
+              - elsif company.state == Company::STATE_APPLY_FOR_VACUUM
+                a.green> href='#' *tip('company.verified_for_vacuum')
+                  = icon :trash
+
+              a> class='green' href=edit_admin_company_path(company) *tip(:edit)
+                = icon :pencil
+
+              /Notice: 相关功能放到了nbms上实现了。rb相关代码也可以清理掉
+              /a> class='brown' href=assign_administrators_admin_company_path(company) *tip('company.assign_administrators')
+                = icon :group
+
+              a> class='purple' href=vos_config_admin_company_path(company) *tip('company.vos_config')
+                = icon :exchange
+
+              a> class='orange2' href=menus_admin_company_path(company) *tip('company.menus')
+                = icon :sitemap
+
+              a> class='dark' href=charge_company_admin_company_path(company) *tip('charge_company.settings')
+                = icon :cny
+
+              a> class='brown' href=task_config_admin_company_path(company) *tip('task.config')
+                = icon :retweet
+
+              a> class='light-blue' href=company_config_admin_company_path(company) *tip(:company_config_)
+                = icon :anchor
+
+              a> class='light-red' href="http://#{Settings.nbms.domain}:#{Settings.nbms.web_port}" *tip('company.numbers_console') target='_blank'
+                = icon 'text-width'
+
+              a> class='green' href="sync_single_company_numbers/#{company.id}" *tip('company.sync_phone_numbers')
+                = icon 'circle-blank'
+
+              a> class='blue' href=admin_company_agents_path(company) *tip('agent.management')
+                = icon :male
+
+              a> class='grey' href=change_password_admin_user_path(company.admin) *tip('user.change_password')
+                = icon :user
+              - if company.charge_company.present? && company.company_config.present?
+                a> href="#modal-table-#{company.id}" role='button' class='green' data-toggle='modal' *tip('company.uc_login')
+                  = icon :unlock
+                = render 'login_as_company_staff', company: company
+
+                - if current_user.have_point('charge_company.recharge')
+                  a> class='pink' href=recharge_admin_company_path(company) *tip(:recharge_)
+                    = icon :yen
+
+  = pagination @companies

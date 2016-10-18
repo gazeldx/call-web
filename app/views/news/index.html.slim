@@ -1,0 +1,21 @@
+= title t(:upgrade_blogs)
+
+= content_for :header do
+  = t(:upgrade_blogs)
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='9%' 上线时间
+        th width='20%' 标题
+        th width='12%' 涉及的模块
+        th width='59%' 更新的具体内容
+
+    tbody
+      - @news.each_with_index do |new, i|
+        tr *odd_even(i)
+          td = time_ago_in_words(new[:upgrade_time])
+          td = new[:title]
+          td = new[:module]
+          td = new[:body]

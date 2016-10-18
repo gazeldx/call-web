@@ -1,0 +1,15 @@
+= content_for :form do
+  = form_for @user, form_options do |f|
+    = error_msg @user
+
+    = input_text :username, {required: true, placeholder: '用于登录，设置后还可以修改'}
+
+    = render '/shared/person/login_inputs', f: f
+
+    = render 'menu_tree' if new_or_create?
+
+    = groups_checkbox(f)
+
+    = teams_checkbox(f)
+
+    = submit_form

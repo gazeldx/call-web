@@ -1,0 +1,84 @@
+= title t(:call_center)
+
+.row
+  .col-xs-12
+    .error-container
+      .well
+        h1 class='green lighter smaller'
+          span class='red bigger-125'
+            i.icon-home
+            |  #{current_company.name}&nbsp;
+          | #{session[:name]}，欢迎您！
+
+        - if policy(:company_config2).popup? || current_company.have_menu?('issue.management')
+          .space
+          h3
+            | 请打开&nbsp;
+            = link_to raw("<i class='icon-inbox bigger-125'></i> #{t(:message_box)}"), console_path, target: 'Console_Page', class: 'btn btn-pink btn-sm'
+
+        - if current_user.agent.present? && current_user.agent.phone_number.present?
+          .space
+          | 座席主叫号码为“
+          span#agent_show_number.red
+            = current_user.agent.show_number
+          | ”
+          - if current_user.sales_numbers.size > 1 || (current_user.sales_numbers.size == 1 && current_user.sales_numbers.first.show_number != current_user.agent.show_number)
+            span#show_number_area.hidden
+              = select_tag :show_number, options_for_select((current_user.sales_numbers.order(:show_number).pluck(:show_number) & current_company.phone_numbers.agent_numbers.pluck(:number)).map { |show_number| [show_number, show_number] }, current_user.agent.show_number)
+              = link_to '保存', '#', onclick: 'javascript:updateShowNumber()'
+              | &nbsp;
+            | ==>
+            = link_to '切换主叫号码', '#', onclick: 'javascript:showShowNumber()'
+            javascript:
+              function showShowNumber() {
+                $('#show_number_area').removeClass('hidden');
+              }
+
+              function updateShowNumber() {
+                $.ajax({
+                  url: '/agent_update_show_number',
+                  data: 'show_number=' + $('#show_number').val(),
+                  type: 'PATCH',
+                  success: function (data) {
+                    $('#agent_show_number').html(data['show_number']);
+                    $('#show_number_area').append('<span class="green"> 已更新 </span>');
+                  }
+                })
+              }
+          - unless current_user.agent.show_number.start_with?('400', '0')
+            | ，到期时间
+            = current_user.agent.phone_number.expire_at.strftime(t(:time_format))
+            | ，
+            - expire_remain = remain_period(current_user.agent.phone_number.expire_at)
+            == "#{expire_remain}#{expire_remain.include?(t(:expired)) ? '' : '后到期'}"
+            - if current_company.agents.where(show_number: current_user.agent.show_number).count > 1
+              | 。主叫号码“#{current_user.agent.show_number}”已经被绑定到多个座席，如要延期，请联系贵公司的管理员或者
+            - else
+              span id="apply_for_hold_#{current_user.agent.show_number}_message"
+              a<> id="apply_for_hold_#{current_user.agent.show_number}" class='btn btn-minier btn-success' href='#' data-url=verify_phone_number_path data-number=current_user.agent.phone_number.number onclick='applyForHoldNumber.call(this)' *tip('点击后，请手机保持开机并接听系统的电话，按照电话中的语言提示完成本号码延期。')
+                = t('phone_number.apply_for_hold')
+            | 用“#{current_user.agent.show_number}”的手机发送短信（#{t('phone_number.sms_verify_message')}），短信内容为“
+            span.purple
+              | 1472
+            | ”，也可以延期。
+
+        .space
+        | 所在团队：#{current_user.team.present? ? current_user.team.name : t(:none)}
+        - if current_user.agent.present?
+          br
+          - group_names = current_user.agent.groups.pluck(:name)
+          | 所在座席组：#{group_names.present? ? group_names.to_split : t(:none)}
+
+        .space
+        = link_to t(:view_web_upgrade_info), news_path
+
+        .space
+        h4.green
+          | 小贴士：出门在外，用手机访问本系统，联系客户，不用带笔记本！
+
+= render '/phone_numbers/verify_phone_number_js'
+
+coffee:
+  $(document).ready () ->
+    queryUCWorkersForThisCompany()
+    $('#uc_workers').show()

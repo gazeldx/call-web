@@ -1,0 +1,84 @@
+<% content_for :javascript do%>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $(".select2").css('width','200px').select2({allowClear:true});
+        })
+    </script>
+<%end%>
+
+<div class="page-content">
+  <div class="page-header">
+    <h1>
+      添加企业彩铃
+      <small>
+        <i class="icon-double-angle-right"></i>
+        填写企业彩铃基本信息
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+  <div class="row">
+    <div class="col-xs-12">
+      <%= form_for :color_ring, url: color_ring_path, html: { class: "form-horizontal", role: "form"}  do |f| %>
+          <%= f.hidden_field :company_id %>
+          <div class="form-group">
+            <%= f.label "名称", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <%= f.text_field :name, class: "col-xs-6 col-sm-4" %>
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "彩铃语音文件", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select class="select2" id="color_ring_timeout_value" name="color_ring[timeout_value]" >
+                <% @voices.each do |e| %>
+                    <option value='<%= e.id %>' ><%= "[#{e.duration}秒]#{e.name}" %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "最小等待时间(秒)", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <input class="col-xs-6 col-sm-3" id="color_ring_timeout_length" maxlength="4" name="color_ring[timeout_length]"
+                     oncontextmenu="value=value.replace(/[^\d]/g,'')" onkeyup="value=value.replace(/[^\d]/g,'')"
+                     onpaste="value=value.replace(/[^\d]/g,'')" size="4" type="text">
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "转接座席组", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select class="select2" id="color_ring_node_id" name="color_ring[node_id]" >
+                <option value='-1' >不转组(放完语音后挂断)</option>
+                <% @groups.each do |e| %>
+                    <option value='<%= e.id %>' ><%= e.name %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <%= f.label "备注", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <%= f.text_area :remark, class: "col-xs-10 col-sm-5" %>
+            </div>
+          </div>
+          <div class="clearfix form-actions">
+            <div class="col-md-offset-3 col-md-9">
+              <button class="btn btn-info" type="submit">
+                <i class="icon-ok bigger-110"></i>
+                确定
+              </button>
+              &nbsp; &nbsp; &nbsp;
+              <%= link_to(color_ring_path, class: "btn") do %>
+                  <i class="icon-undo bigger-110"></i>
+                  返回
+              <% end %>
+            </div>
+          </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

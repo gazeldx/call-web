@@ -1,0 +1,13 @@
+= title @company.name + t('company.vos_config')
+
+= banner({ index_i18_text => "/#{controller_path}", t('company.vos_config') => nil })
+
+= header("#{t('company.vos_config')} - #{@company.name}")
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: update_vos_config_admin_company_path) do |f|
+    = error_msg @company
+
+    = render 'choose_voses', f: f
+
+    = submit_form

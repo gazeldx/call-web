@@ -1,0 +1,13 @@
+= title t('company.menus')
+
+= banner({ index_i18_text => "/#{controller_path}", t('company.menus') => nil })
+
+= header("#{t('company.menus')} - #{@company.name}")
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: update_menus_admin_company_path) do |f|
+    = error_msg @company
+
+    = render 'menu_tree'
+
+    = submit_form

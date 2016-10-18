@@ -1,0 +1,21 @@
+= content_for :form do
+  = form_for [:admin, @company], form_options do |f|
+    = error_msg @company
+
+    /- if edit_or_update?
+    /  .form-group
+    /    = labeled 'ID'
+    /    .col-sm-9
+    /      label = @company.id
+
+    = input_text :id, { required: true, digits: true, minlength: 5, maxlength: 5, title: '五位数字' }.merge(edit_or_update? ? {readonly: true} : {})
+
+    = input_text :name, required: true
+
+    - if new_or_create?
+      = render 'choose_voses', f: f
+
+    - if new_or_create?
+      = render 'menu_tree'
+
+    = submit_form

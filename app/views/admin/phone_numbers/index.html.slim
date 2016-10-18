@@ -1,0 +1,43 @@
+= titled
+
+= content_for :header do
+  = t('phone_number.management')
+
+= content_for :grid do
+  .row
+    = form_tag admin_phone_numbers_path, method: :get
+      = company_container
+      span#number_container class=hide_or_show_css(:number)
+        = text_field_tag :number, params[:number], placeholder: t('phone_number.number'), style: 'vertical-align: middle; width: 110px'
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t('company.id')
+          = checkbox_for_search(:company_id)
+        th = t(:company_name)
+        th
+          = t('phone_number.number')
+          = checkbox_for_search(:number)
+        th = t('phone_number.for_task')
+        th = t('phone_number.for_agent')
+        th = t('phone_number.expire_at')
+        th = t('phone_number.remain_hours')
+        th = t('phone_number.validity_hours')
+
+    tbody
+      - @phone_numbers.each_with_index do |number, i|
+        tr *odd_even(i)
+          td = number.company_id
+          td = number.company.try(:name)
+          td
+            span = number.number
+          td = boolean_value(number, :for_task)
+          td = boolean_value(number, :for_agent)
+          td = number.expire_at.strftime(t(:time_format))
+          td = remain_period(number.expire_at)
+          td = "#{number.validity_hours}#{t(:hour)}"
+
+  = pagination @phone_numbers

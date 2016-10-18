@@ -1,0 +1,57 @@
+= titled
+
+= content_for :header do
+  = t('column.management')
+
+  = link_to t('column.new'), new_column_path, css_new
+
+  a< href=customers_new_path class='btn btn-sm btn-primary'
+    = t('preview')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('column.title')
+        th = t('column.type')
+        th = t('column.width')
+        th = t('column.target')
+        th = t('column.active')
+        th
+
+    tbody
+      - @columns.each_with_index do |column, i|
+        tr *odd_even(i)
+          td
+            span title="ID:#{column.id}, Column:#{column.name}" = column.title
+
+          td
+            = column_type(column)
+
+            - if column.select?
+              = select_tag :type, options_for_select(current_company.options.where(tid: column.name.sub('t', '').to_i).order(:created_at).map { |option| [option.text, option.value] })
+              = link_to t(:edit), "column/#{column.name.sub('t', '').to_i}/options", title: t('column.edit_select_options')
+
+            - if column.name == 's1'
+              - title = '可把它改为“联系方式”或“电话号码”等和“手机号”接近的含义；<br>请不要把它改为“地址”，“个人爱好”等和“手机号”南辕北辙的含义。<br>当呼入呼出该号码时，系统会弹屏'
+              - help_text = '手机号，来电匹配，请不要修改其含义'
+            - elsif column.name == 's2'
+              - title = '可把它改为和“姓名”接近的含义；<br>请不要把它改为“地址”，“个人爱好”等和“姓名”南辕北辙的含义'
+              - help_text = '姓名，来电后显示，请不要修改其含义'
+            - if title
+              span.purple title=title data-rel='tooltip' data-html='true'
+                | （#{help_text}）
+
+          td = column.width
+
+          td = column_target_name(column)
+
+          td = column_active(column)
+
+          td
+            div *css_ops
+              = edit edit_column_path(column)
+
+              - if i > 0
+                a> href=up_column_path(column) class='red' data-method='patch' *tip('up')
+                  = icon 'long-arrow-up'

@@ -1,0 +1,28 @@
+= title t('cdr.group_report')
+= content_for :header do
+  = t('cdr.group_report')
+  .pull-right
+    = back_button_small
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('report_agent_daily.target_date')
+        th = t(:salesman_)
+        th = t(:agent_)
+        th = t('cdr.call_count')
+        th = t('report_agent_daily.talk_duration')
+        th = t('report_agent_daily.average_duration')
+        th = t('report_agent_daily.cost')
+
+    tbody
+      - @reports.each_with_index do |report, i|
+        tr *odd_even(i)
+          td = "#{report.target_date.strftime(t(:date_format))}（#{report.target_date.wday_name}）"
+          td = report.salesman.try(:name)
+          td = report.agent.try(:code)
+          td = report.call_count
+          td = DateTime.seconds_to_words(report.total_duration)
+          td = DateTime.seconds_to_words(report.call_count.to_i == 0 ? 0 : report.total_duration.to_i / report.call_count)
+          td = "#{report.total_cost}#{t(:yuan)}"

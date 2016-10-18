@@ -1,0 +1,84 @@
+<% content_for :javascript do%>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $('#ivr-table').dataTable( {
+                "aoColumns": [ null,null,null,null,null,null, { "bSortable": false }  ],
+                "oLanguage": {
+                    "sLengthMenu": '显示 <select>'+
+                    '<option value="10">10</option>'+
+                    '<option value="20">20</option>'+
+                    '<option value="30">50</option>'+
+                    '<option value="-1">All</option>'+
+                    '</select> 条记录',
+                    "sLoadingRecords": "正在为您准备数据...",
+                    "sEmptyTable": "表中没有可用的记录",
+                    "sZeroRecords": "没有符合条件的记录",
+                    "sSearch": "查询",
+                    "sInfoFiltered": " - 检索了 _MAX_ 条记录",
+                    "sInfoEmpty": "",
+                    "sInfo": "共 _TOTAL_ 条记录 (_START_ 到 _END_)"
+                }
+            } );
+        })
+    </script>
+<%end%>
+<div class="page-content">
+  <div class="page-header">
+    <h1>
+      <strong>企业总机列表</strong>
+      <small class="pull-right">
+        <%= link_to '创建企业总机', exchange_new_path, class: 'btn btn-sm btn-primary' %>
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="table-responsive">
+        <table id="ivr-table" class="table table-striped table-bordered table-hover">
+          <thead>
+          <tr>
+            <th>名称</th>
+            <th>引导语音</th>
+            <th>查号按键</th>
+            <th>查号动作</th>
+            <th>查号处理</th>
+            <th>分机</th>
+            <th>备注</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @exchanges.each do |exchange| %>
+              <tr>
+                <% ex_node = exchange.root_node.get_exchange %>
+                <td><%= exchange.name %></td>
+                <th><%= Voice.get_name(exchange.root_node.value) %></th>
+                <th><%= ex_node[0].from_digits %></th>
+                <th><%= ex_node[0].action_name %></th>
+                <th>
+                  <% if ex_node[0].action == "Trans_Group" %>
+                      <%= Group.get_name(ex_node[0].value) %>
+                  <% elsif ex_node[0].action == "Voice" %>
+                      <%= Voice.get_name(ex_node[0].value) %>
+                  <% else%>
+                      未知
+                  <% end %>
+                </th>
+                <td><%= ex_node[1].join(",") %></td>
+                <td><%= exchange.remark %></td>
+                <td>
+                  <div class="action-buttons">
+                    <%= link_to(del_exchange_path(id: exchange.id), class: 'red', method: :delete, data: { confirm: '确定要删除么?' }, "data-original-title" => '删除', "data-rel" => 'tooltip') do %>
+                        <i class="icon-trash bigger-130"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,1463 @@
+# Sample localization file for Chinese. Add more files in this directory for other locales.
+# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+zh:
+  submit: 提 交
+  reset: 重 置
+  return_back: 返 回
+  delete: 删除
+  permanent_delete: 永久删除
+  save: 保 存
+  delete_confirm: 确定要删除吗?
+  disable_confirm: 确定要禁用吗?
+  enable_confirm: 确定要启用吗?
+  click_for_sorting: 点此排序
+  export_result: 结果导出
+
+
+  view: 查看
+  edit: 编辑
+  preview: 预览
+  download_template: 下载模板
+#  stash: 隐藏，不可恢复！
+#  back: 返回
+  up: 顺序上移
+  up_success: 顺序已上移！
+#  down: 顺序下移
+  success: "%{w}成功！"
+  fail: "%{w}失败！"
+  operation_success: "操作成功！"
+  return_home: 返回首页
+  confirm_delete: 确定删除它？
+  confirm_stash: 确定隐藏它？
+  unselected: 未选择
+  please_select: 请选择
+  unchecked: 待审核
+  all: 全部
+  new: "新建%{w}"
+  edit_: "编辑%{w}"
+  batch_import: 批量导入
+  batch_delete: 批量删除
+  batch_config: 批量设置
+  new_: 新 建
+  edit__: 编 辑
+  created: 已创建！
+  updated: 已修改！
+  required: 必填项
+  input_digits: 请输入整数
+  input_number: 请输入数值
+  can_not_be_changed: 设置后不可更改
+  unit_yuan: 单位（元）
+  yuan: 元
+  times: 次
+  none: 无
+  now: 现在
+  month: 月份
+  true_: 是
+  false_: 否
+  no_bound: 未绑定
+  faq_default_content: 请稍候，本页的FAQ内容我们还在完善中。
+  balance: 余额
+  no_data: 无数据
+  code: 编号
+  nobody_answer: 客户早早挂断
+  play_record: 播放录音
+  download_record: 下载录音
+  line_no: 行号
+  call_now: 呼叫
+  created_at: 创建时间
+  updated_at: 更新时间
+  not_configured: （尚未配置，请配置下）
+  tip: 提醒
+  week: 周
+  week_day: 周几
+
+  message_box: 消息盒子
+
+  company_name: 所属企业
+
+  disable: 禁用
+  enable: 启用
+  enabled: 启用
+  disabled: 停用
+
+  expired: 已过期
+  not_expired: 未过期
+
+  operate_at_free_time: 请在早上9点前，中午12:00-12:59，晚上18:00后操作！
+
+#  start_date: 起始日期
+#  end_date: 结束日期
+
+  name: 姓名
+  mobile: 手机号
+  simple_mobile: 手机
+  simple_extension: 分机
+  remark: 备注
+  mobile_operator: 运营商
+  call_loss: 呼损
+  task_call_loss: 任务呼损
+  inbound_call_loss: 呼入呼损
+  not_call_loss: 未呼损
+  call_loss_or_not: 呼损与否
+
+  quote_ignored: 文件中的（英文双引号"）将被忽略，所以如果双引号内包含英文逗号，该英文逗号将会作为普通分隔符，请搜索（英文双引号"）检查相关行格式是否匹配，并将（英文双引号"）替换成空 ==>
+  view_web_upgrade_info: 网站更新
+  company_config_info: 企业参数
+
+  menus:
+    account: 帐户管理
+    agent: 座席管理
+    call: 话单数据
+    monitor: 监控管理
+    report: 报表管理
+    traffic: 话务明细
+    customer: 客户管理
+    system: 系统管理
+    other: 其它
+
+  site:
+    name: 呼叫中心
+    admin_title: 统一通信后台
+
+
+  manager_console: 统一通信呼叫中心
+  call_center: 呼叫中心
+  uc: 统一通信
+
+  company:
+    management: 企业管理
+    information: 企业信息
+    id: 企业编号
+    name: 企业名
+    license: 座席数
+    state: 状态
+    state_1: 正常
+    state_2: 下线申请中
+    state_3: 已同意下线
+    vos_config: VOS线路配置
+    manual_call_vos_id: 手动外呼VOS线路
+    callback_vos_id: 回呼座席VOS线路
+    task_vos_id: 任务外呼VOS线路
+    batch_config_vos: 批量设置VOS线路
+    created: 企业创建成功！
+    updated: 企业“%{w}”已修改！
+    deleted: 该企业已成功删除！
+    new: 新建企业
+    edit: 编辑企业
+    menus: 功能授权
+    update_menus_success: 为企业“%{w}”授权功能成功！
+    menus_is_required: 功能授权是必选项，请勾选！
+    numbers_console: 管理该企业号码库
+    sync_phone_numbers: 同步该企业的主叫号码
+    recharge: 为企业“%{w}”充值
+    recharge_success: 为企业“%{w}”充值成功！
+    balance_not_enough: 企业余额要达到%{w}元才能完成此次操作！请通知企业充值。
+    uc_login: 登入企业
+    assign_administrators: 关联UC管理员
+    assign_company_administrators_success: 为“%{w}”关联UC管理员操作成功！
+    apply_for_vacuum: 点此申请让该企业下线，并清理企业数据，以便企业编号再度使用
+    applied_for_vacuum: 该企业已经申请下线，统一通信超级管理员正在审核本次申请
+    verified_for_vacuum: 该企业申请下线已审核通过，统一通信超级管理员正在处理后续事宜
+    apply_for_vacuum_confirm: 确定企业已经下线，申请清理企业数据？
+    verify_for_vacuum_application_confirm: 同意企业下线？
+    start_vacuum_confirm: 执行企业下线操作，清理企业所有数据？
+    name_ready: 全新企业，未被使用，可开户
+
+  company_config_: 其他设置
+  company_config:
+#    max_spill_count: 呼入溢出数量上限
+    created: 企业“%{w}”其他设置创建成功！
+    updated: 企业“%{w}”其他设置更新成功！
+    popup: 弹屏功能（付费）
+    popup_true: 开启
+    popup_false: 关闭（默认）
+    switch_salesman: 弹屏页面点保存，该客户已经绑定了销售员时
+    switch_salesman_true: 销售员更新成当前销售员
+    switch_salesman_false: 销售员保持为原销售员（默认）
+    salesman_can_see_numbers: 销售员可以看到客户手机号？
+    salesman_can_see_numbers_true: 可以看到（默认）
+    salesman_can_see_numbers_false: 不可以看全，隐藏中间四位
+    obtain_records_limit_ip: 录音访问
+    obtain_records_limit_ip_false: 不限制，任何IP都可以访问（默认）
+    obtain_records_limit_ip_true: 只有经过授权的合法IP才可以访问
+    import_customers_count: 销售线索（客户）数量上限
+    import_customers_count_level_1: 批量导入3万，手动创建10万（默认）
+    import_customers_count_level_2: 10万（扩容条件：1、客户主动提出扩容；2、客户月消费或座席数较大）
+    import_customers_count_level_3: 20万（扩容条件：1、客户主动提出扩容；2、客户月消费或座席数较大）
+    import_customers_count_level_4: 40万（扩容条件：需要经过统一客服主管确认，客户确实需要这么多客户数）
+    import_popup_customers_count: 批量导入弹屏用的隐藏的销售线索数
+    record_kept_months: 话单和录音保留时长
+    record_kept_months_level_1: 3个月（默认）
+    record_kept_months_level_2: 6个月（录音保留6个月需要联系史文斌，请他调整后才可生效）
+    logo_too_big: Logo太大了。请上传小于2M的文件
+    web_name: 系统名称
+    default_web_name: 统一通信呼叫中心
+    login_title_first: 登录页左边内容
+    default_login_title_first: 登陆
+    login_title_second: 登录页右边内容
+    default_login_title_second: 统一通信呼叫中心
+    please_choose_logo: 请选择Logo图片
+
+  username: 用户名
+  password: 密码
+  confirm_password: 再输一次新密码
+  original_password: 原密码
+  new_password: 新密码
+  change_password: 修改密码
+  change_password_success: 密码已修改！
+  change_someone_password: 修改“%{w}”的密码
+  change_someone_password_success: 已成功修改“%{w}”的登陆密码！
+  original_password_wrong: 原密码错误！
+  password_not_match_previous: 两次输入的密码不一致！
+
+  no_extension: 无分机%{w}
+  salesman_id_is_null: 销售员为空
+  team_id_is_null: 团队为空
+
+  user_: 管理员
+  user:
+    management: 管理员
+    name: 姓名
+    username: 登陆名
+    passwd: 登录密码
+    active: 状态
+    menus: 功能授权
+    menus_for_who: 为“%{w}”授权功能
+    menus_for_who_success: 为“%{w}”授权功能成功！
+    menus_is_required: “功能授权”是必选项，请勾选！
+    invalid_username_format: 请修改登陆名！登陆名是“数字、小写字母或下划线”的组合。
+    username_password_updated: 登陆名和密码设置成功！请登陆。
+    groups: 管理的座席组
+    teams: 管理的团队
+    not_exist: 用户不存在！
+    created: 管理员创建成功！
+    updated: 管理员修改成功！
+    deleted: 该管理员已成功删除！
+    new: 新建管理员
+    edit: 编辑管理员
+    assign_groups: 座席组授权
+    change_password: 修改密码
+    administrator_name: 管理员
+    faq_title: 管理员的权限
+    faq_content: 一、该管理员能管理的“座席组”决定了他在“座席管理”、“座席监控”、“任务管理”中的权限；<br>二、该管理员能管理的“团队”决定了他在所有其它模块的权限。
+  
+  register: 注册
+  login: 登陆
+  logout: 退出
+
+  time_: 时间
+
+  password_wrong: 密码错误！
+  captcha_wrong: 验证码不正确！
+  too_many_wrong_password: 密码输入错误次数已达%{wrong_password_max_count}次，帐号已被锁定。请联系贵公司管理员修改密码！
+  password_wrong_with_count: 密码错误！还有%{w}次机会尝试。
+
+  account_info: 管理员
+
+#  administrator_: UC管理员
+  administrator:
+    management: UC管理员
+    name: 姓名
+    username: 登陆名
+    passwd: 登录密码
+    active: 状态
+    kind: 角色
+    kind_0: 客服经理
+    kind_1: 技术经理
+    kind_2: 业务经理
+    kind_3: 其他人员
+    kind_n_not_assigined: 尚未分配专属%{w}
+    contact_info: 联系信息
+    extension: 分机号
+    phone: 手机号
+    qq: QQ号
+    weixin: 微信
+    email: Email
+
+    points: 功能授权
+    points_for_who: 为“%{w}”授权功能
+    points_for_who_success: 为“%{w}”授权功能成功！
+#    points_is_required: “功能授权”是必选项，请勾选！
+    invalid_username_format: 请修改登陆名！登陆名是“数字、小写字母或下划线”的组合。
+#    username_password_updated: 登陆名和密码设置成功！请登陆。
+    not_exist: 用户不存在！
+    created: UC管理员“%{w}”创建成功！
+    updated: UC管理员“%{w}”修改成功！
+    deleted: 该UC管理员已成功删除！
+    new: 新建UC管理员
+    edit: 编辑UC管理员
+    change_password: 修改密码
+#    administrator_name: 管理员
+
+  group_: 座席组
+  group:
+    management: 座席组管理
+    name: 座席组名
+    created: 座席组已创建！
+    updated: 座席组已成功！
+    deleted: 该座席组已删除！
+    has_running_task: 该座席组下有任务正在运行。请先暂停相关任务，然后再删除。
+    new: 新建座席组
+    edit: 编辑座席组
+    users: 对应的管理员
+    agents: 对应的座席
+#    agents_and_inbound_level: 座席和呼入优先级设定
+    inbound_or_outbound: 类型
+    inbound: 呼入
+    outbound: 呼出
+    outbound_true: 呼出
+    outbound_false: 呼入
+
+    timeout: 等待过久语音提醒
+    timeout_true: 开启
+    timeout_false: 关闭
+    timeout_title: 如何化解客户等待过久的抱怨？
+    timeout_content: 当客户张三拨打我公司的呼入号码后，如果座席全忙，张三就要拿着话机等了。<br><br>我们考虑张三是个急性子，等久了会不高兴，所以我们要给他放一段语音，告诉他：<br>“很抱歉让您久等了。在您前面还有3人……”之类的话，安慰张三。<br><br>请开启本选项，以保证上述功能得以运行，有效化解客户抱怨。
+    timeout_help: 秒（客户等待超过该值即为“过久”）
+    max_wait_time: 超时时长
+    play_timeout_voice: 排队人数语音
+    play_timeout_voice_true: 播放
+    play_timeout_voice_false: 不播放
+    max_loop_times: 最多播放
+    max_loop_times_title: “最多播放N次”的含义
+    max_loop_times_content: 当客户张三拨打我公司的呼入号码后，如果座席全忙，张三就要拿着话机等了。<br>当他等了40秒后，如果最多播放0次（这个次数“0”您可以修改），则不播放语音，直接被挂断。<br>如果最多播放2次，则张三每等待40秒后系统都会播放语音给他听，他在等待了总计至少120秒后（之间听到两次语音提醒，因为每次语音时长未计入，因此他实际等待时长超过120秒）将被拆线挂断。
+    timeout_ivr: 等待过久IVR
+
+    spill_count: 排队人数达
+    spill_count_help: 人开始提醒
+    spill: 排队人数过多提醒
+    spill_true: 开启
+    spill_false: 关闭
+    play_spill_voice: 排队人数语音
+    play_spill_voice_true: 播放
+    play_spill_voice_false: 不播放
+    spill_ivr: 提醒IVR
+    spill_title: “排队人数过多提醒”是什么？
+    spill_content: 其实就是当座席全忙，排队的客户数已经超出了限度了，客户再拨打我公司的号码时，我们会直接播放语音提醒客户：“抱歉，在您前面还有3人...”<br><br>这样，客户可以根据语音提示作出选择。<br>“排队人数过多”的专业术语叫“溢出”！
+
+    noagent: 是否走队列溢出逻辑
+    play_noagent_voice: 是否播放队列溢出计数提示录音
+    noagent_ivr: 队列溢出IVR
+
+    agent_level_success: 座席优先级调整成功！
+
+    faq_title: “座席组”就是“话机组”
+    faq_content: 1、座席组用于把一些座席放在一起。根据公司的业务需要而创建。<br>举个例子，某公司可能会有“售前”、“技术支持”、“客服”等组。<br><br>2、为座席组分配管理员后，之后的具体操作就可以放心交给各组的管理员了。<br><br>3、呼入组中的座席，有呼入优先级的说法。就是说来一通呼入电话进到一个组中了，优先级最高的话机将最先响铃。接听优先级相同的话机会依次响铃，机会均等。<br>您只需要点一下分机号两边的箭头就可以完成升/降话机接听优先级操作。不同颜色表示不同的接听优先级，橙色话机最先响铃。
+    new_faq_title: 如何创建座席组？
+    new_faq_content: 1、根据公司业务需要命名一个新的座席组。<br><br>2、座席组分为呼入和呼出类型，如果您是呼入客户，呼出类型就不要选择了。<br><br>3、选择若干座席。一个座席可以在多个呼入组中。<br><br>4、对于呼入组，可以设置一些呼入选项，请把鼠标放在带颜色的选项名词上，查看相关具体说明。
+    edit_faq_title: 何时需要修改座席组？
+    edit_faq_content: 1、座席需要增减时。<br><br>2、呼入组的呼入选项需要调整时。请把鼠标放在带颜色的选项名词上，查看相关具体说明。
+
+  agent_: 座席
+  agent:
+    management: 座席管理
+    created: 座席已创建！
+    updated: 座席已修改！
+    deleted: 座席“%{w}”已被禁用！
+    enabled: 座席“%{w}”已启用！
+    batch_configured: 座席主叫号码批量修改成功！
+    history: 座席历史明细
+    edit: 编辑座席
+    batch_config: 批量设置座席主叫号码
+
+    code: 座席编号
+    code_start: 起始座席编号
+    code_end: 结束座席编号
+    salesman: 绑定的销售员
+    id: SIP号
+    state: 状态
+    state_0: 已停用
+    state_1: 正常
+    state_2: 上月末停用
+    extension: 分机号
+    extension_type: 分机类型
+    show_number: 主叫号码
+    transfer: 接听方式
+    transfer_true: 绑定号码
+    transfer_false: SIP话机
+    private_phone: 绑定号码
+    groups: 对应的座席组
+    out_Available: 可用
+    out_NotAvailable: 不可用
+    out_: 无效
+
+    batch_new: 批量增座席
+    batch_new_count: 新增座席数
+    agent_code_start: 起始座席编号
+    batch_created: 批量增座席成功！
+
+    batch_charge: 批量设置计费
+    batch_charge_change: 批量变更套餐
+    batch_disable_eom: 批量月底禁用
+
+    charge: 计费套餐
+
+    faq_title: “座席”的含义
+    faq_content: “座席”在本系统中可以理解为“话机”，也可以理解为“已绑定话机的销售员”。系统是按座席计费的。<br><br>“分机号”是企业自行指定的话机编号，可用于呼叫的转接，是话机的名字，最为重要。<br>“座席编号”是系统自动产生的一个数字，恒定不变。<br>“主叫号码”是该座席呼出时，在被叫手机上显示的号码。<br>座席只有隶属于某个组后，该组中的呼叫才有机会转到该座席。<br>座席所对应的销售员，就是该话机的主人。<br><br>您可以今天把话机分配给销售员张三（就是让他用），明天把这个话机给李四用。<br>所有该话机产生的话单都会算到当时所绑定的销售员头上，这样，即使换话机也不会影响销售员的工作量统计。
+    edit_faq_title: 何时需要修改座席？
+    edit_faq_content: 1、想给它换一个主叫号码。<br><br>2、想给它换个主人。<br><br>3、只有公司超级管理员才可以改变座席所在的座席组。
+
+    id_taken: 座席编号已经存在于系统中了，请更换。本次操作未进行。
+    show_number_not_exist: 主叫号码不属于贵公司！
+
+    disable_eom: 月底禁用
+    disable_eom_confirm: 确定在本月底禁用该座席？
+    disable_eom_confirm_user: 点击“月底禁用”后，在本月底23点59分，本座席会被系统自动禁用。确认“月底禁用”该座席吗？
+    disabled_eom: “月底禁用”操作完成，该座席将在月底自动无法使用！
+    disabled_eom_user: “月底禁用”操作完成，座席“%{w}”在本月底23点59分，会被系统自动禁用！
+    disabled_eom_wait: 该座席在本月底将被禁用！
+    disabled_eom_user_wait: “月底禁用”已完成，在本月底23点59分，本座席会被系统自动禁用！
+
+  agents_monitor:
+    management: 座席监控
+
+  team_: 团队
+  team:
+    management: 团队
+    name: 团队名
+    created: 团队创建成功！
+    updated: 团队修改成功！
+    deleted: 该团队已成功删除！
+    new: 新建团队
+    edit: 编辑团队
+    users: 对应的管理员
+    salesmen: 对应的销售员
+    tip_before_create: 提醒：团队创建后不可以删除，请不要创建无用的团队！
+
+    faq_title: 何为团队？
+    faq_content: 团队，就是一群人。不论是谁，单打独斗都已难成大事了。<br>大家抱团，推举领袖（座席班长或者销售总监），一起把工作完成得更好。<br><br>团队创建好后，报表会统计到团队上，让各团队PK业绩！<br>团队管理员只可以看到本团队的销售员和客户，有效的划分了职责范围。<br><br>我们的系统是多角色的，如果座席班长也需要亲自拓展客户，那么除了为该座席班长创建一个管理员账户外，还需要创建一个销售员账户。
+    new_faq_title: 如何创建团队？
+    new_faq_content: 首先，给每个团队取一个响亮的名字！<br><br>Then, 把销售精英们安置到团队中。您可能已经注意到了，一个销售员只能属于一个团队。难道就不能隶属于两个团队吗？历史经验告诉我们，属于两个团队的人往往是间谍。所以啊。。。<br><br>最后，要安排若干管理员（领导）去管理这个团队。低级别的领导只要管好一个团队就可以了，高级别的领导可以监管多个团队。团队中所有销售员的客户也在领导管辖范围内。
+    edit_faq_title: 如何更新团队信息？
+    edit_faq_content: 1、团队名称如果不再适应公司战略发展了，改之！<br><br>2、销售精英们如果离开了团队，或者有新人加入，需要修改下团队成员<br><br>3、领导换了，就修改下对应的管理员
+
+  salesman:
+    management: 销售员管理
+    id: 销售员ID
+    username: 登陆名
+    passwd: 登陆密码
+    name: 姓名
+    agent: 绑定的座席
+    agent_taken: 很遗憾，您选择绑定的座席，已被绑定到其他销售员了！
+    team: 所在团队
+    active: 状态
+    active_true: 在职
+    active_false: 已离职
+    show_numbers: 可自行修改的座席主叫号码
+    created: 销售员创建成功！
+    updated: 销售员修改成功！
+    deleted: 该销售员已成功删除！
+    new: 新建销售员
+    edit: 编辑销售员
+    change_password: 修改密码
+
+    faq_title: 销售员是如何工作的？
+    faq_content: 每个销售员都可以登录本系统，完成日常的销售工作。<br><br>通常你需要把一个销售员绑定到一个座席（话机）上。这样，当话机有电话呼出或呼入时，系统会认为是这个销售员在接打电话。
+    new_faq_title: 如何创建销售员？
+    new_faq_content: 1、登陆名和密码用于给这个销售员登陆系统。<br><br>2、销售员一般会属于一个营销团队。请先创建好贵公司的团队，然后再把销售员加到团队中。<br><br>3、当您把一个座席分配给某个销售员后，话机就有了主人。<br><br>4、如果贵公司主叫号码比较多，销售员又需要经常切换“手拔”或“点击呼叫”的主叫号码，这时候，你可以在“可自行修改的座席主叫号码”这里选择若干主叫号码，让销售员自己切换去。这样销售员们就不用经常让你来切换主叫号码了。
+    edit_faq_title: 修改销售员信息
+    edit_faq_content: 1、登陆名和姓名都可以修改。<br><br>2、销售员离开了某个团队，或者加入了某个新团队了时，可以修改“所在团队”。<br><br>3、张三销售员今天请假没来公司，他的话机由李四用，可以在此处修改（需要操作两次：先把张三的绑定的座席设置为未绑定，然后将该座席分配给李四）。如果您想只操作一次就完成，请通过“座席管理”找到该话机，然后把绑定的销售员修改为李四就可以了。不过这种事情一般由座席班长代劳了，咱是超级管理员嘛，这种小事就别烦我啦！
+
+  valid_ip:
+    management: 访问录音合法IP
+    ip: IP地址
+    remark: 备注
+    created: 访问录音合法IP已创建！
+    updated: 访问录音合法IP已修改！
+    deleted: 该IP已删除！
+    new: 新建访问录音合法IP
+    edit: 编辑访问录音合法IP
+    faq_title: 何为访问录音合法IP？
+    faq_content: 只有在这些合法IP的网络访问，才可以听取、下载录音。其它IP禁止访问录音。
+
+  task:
+    name: 号码库名称
+    short_name: 号码库
+    state: 状态
+    remark: 备忘
+    creator: 创建者
+    phones: 任务号码表
+    phone_count: 号码总数
+    left_count: 剩余数
+    executed_count: 已拔打数
+    contacted_count: 接通数
+    contacted_ratio: 接通率
+    started_at: 启动时间
+#    maintain_phone: 管理号码
+    import_numbers: 批量导入号码
+    import_numbers_finished: "====> 导入了%{w}个号码到号码库。"
+    export_left_numbers: 导出未拨打的号码
+    start_message_sent: "启动任务命令已发送！\n请几秒后刷新本页，查看任务状态。"
+    pause_message_sent: "暂停任务命令已发送！\n请几秒后刷新本页，查看任务状态。"
+    config: 企业任务参数设置
+    file_too_big: 文件太大了。一次最多允许导入5万个号码。请把文件大小控制在800K以内！
+    import_method: 导入方式
+    number_segment: 号码段
+    start_phone: 起始号码
+    phone_count: 号码数量
+    updated: 号码库信息修改成功！
+    deleted: 该号码库已彻底删除！
+    is_deleted: 任务已删
+    stashed: 该号码库已被删除！您可以在历史任务中查看，7天内可以恢复它。
+    confirm_stash: 删除的号码库将被放在历史任务中，7天内可以被恢复。确定删除吗？
+    history: 任务历史
+    import_automatically: 自动智能
+    import_from_file: 从csv或txt文件
+    extract_method: 文件中信息提取方式
+    extract_only_phone: 仅提取号码
+    extract_full_detail: 提取号码和客户详细资料
+    detail: 号码库执行情况
+    deleted_at: 删除时间
+    test_numbers: 测试号码
+    executed_orderly: 顺次执行
+    resume: 恢复并重新启用
+    resumed: 号码库“%{task_name}”已被恢复，%{duplicated_numbers_count}个在其它号码库中已存在的号码被剔除！
+    resumed_and_no_reject: 号码库“%{task_name}”已被完整恢复！号码一个也没少！
+    confirm_resume: 号码库在恢复时，系统会帮您自动去掉和其它号码库中重复的号码。因此，恢复后的号码数量可能比目前本号码库中的少一些。确定恢复本号码库吗？
+
+  bundle:
+    management: 任务管理
+    name: 任务名称
+    ratio: 呼叫比率
+    group: 执行座席组
+    manager: 负责人
+    creator: 创建者
+    remark: 备忘
+    library: 任务号码库
+    kind: 类型
+    kind_0: 自动呼叫任务
+    kind_1: 预测呼叫任务
+    kind_20: 语音营销任务
+    automatic: 自动呼叫
+    predict: 预测呼叫
+    keypress_transfer: 按键转接
+    timeout_transfer: 超时转接
+    keypress_gather: 按键采集
+    ivr: 语音营销
+    ivr_type: 任务类型
+    created: 任务已创建！请点右侧深红色的“+”按钮，为任务导入号码。
+    updated: 任务修改成功！
+    deleted: 该任务已成功删除！
+    no_running_task: 当前未运行
+    reach_the_max_tasks: 号码库数量已达上限：%{w}个
+    reach_the_max_tasks_most: 号码库数量已达最大上限：%{w}个。请在“历史任务”中删除本任务对应的历史号码库后，再在本任务下创建新号码库。
+
+    faq_title_0: “自动呼叫”任务
+    faq_content_0: 1、“自动呼叫”任务的主叫号码是座席绑定的主叫号码。<br><br>2、同一个呼出座席组在某一时刻只能启动一个任务，一个任务下只能有一个号码库在运行。<br><br>3、座席绑定的主叫号码有有效期，过期后，该主叫号码对应的座席所在的“自动呼叫”任务不允许被启动，等“申请延期”成功后，才可以启动。<br><br>4、可以创建的任务数量上限是10个。<br><br>5、管理员只能看到自己管辖的座席组对应的任务。<br><br>6、20:00至次日08:00之间不允许启动任务。
+    faq_title_1: “预测呼叫”任务
+    faq_content_1: 1、“预测呼叫”任务的呼叫比率越高，进电话越快，同时可能导致呼损加大。所以根据号码库质量测试出一个比较好的呼叫比率，是件有趣的事情。<br><br>2、同一个呼出座席组在某一时刻只能启动一个任务，一个任务下只能有一个号码库在运行。<br><br>3、可以创建的任务数量上限是10个。<br><br>4、管理员只能看到自己管辖的座席组对应的任务。<br><br>5、任务主叫号码有有效期，过期后，该主叫号码所属的“预测呼叫”任务不允许被启动，等“申请延期”成功后，才可以启动。<br><br>6、20:00至次日08:00之间不允许启动任务。
+    please_donot_choose_expired_number: （提示：已过期的主叫号码请不要勾选，否则任务下的号码库无法启动）
+    number_should_exist_if_predict: 预测呼叫的主叫号码是必填项！
+
+  task_config:
+    created: 企业“%{w}”任务参数创建成功！
+    updated: 企业“%{w}”任务参数更新成功！
+    long_idle_time: 呼叫间隔时长
+    long_checkin: 预测呼叫类型
+    long_checkin_true: 长签
+    long_checkin_false: 短签
+    predict_max_ratio: 预测呼叫比例上限
+    voice_max_ratio: 按键转接和超时转接比例上限
+    voice_max_duration: 超时转接放音时长上限
+    keypress_max_concurrency: 按键采集最大并发数
+
+  issue:
+    management: 工单管理
+    show: 工单详情
+    popup: 弹出工单
+    id: 单号
+    title: 标题
+    body: 内容
+    creator: 发起人
+    handler: 处理人
+    customer: 客户
+    attachments: 附件
+    state: 状态
+    state_0: 尚未受理
+    state_1: 受理中
+    state_3: 已解决
+    state_4: 已关闭
+    new: 新建工单
+    edit: 编辑工单
+    created: '%{w}创建了工单！'
+    updated: 工单修改成功！
+    please_select_handler: 请选择处理人
+#    please_select_creator: 请选择发起人
+    faq_title: “工单”是什么？
+    faq_content: 1、比如您想告诉同事张三，某件事情需要做一下了。创建好工单后，张三的浏览器中会弹出这个工单，并作出回复。<br><br>2、工单在“已解决”两周后，将自动变为“已关闭”状态。
+    new_faq_title: “工单”是什么？
+    new_faq_content: 1、比如您想告诉同事张三，某件事情需要做一下了。创建好工单后，张三的浏览器中会弹出这个工单，并作出回复。<br><br>2、工单在“已解决”两周后，将自动变为“已关闭”状态。
+
+  issue_item:
+    created: '%{w}回复了工单！'
+
+  voice:
+    management: 语音管理
+    name: 语音名
+    file: 语音文件
+    duration: 语音时长
+    checker: 审核人
+    created: 语音已创建！
+    updated: 语音已修改！
+    deleted: 该语音已删除！
+    new: 新建语音
+    edit: 编辑语音
+    file_too_big: 文件太大了。请上传小于1M的文件
+    please_choose_file: 请选择“wav格式”语音文件
+
+  inbound_config:
+    created: '呼入配置创建成功！'
+    updated: '呼入配置修改成功！'
+    deleted: '呼入配置已成功删除！'
+
+  strategy:
+    created: '策略创建成功！'
+    updated: '策略修改成功！'
+    deleted: '策略已成功删除！'
+
+  ivr:
+    created: 'IVR创建成功！'
+    updated: 'IVR修改成功！'
+    inbound_config_used: '本次操作被系统拒绝处理，原因是“IVR已经在[呼入配置]中使用”。请确认该IVR未被使用后再进行本次操作。'
+    strategy_used: '本次操作被系统拒绝处理，原因是“IVR已经在[策略设置]中使用”。请确认该IVR未被使用后再进行本次操作。'
+    deleted: 'IVR已成功删除！'
+    management: '呼入管理'
+    inbound_config: '呼入设置'
+    extension_config: '分机设置'
+    exchange: '企业总机'
+    color_ring: '企业彩铃'
+    upload: '上传语音'
+    settings: 'IVR设置'
+    strategy: '策略设置'
+    vip: 'VIP设置'
+    satisfaction: '服务评价设置'
+    history: 'IVR历史明细'
+
+  exchange:
+    created: '企业总机创建成功！'
+    updated: '企业总机修改成功！'
+    inbound_config_used: '本次操作被系统拒绝处理，原因是“企业总机已经在[呼入配置]中使用”。请确认该企业总机未被使用后再进行本次操作。'
+    strategy_used: '本次操作被系统拒绝处理，原因是“企业总机已经在[策略设置]中使用”。请确认该企业总机未被使用后再进行本次操作。'
+    deleted: '企业总机已成功删除！'
+
+  color_ring:
+    created: '企业彩铃创建成功！'
+    updated: '企业彩铃修改成功！'
+    inbound_config_used: '本次操作被系统拒绝处理，原因是“企业彩铃已经在[呼入配置]中使用”。请确认该企业彩铃未被使用后再进行本次操作。'
+    strategy_used: '本次操作被系统拒绝处理，原因是“企业彩铃已经在[策略设置]中使用”。请确认该企业彩铃未被使用后再进行本次操作。'
+    deleted: '企业彩铃已成功删除！'
+
+  vip:
+    created: 'VIP配置创建成功！'
+    updated: 'VIP配置修改成功！'
+    deleted: 'VIP配置已成功删除！'
+
+  node:
+    created: '节点创建成功！'
+    updated: '节点修改成功！'
+    deleted: '节点已成功删除！'
+
+  extension_config:
+    created: 分机设置已创建！
+    updated: 分机设置已修改！
+    deleted: 分机设置已删除！
+    used_by_exchange: 分机号已被设置到企业总机，请先从企业总机中去掉该分机！
+    used_by_ivr: 分机号已被设置到IVR中，请先从“IVR设置”中去掉该分机的相关设置！
+
+  satisfaction_statistics:
+    management: 服务评价记录表
+    management_agent: 日报表
+    agent_name: 座席
+    salesman_name: 销售员
+    create_at: 评价时间
+    customer_number: 客户号码
+    value: 评价结果
+    cdr: 通话记录
+    monthly: 座席月报表
+    monthly_agent: 月报表
+
+  server_ip:
+    management: '服务器IP管理'
+    name: '服务器名'
+#    external_ip: '外网IP'
+    internal_ip: '内网IP'
+    port: '端口号'
+    server_type: '服务器类型'
+    server_type_1: 'VOS'
+    server_type_2: '软交换'
+#    call_type: '呼入呼出类型'
+    created: '服务器IP创建成功！'
+    updated: '服务器IP修改成功！'
+    deleted: '该服务器IP已成功删除！'
+    new: '新建服务器IP'
+    edit: '编辑服务器IP'
+
+  disabled_agent:
+    management: 月底禁用的座席
+    created_at: 创建时间
+    processed: 处理了？
+    processed_true: 已处理
+    processed_false: 尚未处理
+    deleted: 取消座席“%{w}”月底禁用成功！
+
+  charge_agent_minutely:
+    management: 座席 - 按分钟数计费
+    id: 套餐编号
+    name: 名称
+    fee: 月使用费（单位：元）
+    minutes: 通话分钟数
+    price: 超出单价（单位：元）
+    kind: 类型
+    kind_0: 手拨
+    kind_1: 预测
+    kind_2: 预测+手拨
+
+  charge_id_tip: 请按%{min}-%{max}顺序创建
+
+  charge_agent_exceed_free:
+    management: 座席 - 超出上限不计费
+    id: 套餐编号
+    name: 名称
+    max_fee: 上限费用（单位：元）
+    min_fee: 保底（单位：元）
+    price: 单价（单位：元）
+    kind: 类型
+    kind_0: 手拨
+    kind_1: 预测
+    kind_2: 预测+手拨
+
+  charge_agent_monthly:
+    management: 座席 - 包月
+#    id_format: 套餐编号需要以“3”打头，如：3001
+    id: 套餐编号
+    name: 名称
+    fee: 月租费（单位：元）
+    kind: 类型
+    kind_0: 手拨
+    kind_1: 预测
+    kind_2: 预测+手拨
+
+  charge_agent_share_minfee:
+    management: 座席 - 共享保底
+    id: 套餐编号
+    name: 名称
+    min_fee: 保底（单位：元）
+    price: 单价（单位：元）
+    kind: 类型
+    kind_0: 手拨
+    kind_1: 预测
+    kind_2: 预测+手拨
+
+  charge_agent:
+    monthly_rent: 座席功能费
+    settings: 座席计费方案设定
+    settings_for_agnet: 座席“%{w}”计费方案设定
+    show: 计费方案
+    set_success: 座席“%{w}”的计费方案设定成功！
+    monthly_rent_updated_success: 座席“%{w}”的月租费更新成功！
+
+  charge_company_outbound:
+    management: 企业 - 呼出费率
+    id: 套餐编号
+    name: 名称
+    price: 呼出每分钟单价（单位：元）
+    transfer_price: 呼转每分钟单价（转私人号码）
+
+
+  charge_company400:
+    management: 企业 - 400呼入费率
+    id: 套餐编号
+    name: 名称
+    price: 400呼入每分钟单价（单位：元）
+
+  charge_company400_month:
+    management: 企业 - 400呼入包月
+    id: 套餐编号
+    name: 名称
+    fee: 资费（单位：元）
+    months: 有效期（月份数）
+    agent_count: 送座席数量
+
+  charge_company:
+    recharge: 为企业冲值
+    management: 企业计费配置
+    settings: 计费方案
+    created: 企业计费配置创建成功！
+    updated: 企业计费配置更新成功！
+    inbound_charge_must_choose: 提醒：“400呼入费率”和“400呼入包月”请二选一，或者都不选，不可同时都选！
+    number_fee: 码号月租费
+    number_fee_help: 元（请手工计算下该企业的码号总月租费，举个例子：该企业用了“010”的号1个，每个号30元每月，“025”的号2个，每个号10元每月，则此处填50）
+
+    kind: 租户座席类型
+    kind_0: 包月
+    kind_1: 流量
+    kind_2: 包月+流量
+
+    charge_mode: 计费模式
+    charge_mode_0: 座席级
+    charge_mode_1: 企业级
+
+    balance: 余额
+    current_balance: 企业余额
+
+    charge_company_outbound: 呼出费率
+    outbound_min_fee: 呼出保底
+    outbound_min_fee_balance: 呼出保底冻结余额
+
+    charge_company400: 400呼入费率
+    min_fee_400: 400保底
+    min_fee_400_balance: 400保底冻结余额
+
+    charge_company400_month: 400呼入包月
+    effective_date_400: 企业400呼入包月套餐生效日期
+
+    balance_not_enough: 余额不足，无法完成本次操作。本次操作未被执行！请通知企业进行充值！
+    recharge_and_submit: 充值并设置计费
+
+  charge_change:
+    management: 套餐变更
+    id: ID
+    company_name: 企业
+    charge_id: 套餐编号
+    processed: 处理了？
+    processed_true: 已处理
+    processed_false: 未处理
+    effective_at: 生效时间
+    operator_id: 操作员
+    remark: 备注
+    min_fee: 保底
+    new_company: 新增企业套餐变更
+    new_agent: 新增座席套餐变更
+    deleted: 套餐变更已成功删除！
+    agent_or_company: 座席或企业
+
+  bill:
+    agent_or_company: 座席或企业
+    fee_type_id: 扣费类型
+    charge_id: 套餐编号
+    fee: 费用
+    balance: 余额
+    min_fee_balance: 冻结保底余额
+    month: 结算月份
+    remark: 备注
+    created_at: 创建时间
+
+  recharge_: 充值
+  recharge:
+    management: 充值记录
+    amount: 充值金额
+    balance: 充值后余额
+    remark: 备注
+    created_at: 充值时间
+    operator_id: 操作员
+    first_time: 初次充值
+
+  report_agent_daily:
+    management: 座席日报表
+    monthly: 座席月报表
+    days: 座席多日报表
+    today: 今日实时
+    management_agent: 日报表
+    target_date: 统计日期
+    trigger_count: 话单数
+    answer_count: 应答数量/率
+    talk_count: 通话数
+    bridged_ratio: 接通率
+    talk_duration: 通话总时长
+    talk_minutes: 计费分钟
+    talk_minutes_: 计费分钟数
+    cost: 费用
+    call_type: 类型
+    call_type_0: 呼出
+    call_type_1: 呼入
+    average_duration: 平均通话时长
+    checkin_duration: 签到总时长
+    average_checkin_duration_short: 平均时长
+    average_checkin_duration: 平均签到时长
+    checkin_count: 签到次数
+    monthly_agent: 月报表
+    daily_header: 日 报
+    monthly_header: 月 报
+    days_header: 多日报
+    today_header: 今天实时
+    daily_report_sum: 日报汇总
+    return_daily_report: 返回日报
+
+  upgrade_blogs: 网站更新信息
+
+  notice:
+    management: 公告管理
+  fee:
+    record: 消费记录
+
+  cdr:
+    list: 通话详单
+    export: 通话详单导出
+    group_report: 统计
+    view_fee: 查看通话费用
+    list_current: 一周话单
+    list_history: 全部话单
+    list_history_title: 全部话单（不含今天）
+    time: 呼叫时间
+#    moment: 时刻
+    moment_begin: 起时
+    moment_end: 终时
+    call_type: 呼叫类型
+    call_type_0: 任务外呼
+    call_type_1: 呼入
+    call_type_2: 手动外呼
+    call_type_3: 呼转
+    call_type_4: 点击呼叫
+    call_type_5: API外呼
+
+    record_url: 录音地址
+    fee: 话费
+    duration: 时长
+
+    result: 结果
+    result_0: 接通成功
+#    result_1: 已开机，但未应答
+#    result_2: 已开机，但主动挂断拒接
+#    result_3: 未开机
+#    result_4: 空号
+
+    export_max_title: 一次最多导出%{w}条
+    export_max_content: 话单一次最多导出%{w}条，本次导出数量过多，被系统拒绝了。您可以增加搜索条件，比如缩小查询的时间范围等，控制搜索结果条数小于%{w}条。
+
+    faq_title: “通话详单”简称“话单”。
+    faq_content: 1、所有有价值的话单都会记录在此处。含呼入、呼出（任务外呼、手动外呼、点击呼叫）。<br><br>2、任务外呼的呼损也记录在这里。任务“呼损”是指客户已经接起来，由于座席全忙，无法转接座席而导致呼损。<br><br>3、话单仅保留三个月内的数据，过期数据将被自动删除。
+
+    agent_id_is_null: 座席为空
+    group_transferred: 转组：%{w}
+    not_transfer_to_group: 未转组
+
+    call_count: 呼叫数量
+
+  callee_number: 被叫号码
+  caller_number: 主叫号码
+
+  invalid_cdr:
+    list: 任务废单
+    time: 呼叫时间
+    moment_begin: 起时
+    moment_end: 终时
+
+    kind: 原因
+    kind_1: 空号
+    kind_2: 停机
+    kind_3: 未开机
+    kind_4: 无法接通
+    kind_5: 拒接
+    kind_6: 无应答
+    kind_unknown: 未知
+
+    export_max_title: 一次最多导出10000条
+    export_max_content: 任务废单一次最多导出10000条，本次导出数量过多，被系统拒绝了。您可以增加搜索条件，比如缩小查询的时间范围等，控制搜索结果条数小于10000条。
+
+    faq_title: “任务废单”的意义
+    faq_content: 1、通过任务拨打，最终没有接通、价值不大的呼叫记录称为“任务废单”。<br><br>2、系统不会对“任务废单”进行计费。<br><br>3、“任务废单”数据只保留五天，过期数据会被自动删除。
+
+  monitor:
+    agents: 座席监控
+    tasks: 任务监控
+    queues: 队列监控
+
+  report:
+    management: 报表管理
+    agent: 座席统计报表
+    operation: 运营状态报表
+    contact_result: 联络结果统计
+    satisfaction_statistics: 服务评价统计
+
+  queue:
+    history: 队列历史明细
+
+  customer:
+    column_define: 定义数据列
+    management: 客户名单
+    new: 新建客户
+    edit: 编辑客户
+    transfered: 已转为客户（销售线索中不再显示）！
+    created: 客户创建成功！
+    updated: 客户修改成功！
+    create: 转为客户
+    popup: 与%{w}通话中
+    info: 客户资料
+    import: 批量导入客户
+    batch_delete_by_id_range: 根据ID范围批量删除客户
+    file_too_big: 文件太大了。请缩小文件大小到1M左右。
+    first_line_column_not_exist: 抱歉，首行格式不符合要求，列名“%{w}”不存在。导入未进行。
+    first_line_not_valid: 抱歉，首行格式不符合要求，导入未成功。
+    import_customers_finished: "====> 批量导入客户（或销售线索）完成，新增了%{created_count}个%{w}，修改了%{updated_count}个%{w}。"
+    import_customers_add_only_finished: "====> 批量导入客户（或销售线索）完成，新增了%{created_count}个%{w}，修改了%{updated_count}个%{w}（修改的是弹屏用的隐藏的或已经删除但尚未清理的数据）。"
+    self: 客户
+    no_name: 未名
+    no_name_import: 佚名
+
+    act_0: 销售线索和客户名单
+    act_1: 客户名单
+    act_2: 销售线索
+    switch_act: 转为%{w}
+
+    state_0: 已标记删除
+    state_1: 正常
+    state_2: 弹屏专用
+
+    export: 导出销售线索（或客户名单）
+    export_max_title: 一次最多导出%{w}条
+    export_max_content: 一次最多导出%{w}条客户信息，本次导出数量过多，被系统拒绝了。您可以增加搜索条件，控制搜索结果条数小于%{w}条。
+
+    batch_delete_max_title: 一次最多批量删除%{w}条销售线索(或客户名单)
+    batch_delete_max_content: 一次最多批量删除%{w}条销售线索(或客户名单)。本次删除的数量过多。为保护您的数据安全，系统拒绝了您的本次操作。您可以增加搜索条件，控制搜索结果条数小于%{w}条。
+    batch_delete_success: 成功删除了%{w}条销售线索（或客户名单）。
+    batch_delete_title: 根据搜索结果批量删除销售线索（或客户名单）
+    batch_delete_confirm: 确定批量删除%{w}条数据？
+    assign_to_salesman_confirm: 确定将销售线索（或客户名单）分配给销售员？
+    assign_to_salesman: 分配销售员
+    assign_to_salesman_title: 把搜索出的客户分配给销售员
+    assign_to_salesman_success: 分配了%{count}个销售线索（或客户名单）给销售员“%{salesman_name}”；
+    assign_to_null_salesman_success: 已将这%{count}个销售线索（或客户名单）的销售员设为空（即无人跟进、未分配销售员）。
+    switch_act_success: "%{count}条数据已转为%{w}。"
+
+    view_phone_number: 可查看客户电话号码
+    call_time: 点击呼叫时间
+
+  clue:
+    management: 销售线索
+    new: 新建线索
+    edit: 编辑线索
+    transfered: 已转为销售线索（客户名单中不再显示）！
+    created: 销售线索创建成功！
+    updated: 销售线索修改成功！
+    generate: 转为销售线索
+    import: 批量导入销售线索
+    batch_delete_by_id_range: 根据ID范围批量删除销售线索
+    self: 线索
+
+  column_: 数据列
+  column:
+    title: 列名
+    width: 列长度
+    active: 显示/隐藏
+    active_true: 显示的
+    active_false: 隐藏的
+    target: 使用场合
+    target_0: 客户名单和销售线索
+    target_1: 客户名单
+    target_2: 销售线索
+    type: 列类型
+    string: 手工输入型
+    enum: 下拉选择型
+    date: 日期型
+    datetime: 时间型
+    management: 定义数据列
+    new: 新建数据列
+    edit: 编辑数据列
+    created: 数据列已创建！
+    updated: 数据列修改成功！
+    edit_select_options: 编辑下拉选项
+    reach_max_count: '您最多可以创建%{max_count}个“%{type_name}”数据列，目前已经达到上限了。如果您还想继续创建，请联系统一通信客服。'
+
+  contact:
+    history: 联络记录
+    remark: 联络内容
+    customer: 客户
+    saved: 保存成功！
+    save_failed: 保存失败！
+
+  sales_clue: 销售线索
+
+  record:
+    list: 录音包下载
+    package: 打包录音
+    download: 下载录音
+    batch_mixin: 批量合成录音
+
+  record_package:
+    management: 录音包下载
+    edit: 录音包重命名
+    title: 录音包名
+    creator: 打包人
+    created_at: 打包时间
+    download_url: 下载地址
+    download: 下载录音包
+    naming: 为录音包取一个响亮的名字
+    updated: 录音包（ID:%{id}）已重命名！
+
+  record_format:
+    management: 录音格式定义
+    name: 内容
+    calleeNumber: 被叫号码
+    callerNumber: 主叫号码
+    duration: 通话时长
+    agentCode: 座席编号
+    salesmanName: 销售员姓名
+    date: 录音日期
+    time: 录音时间
+    calleeNumber_sample: 13813299824
+    callerNumber_sample: 051287263816
+    duration_sample: 54
+    agentCode_sample: 1007
+    salesmanName_sample: 王坤
+    date_sample: 20160518
+    time_sample: 143556
+    created: 已加入！
+    deleted: 已移除！
+
+  option:
+    text: 选项
+    management: 选项管理
+    new: 新建选项
+    edit: 编辑选项
+    created: 选项已创建！
+    updated: 选项修改成功！
+
+  salesman_: 销售员
+
+  todo:
+    management: 代办事宜
+
+  form:
+    management: 表单管理
+    settings: 表单设置
+#    表单一
+
+  logo:
+    customize: Logo和系统名
+
+  knowledge_library: 知识库
+#    字典管理
+#    客户资料扩展
+
+  number:
+    management: 呼入号码
+    number: 呼入号码
+    company: 所属企业
+    inbound_max_lines: 呼入最大线路数
+    created: 呼入号码创建成功！
+    updated: 呼入号码修改成功！
+    deleted: 呼入号码已成功删除！
+    new: 新建呼入号码
+    edit: 编辑呼入号码
+#    from_company: 来源
+#    from_company_true: 客户提供
+#    from_company_false: 我方提供
+#    for_task: 可用于任务外显？
+#    for_task_true: 是
+#    for_task_false: 否
+#    for_agent: 可用于座席外显？
+#    for_agent_true: 是
+#    for_agent_false: 否
+#    inbound: 呼入？
+#    inbound_true: 是
+#    inbound_false: 否
+
+#    expire_date: 到期日期
+#    permanent: 永久有效
+#    used_count: 使用次数
+
+
+  phone_number:
+    management: 主叫号码
+    new: 新建主叫号码
+    title: 同步“号码管理系统”
+    single_company_title: 同步“%{w}”的“主叫号码”
+    number: 主叫号码
+    for_task: 可用于任务外显？
+    for_task_true: 是
+    for_task_false: 否
+    for_agent: 可用于座席外显？
+    for_agent_true: 是
+    for_agent_false: 否
+    expire_at: 到期时间
+    validity_hours: 默认延期时长
+    remain_hours: 剩余时长
+    number_expired: 主叫号码中存在已过期号码，点此进入“号码延期”页面，申请将主叫号码延期。
+    apply_for_hold: 申请延期
+    enter_manage_page: 点击进入主叫号码申请延期页面
+    sms_verify_message: 联通用户发至“106900485886”，电信用户发至“1069008385886”
+
+  time_format: "%Y年%-m月%-d日 %H:%M:%S"
+  time_format_simple: "%Y-%m-%d %H:%M:%S"
+  time_without_year: "%-m月%-d日 %H:%M:%S"
+  date_format: "%Y年%-m月%-d日"
+  date_without_year: "%-m月%-d日"
+  date_format_: "%Y-%m-%d"
+  date_digits: "%Y%m%d"
+  no_year: "%-m月%-d日 %H:%M"
+  no_year_simple: "%-m-%-d %H:%M"
+  time_digits: "%Y%m%d%H%M%S"
+  h_m: "%H:%M"
+  h_m_s: "%H:%M:%S"
+  year_month: "%Y年%-m月"
+  second: 秒
+  digits_range: "%{w1} - %{w2} 之间的整数"
+  number_range: "%{w1} - %{w2} 之间的数值"
+
+  invalid_format: 格式不符合要求。请输入小写字母、数字或下划线
+  invalid_ip_format: IP地址格式不对！
+  at_least_has_one: 至少应该选择一个
+
+  point:
+    general: 常用功能
+    special: 专有功能
+#    charge: 计费套餐
+#    global_config: 全局配置
+
+  errors:
+    format: "%{attribute} %{message}"
+    messages: &errors_messages
+      inclusion: "不包含于列表中"
+      exclusion: "是保留关键字"
+      invalid: ""
+      confirmation: "与确认值不匹配"
+      accepted: "必须是可被接受的"
+      empty: "不能留空"
+      blank: "是必填项"
+      too_long: "过长（最长为 %{count} 个字符）"
+      too_short: "过短（最短为 %{count} 个字符）"
+      wrong_length: "长度非法（必须为 %{count} 个字符）"
+      not_a_number: "不是数字"
+      not_an_integer: "必须是整数"
+      greater_than: "必须大于 %{count}"
+      greater_than_or_equal_to: "必须大于或等于 %{count}"
+      equal_to: "必须等于 %{count}"
+      less_than: "必须小于 %{count}"
+      less_than_or_equal_to: "必须小于或等于 %{count}"
+      odd: "必须为单数"
+      even: "必须为双数"
+      taken: "应该是唯一的。系统里已经存在这个值，请修改！"
+      record_invalid: "验证失败: %{errors}"
+
+      wrong_size: "is the wrong size (should be %{file_size})"
+      size_too_small: "is too small (should be at least %{file_size})"
+      size_too_big: "文件太大了。最大允许上传 %{file_size} 哦。"
+
+      extension_white_list_error: "上传的文件格式不对。请上传扩展名符合要求的文件。"
+
+
+    template: &errors_template
+      header:
+        one: "有 1 个错误发生导致「%{model}」无法被保存。"
+        other: "有 %{count} 个错误发生导致「%{model}」无法被保存。"
+      body: "如下字段出现错误："
+
+  activerecord:
+    errors:
+      full_messages:
+        format: "%{attribute} %{message}"
+
+      messages:
+        <<: *errors_messages
+      template:
+        <<: *errors_template
+    attributes:
+      company:
+        id: 企业编号
+        name: 企业名
+        license: 座席数
+
+      company_config:
+        web_name: 系统名称
+        login_title_first: 登录页左边内容
+        login_title_second: 登录页右边内容
+
+      number:
+        number: 外显号码
+
+      user:
+        username: 登陆名
+        name: 姓名
+
+      role:
+        name: 角色名
+
+      group:
+        name: 座席组名
+        agents: 座席
+
+      bundle:
+        name: 名称
+
+      task:
+        name: 号码库名称
+
+      agent:
+        code: 座席编号
+        salesman: 绑定的销售员
+        show_number: 主叫号码
+
+      team:
+        name: 团队名
+
+      salesman:
+        username: 登陆名
+        name: 姓名
+
+      column:
+        title: 列名
+
+      customer:
+        s1: 手机号
+        s2: 姓名
+
+      voice:
+        duration: 语音时长
+        file: 语音文件
+
+      server_ip:
+        port: 端口号
+
+      inbound_config:
+        ivr_id: 对应的IVR、企业总计、企业彩铃或策略
+
+      ivr:
+        value: 对应的IVR、企业总计、企业彩铃或策略
+      extension_config:
+        extension: 分机号
+      charge_change:
+        min_fee: 保底
+
+  will_paginate:
+    previous_label: "<i class='icon-double-angle-left'></i>"
+    next_label: "<i class='icon-double-angle-right'></i>"
+    page_entries_info:
+      single_page_html:
+        zero:  "无纪录"
+        one:   "<b>1</b>条纪录"
+        other: "<b>%{count}</b>条纪录"
+
+      multi_page_html: "<b>%{from}&nbsp;-&nbsp;%{to}</b>，共<b>%{count}</b>"
+
+  pundit:
+    default: 抱歉，您不能进行这项操作。
+    company_policy:
+      view_bills?: 计费尚未设置，您目前不能进行此项操作。
+
+    group_policy:
+      create?: 本次操作被拒绝了。原因有两种：1、一个座席只能归属于一个呼出座席组，而您试图把一个座席放到两个呼出座席组。  2、您试图把计费方案为“手拨”的座席加入到呼出组中。
+      update?: 本次操作被拒绝了。原因有两种：1、一个座席只能归属于一个呼出座席组，而您试图把一个座席放到两个呼出座席组。  2、您试图把计费方案为“手拨”的座席加入到呼出组中。
+
+    agent_policy:
+      update?: 座席的主叫号码是非法的！
+      enable?: 启用座席失败.座席需要有一个外显号码，并且是“已停用”状态才可以被启用！
+
+    cdr2_policy:
+      view?: 抱歉，因为没有绑定座席，您无法使用该功能！
+
+    customer_policy:
+      create?: 客户数量已上限%{max_count}个！如果客户数不够用，请联系统一通信客服申请扩容，扩容流程比较简单。
+      manual_create?: 客户数量已达上限（十万或扩容后的数量）！如果客户数不够用，请联系统一通信客服申请扩容，扩容流程比较简单。
+      update_too_many?: 修改的行数过多，一次最多只允许修改%{w}行！我们猜测您可能正在重复导入之前已经导入成功的文件，这是没有必要的，因为之前的文件已经导入完成了，再次导入意味着批量修改。如果您的确要进行批量修改操作，请忽略之前的提示，并把一次修改的数据行数控制在%{w}以内。
+
+    charge_change_policy:
+      create?: 操作不成功。原因可能是：1、您选错了套餐(如果是座席套餐变更，可选的套餐会受到“企业计费方案”中“租户座席类型”的限制)； 2、该企业或者座席本月已经添加过套餐变更； 3、您没有做任何改动
+
+    recharge_policy:
+      create?: 操作被拒绝，原因可能是：1、企业计费方案尚未开通 2、您填入了一个会导致企业余额变为负数的值！
+
+    system_policy:
+      free_time?: 请在早上9点前，中午12:00-12:59，晚上18:00后操作“任务废单”。
+
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b%d日"
+      long: "%Y年%b%d日"
+    day_names:
+      - 星期日
+      - 星期一
+      - 星期二
+      - 星期三
+      - 星期四
+      - 星期五
+      - 星期六
+    abbr_day_names:
+      - 日
+      - 一
+      - 二
+      - 三
+      - 四
+      - 五
+      - 六
+    month_names:
+      - ~
+      - 一月
+      - 二月
+      - 三月
+      - 四月
+      - 五月
+      - 六月
+      - 七月
+      - 八月
+      - 九月
+      - 十月
+      - 十一月
+      - 十二月
+    abbr_month_names:
+      - ~
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
+    order:
+      - :year
+      - :month
+      - :day
+
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: 一小时前
+        other: "%{count}小时前"
+      about_x_months:
+        one: 一个月前
+        other: "%{count}个月前"
+      about_x_years:
+        one: 一年前
+        other: "%{count}年前"
+      almost_x_years:
+        one: 一年前
+        other: "%{count}年前"
+      half_a_minute: 半分钟内
+      less_than_x_minutes:
+        one: 一分钟内
+        other: "%{count}分钟内"
+      less_than_x_seconds:
+        one: 一秒内
+        other: "%{count}秒内"
+      over_x_years:
+        one: 一年前
+        other: "%{count}年前"
+      x_days:
+        one: 一天前
+        other: "%{count}天前"
+      x_minutes:
+        one: 一分钟前
+        other: "%{count}分钟前"
+      x_months:
+        one: 一个月前
+        other: "%{count}个月前"
+      x_seconds:
+        one: 一秒前
+        other: "%{count}秒前"
+
+  hour: 小时
+  minute: 分钟
+  second: 秒
+
+  time:
+    formats:
+      default: "%Y年%b%d日 %A %H:%M:%S %Z"
+      short: "%b%d日 %H:%M"
+      long: "%Y年%b%d日 %H:%M"
+    am: "上午"
+    pm: "下午"

@@ -1,0 +1,115 @@
+= render '/shared/javascript/datepicker'
+
+= title t('report_agent_daily.management')
+
+= content_for :header do
+  = t('report_agent_daily.management')
+  = report_agent_dailies_header_links
+  = link_to t('report_agent_daily.daily_report_sum'), report_agent_dailies_sum_path, { class: 'btn btn-sm btn-purple pull-right' }
+
+= content_for :grid do
+  .row
+    = form_tag report_agent_dailies_path, method: :get
+      = hidden_field_tag(:target_method, '')
+      = hidden_field_tag(:orderBy, params[:orderBy])
+      = hidden_field_tag(:united, params[:united])
+      span#target_date_container class=hide_or_show_css(:target_date)
+        = text_field_tag(:target_date, (params[:target_date] ? params[:target_date] : nil), class: 'date-picker')
+      = salesman_container
+      = team_container
+      = agent_container
+      /TODO: 这里如果企业没有呼入功能, 下面的根据 call_type 搜索可以不出现。
+      span#call_type_container class=hide_or_show_css(:call_type)
+        = select_tag :call_type, options_for_select(ReportAgentDaily::CALL_TYPES.map { |call_type| [t("report_agent_daily.call_type_#{call_type}"), call_type] }.unshift([t('report_agent_daily.call_type'), nil]), params[:call_type])
+      = search_button
+      = export_button
+
+  table *css_table
+    .row
+      - if @sum.present? && @sum.trigger_count.present?
+        == "<b>汇总</b> #{t('report_agent_daily.trigger_count')}: #{@sum.trigger_count}, #{t('report_agent_daily.answer_count')}: #{@sum.answer_count} / #{@sum.trigger_count > 0 ? ((@sum.answer_count.to_f / @sum.trigger_count) * 100).round(1) : 0}%, #{t('report_agent_daily.talk_duration')}: #{DateTime.seconds_to_words(@sum.talk_duration)}, #{t('report_agent_daily.average_duration')}: #{DateTime.seconds_to_words(@sum.talk_count.to_i == 0 ? 0 : @sum.talk_duration.to_i / @sum.talk_count)}, #{t('report_agent_daily.talk_minutes')}: #{@sum.talk_minutes}#{t(:minute)}, #{t('report_agent_daily.cost')}: #{@sum.cost.to_f.round(2)}#{t(:yuan)}"
+    thead
+      tr
+        th
+          = t('report_agent_daily.target_date')
+		  = checkbox_for_search_with_value(:target_date, (Time.now - 1.day).strftime(t(:date_format_)))
+        th
+          = t(:salesman_)
+          = checkbox_for_search(:salesman_id)
+        = search_teams_checkbox
+        th
+          = check_box_tag("united_agent_id", nil, united_agent_id, onchange: 'unitedAgentIdChanged.call(this)', 'data-content' => '勾选后，统计将不再细分座席', 'data-trigger' => 'hover', 'data-rel' => 'popover')
+          = t(:agent_)
+          = checkbox_for_search(:agent_id)
+        - unless united_agent_id
+          th
+            = t('report_agent_daily.call_type')
+            = checkbox_for_search(:call_type)
+        th
+          = orderIcon(:trigger_count)
+          a href='#_' onclick='sortByTriggerCount()' *tip(:click_for_sorting)
+            = t('report_agent_daily.trigger_count')
+        - if policy(:menu2).has_ivr?
+          th = t('report_agent_daily.answer_count')
+        th
+          = orderIcon(:talk_count)
+          a href='#_' onclick='sortByTalkCount()' *tip(:click_for_sorting)
+            = t('report_agent_daily.talk_count')
+        th
+          = orderIcon(:talk_duration)
+          a href='#_' onclick='sortByTalkDuration()' *tip(:click_for_sorting)
+            = t('report_agent_daily.talk_duration')
+        - unless united_agent_id
+          th = t('report_agent_daily.average_duration')
+        th = t('report_agent_daily.talk_minutes')
+        th = t('report_agent_daily.cost')
+        - unless united_agent_id
+          th = checkin_duration_and_average
+        th = t('report_agent_daily.checkin_count')
+
+    tbody
+      - @report_agent_dailies.each_with_index do |daily, i|
+        tr *odd_even(i)
+          td = "#{daily.target_date.strftime(t(:date_without_year))}（#{daily.target_date.wday_name}）"
+          td = daily.salesman.try(:name)
+          - if current_user.manage_many_teams?
+            td = daily.salesman.try(:team).try(:name)
+          td = united_agent_id ? '已合并' : daily.agent.try(:code)
+          - unless united_agent_id
+            td = report_call_type(daily.call_type)
+          td = daily.trigger_count
+          - if policy(:menu2).has_ivr?
+            td = "#{daily.answer_count} / #{daily.answer_ratio}"
+          td == "#{daily.talk_count.to_i > 0 && params[:united].blank? ? (link_to daily.talk_count, "/history_cdrs/filter/#{daily.target_date.strftime(t(:date_digits))}/#{daily.agent_id}/#{daily.salesman_id}/#{daily.call_type}") : daily.talk_count} / #{ratio(daily.talk_count, daily.trigger_count)}"
+          td = DateTime.seconds_to_words(daily.talk_duration)
+          - unless united_agent_id
+            td = DateTime.seconds_to_words(daily.average_duration)
+          td = "#{daily.talk_minutes}#{t(:minute)}"
+          td = "#{daily.cost}#{t(:yuan)}"
+          - unless united_agent_id
+            td = checkin_duration_average(daily.checkin_duration, daily.checkin_count)
+          td = daily.checkin_count
+
+  = pagination @report_agent_dailies
+
+  coffee:
+    this.sortByTriggerCount = () ->
+      if $('#orderBy').val().startsWith('trigger_count')
+        reverseSort($('#orderBy').val())
+      else
+        $('#orderBy').val('trigger_count_desc')
+      $('#search_button').click()
+
+    this.sortByTalkCount = () ->
+      if $('#orderBy').val().startsWith('talk_count')
+        reverseSort($('#orderBy').val())
+      else
+        $('#orderBy').val('talk_count_desc')
+      $('#search_button').click()
+
+    this.sortByTalkDuration = () ->
+      if $('#orderBy').val().startsWith('talk_duration')
+        reverseSort($('#orderBy').val())
+      else
+        $('#orderBy').val('talk_duration_desc')
+      $('#search_button').click()

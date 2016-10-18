@@ -1,0 +1,60 @@
+= titled
+
+= content_for :header do
+  = faq_header
+  a< href='agents/batch_config' class='hidden_when_submit btn btn-sm btn-primary'
+    = t(:batch_config)
+
+= content_for :grid do
+  .row
+    = form_tag agents_path, method: :get
+      span#code_container class=hide_or_show_css(:code)
+        = text_field_tag :code, params[:code], placeholder: t('agent.code'), style: 'vertical-align: middle; width: 70px'
+      span#show_number_container class=hide_or_show_css(:show_number)
+        = text_field_tag :show_number, params[:show_number], placeholder: t('agent.show_number'), style: 'vertical-align: middle; width: 90px'
+      = group_container
+      = salesman_container
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th width='8%'
+          = t('agent.code')
+          = checkbox_for_search(:code)
+        th width='10%'
+          = t('agent.show_number')
+          = checkbox_for_search(:show_number)
+        th width='15%'
+          = t('agent.groups')
+          = checkbox_for_search(:group_id)
+        th width='10%'
+          = t('agent.salesman')
+          = checkbox_for_search(:salesman_id)
+        th width='47%' = t('agent.charge')
+        th width='4%' 状态
+        th width='7%'
+
+    tbody
+      - @agents.each_with_index do |agent, i|
+        tr *odd_even(i)
+          td title="#{t('agent.extension')}：#{agent.extensions.map(&:extension).to_split}" data-rel='tooltip'
+            = agent.code
+          td = agent.show_number
+          td = agent.groups.state_ok.order('created_at').map(&:name).to_split
+          td = agent.salesman.try(:name)
+          td
+            = charge_agent_info(agent)
+            = agent_charge_change_info(agent)
+          td = agent_out(agent.id)
+          td
+            div *css_ops
+              = edit edit_agent_path(agent)
+              - if agent.ok?
+                - if policy(agent).disable_eom?
+                  a> class='orange' href=disable_eom_agent_path(agent) data-method='post' data-confirm=t('agent.disable_eom_confirm_user') *tip('agent.disable_eom')
+                    = icon :fire
+                - else
+                  | &nbsp;#{icon(:fire, class: 'text-muted', title: t('agent.disabled_eom_user_wait'), 'data-rel' => 'tooltip')}&nbsp;&nbsp;
+
+  = pagination @agents

@@ -1,0 +1,13 @@
+= title(t('administrator.points'))
+
+= banner({ t('administrator.management') => admin_administrators_path, t('administrator.points') => nil })
+
+= header(t('administrator.points_for_who', w: @administrator.name))
+
+= content_for :form do
+  = form_for @administrator, form_options(url: update_points_admin_administrator_path) do |f|
+    = error_msg @administrator
+
+    = render 'point_tree'
+
+    = submit_form

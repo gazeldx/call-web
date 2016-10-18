@@ -1,0 +1,14 @@
+- if act_clue?
+  - index_text = t('clue.management')
+  - new_text = t('clue.new')
+- else
+  - index_text = t('customer.management')
+  - new_text = t('customer.new')
+
+= title new_text
+
+= banner({ index_text => "#{customers_path}#{act_param}", new_text => nil })
+
+= header new_text
+
+= render 'form'

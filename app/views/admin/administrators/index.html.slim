@@ -1,0 +1,52 @@
+= titled
+
+= content_for :header do
+  = t('administrator.management')
+
+  = link_to t('administrator.new'), new_admin_administrator_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='6%' = t('administrator.username')
+        th width='6%' = t('administrator.name')
+        th width='4%' = t('administrator.kind')
+        th width='54%' = t('administrator.points')
+        /th width='6%' = t('administrator.active')
+        th width='4%' = t(:simple_extension)
+        th width='4%' = t(:simple_mobile)
+        th width='4%' QQ
+        th width='4%' = t('administrator.weixin')
+        th width='4%' = t('administrator.email')
+        th width='10%'
+
+    tbody
+      - @administrators.each_with_index do |administrator, i|
+        tr *odd_even(i)
+          td
+            span = value_more(administrator.username, 10)
+          td
+            span = value_more(administrator.name, 5)
+          td = administrator_kind(administrator.kind)
+          - point_names = administrator.points.map(&:name).map { |point_name| t(point_name) }.to_split
+          td = value_more(point_names, 200)
+          /td
+          /  span = enabled_or_disabled(administrator)
+          td = value_more(administrator.extension, 4)
+          td = value_more(administrator.phone, 3)
+          td = value_more(administrator.qq, 3)
+          td = value_more(administrator.weixin, 3)
+          td = value_more(administrator.email, 3)
+          td
+            div *css_ops
+              a> class='orange2' href=points_admin_administrator_path(administrator) *tip('administrator.points')
+                = icon :sitemap
+
+              - unless administrator.admin?
+                = edit edit_admin_administrator_path(administrator)
+
+                a> class='grey' href=change_password_admin_administrator_path(administrator) *tip('administrator.change_password')
+                  = icon :user
+
+  = pagination @administrators

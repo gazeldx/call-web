@@ -1,0 +1,78 @@
+div id="modal-assign_to_salesman" class="modal fade" tabindex="-1" aria-hidden="true" style="display: none;"
+  div class="modal-dialog"
+    div class="modal-content"
+      div class="modal-header no-padding"
+        div class="table-header"
+          button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+            span class="white"
+              | ×
+          = t('customer.assign_to_salesman_title')
+
+      div class="modal-body no-padding"
+        table class="table table-bordered no-margin-bottom no-border-top"
+          thead
+            tr
+              th colspan=2
+                | 本次搜索出了“
+                span.red #{@customers.count}
+                | ”个客户（或销售线索）。
+          tbody#assign_salesmen
+            = form_tag({action: :do_assign_to_salesman}, { class: 'form-horizontal', id: 'assign_form' }) do
+              = hidden_field_tag(:act, params[:act])
+              tr
+                td width='15%' #{red_star}#{t(:salesman_)}
+                td
+                  = check_box_tag('assign_to_null', 99999, false, 'v-model' => 'nullSalesmanChecked', 'v-on:change' => 'uncheckSalesmanIds')
+                  label for="assign_to_null"
+                    | 设为空（即无人跟进、未分配销售员）
+                  br
+                  - current_user.salesmen.active.includes(:agent).map do |salesman|
+                    = check_box_tag('assigned_salesman_ids[]', salesman.id, false, id: "assigned_salesman_ids_#{salesman.id}", 'v-on:change' => 'uncheckNullSalesman', 'v-model' => 'checkedSalesmen')
+                    label for="assigned_salesman_ids_#{salesman.id}"
+                      = " #{salesman.name}"
+                    = nbsp(2)
+              tr
+                td #{red_star}分配数量
+                td = text_field_tag :count, nil, required: true, digits: true, range: [1, 3000]
+              tr
+                td 分配方式
+                td
+                  label
+                    = radio_button_tag :assign_type, 'random', checked: true
+                    span< class='lbl' for='assign_type_random'
+                      | 随机分配
+                    = nbsp(5)
+                  label
+                    = radio_button_tag :assign_type, 'order'
+                    span< class='lbl' for='assign_type_order'
+                      | 顺序分配
+              tr
+                td = content_tag(:button, raw("一键分配 #{content_tag(:i, nil, class: 'bigger-110')}"), type: 'submit', class: 'hidden_when_submit btn btn-primary btn-sm', 'v-on:click' => 'submitAssignForm($event)')
+                td
+                  span.text-muted
+                    | 注：每销售员分得客户数 = 分配数量 / 选中的销售员数
+
+javascript:
+  new Vue({
+    el: '#assign_salesmen',
+    data: {
+      nullSalesmanChecked: false,
+      checkedSalesmen: [],
+    },
+    methods: {
+      uncheckSalesmanIds: function () {
+        this.checkedSalesmen = []
+      },
+      uncheckNullSalesman: function () {
+        this.nullSalesmanChecked = false
+      },
+      submitAssignForm: function (event) {
+        if (this.nullSalesmanChecked || this.checkedSalesmen.length > 0) {
+          $('#target_method').val('assign_to_salesman')
+        } else {
+          alert('请选择销售员！')
+          event.preventDefault()
+        }
+      }
+    }
+  })

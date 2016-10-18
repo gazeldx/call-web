@@ -1,0 +1,45 @@
+= title t('agent.batch_charge')
+
+= banner({ index_i18_text => "/#{controller_path}", t('agent.management') => admin_company_agents_path(@company), t('agent.batch_charge') => nil })
+
+= header "#{t('agent.batch_charge')} - #{@company.name_and_id}"
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: do_batch_charge_agents_admin_company_path, method: :post) do |f|
+    = error_msg @company
+
+    .form-group
+      = labeled '尚未设置计费的座席', required: true
+      .col-sm-9
+        - ChargeAgent.where(agent_id: @company.agents.ok.pluck(:id), charge_id: nil).order(:agent_id).pluck(:agent_id).map do |agent_id|
+          = check_box_tag('agent_ids[]', agent_id, false, id: "agent_ids_#{agent_id}")
+          label for="agent_ids_#{agent_id}"
+            = " #{agent_id.to_s.slice(5..9)}"
+            = nbsp(2)
+        javascript:
+          var customized_validation = {
+            rules: {
+              'agent_ids[]': {
+                required: true
+              }
+            }
+          };
+
+    hr
+    = help_info("#{t('charge_company.current_balance')}：#{@company.charge_company.balance_shown}元")
+
+    .form-group
+      = labeled t('agent.charge'), required: true
+      .col-sm-9
+        = select_tag :charge_id, options_for_select((@company.charge_company.available_agent_charges).map { |charge| ["#{charge.id} - #{charge.name}", charge.id] }.unshift([t(:please_select), nil])), {required: true}
+
+    .form-group
+      = labeled t('charge_agent.monthly_rent'), required: true
+      .col-sm-9
+        = text_field_tag :monthly_rent, 0, class: 'col-sm-1', required: true, range: [0, 999], maxlength: 3, number: true
+        = help_info(t(:unit_yuan))
+
+    - if @company.charge_company.balance.to_f > 0
+      = submit_form
+    - else
+      | 该企业已经欠费！

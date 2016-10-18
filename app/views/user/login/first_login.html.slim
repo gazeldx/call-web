@@ -1,0 +1,35 @@
+= title '初次登陆'
+
+= header '初次登陆，请先修改登陆名和密码'
+
+= content_for :form do
+  = form_for @user, form_options(url: user_first_login_update_path) do |f|
+    = error_msg @user
+
+    .form-group
+      = labeled t('user.username'), required: true
+      .col-sm-9
+        = f.text_field :username, required: true, placeholder: '用于登陆，设置后不可修改', class: 'col-sm-3'
+        | &nbsp;不建议用纯数字的企业编号作登陆名，不够安全
+
+    .form-group
+      = labeled t('user.passwd'), required: true
+      .col-sm-9
+        = f.password_field :passwd, required: true, title: t(:required), class: 'col-sm-3'
+
+    .form-group
+      = labeled t('confirm_password'), required: true
+      .col-sm-9
+        = password_field_tag :confirm_password, nil, required: true, class: 'col-sm-3'
+
+    = submit_form
+
+    javascript:
+      $('form').validate({
+        rules: {
+          confirm_password: {
+            equalTo: "#user_passwd"
+          }
+        }
+      });
+

@@ -1,0 +1,9 @@
+= content_for :form do
+  = form_for @option, form_options do |f|
+    = error_msg @option
+
+    = hidden_field_tag 'option[tid]', @option.tid
+
+    = input_text :text, required: true
+
+    = submit_form

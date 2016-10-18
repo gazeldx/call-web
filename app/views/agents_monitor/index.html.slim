@@ -1,0 +1,71 @@
+- status = { 'Logged_Out' => { name: '登出', color: 'btn-grey', word_color: 'badge-primary' },
+             'Ready' => { name: '就绪', color: 'btn-default', word_color: 'badge-warning' },
+             'Not_Ready' => { name: '正忙', color: 'btn-info', word_color: 'badge-danger' },
+             'On_Break' => { name: '禁用', color: 'btn-light', word_color: '' } }
+
+- state = { 'Waiting' => { name: '空闲', color: 'btn-default', word_color: 'badge-pink' },
+            'Receiving' => { name: '转接中', color: 'btn-warning', word_color: 'badge-success' },
+            'Trying' => { name: '匹配中', color: 'btn-danger', word_color: 'badge-purple' },
+            'In_a_queue_call' => { name: '通话', color: 'btn-success', word_color: 'badge-danger' },
+            'Do_purpose' => { name: '后续', color: 'btn-purple', word_color: 'badge-grey' } }
+
+- sign = { '0' => { name: '未签到', color: 'btn-grey', word_color: 'label arrowed-in', button_css: '' },
+           '1' => { name: '签到了', color: 'btn-yellow', word_color: 'label label-inverse arrowed-in', button_css: 'no-radius' } }
+
+- button_css = 'btn btn-app '
+- status_css = 'badge badge-left '
+- state_css = 'badge '
+
+= title t('agents_monitor.management')
+
+= content_for :header do
+  = t('agents_monitor.management')
+
+- @agents.each_with_index do |agent, i|
+  - redis_agent = $redis.hmget("acdqueue:agent:#{agent.id}", 'status', 'state', 'is_sign')
+  - if redis_agent.first && redis_agent.second
+    a id="button_#{agent.id}" href='#' class="#{button_css}#{agent_color_prior(redis_agent, status, state, sign)} #{redis_agent.third == '1' ? 'no-radius' : nil }"
+      i class='icon-user bigger-230'
+      = agent.salesman.try(:name)
+      = agent.code.to_s.slice(1, 3)
+      span id="status_#{agent.id}" class="#{status_css}#{status[redis_agent.first][:word_color]}"
+        | #{status[redis_agent.first][:name]}
+      span id="state_#{agent.id}" class="#{state_css}#{state[redis_agent.second][:word_color]}"
+        | #{sign[redis_agent.third][:name]} #{state[redis_agent.second][:name]}
+  - else
+    a id="button_#{agent.id}" href='#' class="#{button_css}" title='缺数据，请联系管理员。' data-rel='tooltip'
+      = agent.code.to_s.slice(1, 3)
+
+script type='text/javascript' src="http://#{Settings.nodesl.domain}:#{Settings.nodesl.port}/faye/client.js"
+
+javascript:
+  var client = new Faye.Client("http://#{Settings.nodesl.domain}:#{Settings.nodesl.port}/faye", { timeout: 120 });
+  var _status = JSON.parse('#{raw(status.to_json)}');
+  var _state = JSON.parse('#{raw(state.to_json)}');
+  var _sign = JSON.parse('#{raw(sign.to_json)}');
+
+  function state_changed_color(agentId, newState) {
+    if (newState == 'Waiting' && $('#state_' + agentId).html().indexOf('签到了') >= 0) {
+      return _sign['1'].color;
+    } else {
+      return _state[newState].color;
+    }
+  }
+
+  client.subscribe("/monitor_agents_#{current_company.id}", function (message) {
+    console.log('== Message received: ' + message['AQ-Agent'] + ' status: ' + message['AQ-Agent-Status'] + ', state: ' + message['AQ-Agent-State']);
+    if (message['AQ-Agent-Status']) {
+      $('#button_' + message['AQ-Agent']).attr('class', '#{button_css}' + _status[message['AQ-Agent-Status']].color);
+      $('#status_' + message['AQ-Agent']).attr('class', '#{status_css}' + _status[message['AQ-Agent-Status']].word_color);
+      $('#status_' + message['AQ-Agent']).html(_status[message['AQ-Agent-Status']].name);
+    } else if (message['AQ-Agent-State']) {
+      $('#button_' + message['AQ-Agent']).attr('class', '#{button_css}' + state_changed_color(message['AQ-Agent'], message['AQ-Agent-State']));
+      $('#state_' + message['AQ-Agent']).attr('class', '#{state_css}' + _state[message['AQ-Agent-State']].word_color);
+      $('#state_' + message['AQ-Agent']).html($('#state_' + message['AQ-Agent']).html().replace(/空闲|转接中|匹配中|通话|后续/, '') + _state[message['AQ-Agent-State']].name);
+    } else if (message['AQ-Agent-Sign']) {
+      var sign = _sign[message['AQ-Agent-Sign']];
+      $('#button_' + message['AQ-Agent']).attr('class', '#{button_css}' + sign.button_css + ' ' + sign.color);
+      $('#state_' + message['AQ-Agent']).attr('class', sign.word_color);
+      $('#state_' + message['AQ-Agent']).html(sign.name + ' ' + $('#state_' + message['AQ-Agent']).html().replace(/未签到|签到了/, ''));
+    }
+  });

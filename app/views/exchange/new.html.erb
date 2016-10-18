@@ -1,0 +1,128 @@
+<% content_for :javascript do%>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $(".select2").css('width','200px').select2({allowClear:true});
+            $("#select_action").change(function(){
+                changeAction($("#select_action").val());
+            });
+            changeAction("Voice");
+        })
+
+        function changeAction(value){
+            if(value=="Voice"){
+                $('#voice').fadeIn('slow');
+                $('#group').fadeOut('slow');
+            } else{
+                $('#voice').fadeOut('slow');
+                $('#group').fadeIn('slow');
+            }
+        }
+    </script>
+<%end%>
+
+<div class="page-content">
+  <div class="page-header">
+    <h1>
+      添加企业总机
+      <small>
+        <i class="icon-double-angle-right"></i>
+        填写企业总机基本信息
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+  <div class="row">
+    <div class="col-xs-12">
+      <%= form_for :exchange, url: exchange_path, html: { class: "form-horizontal", role: "form"}  do |f| %>
+          <%= f.hidden_field :company_id %>
+          <div class="form-group">
+            <%= f.label "名称", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <%= f.text_field :name, class: "col-xs-6 col-sm-4" %>
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "引导语音", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select class="select2" id="welcome_voice" name="welcome_voice" >
+                <% @voices.each do |e| %>
+                    <option value='<%= e.id %>' ><%= e.name %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "查号按键", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <input class="col-xs-6 col-sm-3" id="digits" maxlength="4" name="digits"
+                     oncontextmenu="value=value.replace(/[^\d]/g,'')" onkeyup="value=value.replace(/[^\d]/g,'')"
+                     onpaste="value=value.replace(/[^\d]/g,'')" size="4" type="text">
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "查号动作", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select class="select2" id="select_action" name="select_action" >
+                <option value='Voice' >播放语音</option>
+                <option value='Trans_Group' >转座席组</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group" id="voice">
+            <%= f.label "查号语音", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select class="select2" id="select_voice" name="select_voice" >
+                <% @voices.each do |e| %>
+                    <option value='<%= e.id %>' ><%= e.name %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="form-group " id="group">
+            <%= f.label "查号座席组", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select class="select2" id="select_group" name="select_group" >
+                <% @groups.each do |e| %>
+                    <option value='<%= e.id %>' ><%= e.name %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="space-4"></div>
+          <div class="form-group">
+            <%= f.label "分机", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <select multiple="" class="select2 " id="extensions_" name="extensions[]" data-placeholder="选择可转分机...">
+                <% @extensions.each do |e| %>
+                    <option value='<%= e.extension %>' ><%= "#{e.extension}[#{e.agent_or_group}]" %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <%= f.label "备注", class: "col-sm-3 control-label no-padding-right"%>
+            <div class="col-xs-12 col-sm-9">
+              <%= f.text_area :remark, class: "col-xs-10 col-sm-5" %>
+            </div>
+          </div>
+          <div class="clearfix form-actions">
+            <div class="col-md-offset-3 col-md-9">
+              <button class="btn btn-info" type="submit">
+                <i class="icon-ok bigger-110"></i>
+                确定
+              </button>
+              &nbsp; &nbsp; &nbsp;
+              <%= link_to(exchange_path, class: "btn") do %>
+                  <i class="icon-undo bigger-110"></i>
+                  返回
+              <% end %>
+            </div>
+          </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

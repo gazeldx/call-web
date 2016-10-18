@@ -1,0 +1,36 @@
+div class='widget-box '
+  div class='widget-header'
+    h4 class='lighter smaller'
+      i class='icon-comment blue'
+      | 回复
+
+  div class='widget-body'
+    div class='widget-main no-padding'
+      div class='slimScrollDiv' style='position: relative; overflow: hidden; width: auto; height: auto;'
+        div class='dialogs' style='overflow: hidden; width: auto; height: auto;'
+          - if @issue.issue_items.blank?
+            | 还没有回复。
+          - else
+            - creator_ids = @issue.issue_items.pluck(:creator_id).uniq
+            - @issue.issue_items.order(:id).each do |issue_item|
+              div class='itemdiv dialogdiv'
+                .user
+                  img src="/assets/avatars/avatar#{creator_ids.index(issue_item.creator_id) + 1}.png"
+
+                .body
+                  .time
+                    i class='icon-time'
+                    span.green
+                      = time_ago_in_words(issue_item.created_at)
+
+                  .name
+                    a href='#'
+                      = issue_item.creator.name
+                    - if issue_item.state_changed?
+                      |  #{issue_state(issue_item.state)} 改为 #{issue_state(issue_item.real_state)}
+
+                    - if issue_item.handler_changed?
+                      | &nbsp;&nbsp;处理人“#{issue_item.handler.name}”改为“#{issue_item.real_handler.name}”
+
+                  .text
+                    = issue_item.body

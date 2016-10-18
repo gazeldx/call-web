@@ -1,0 +1,50 @@
+= titled
+
+= content_for :header do
+  = faq_header
+  = link_to t('user.new'), new_user_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='8%' = t('user.username')
+        th width='8%' = t('user.name')
+        th width='44%' = t('user.menus')
+        th width='14%' = t('user.groups')
+        th width='12%' = t('user.teams')
+        th width='6%' = t('user.active')
+        th width='8%'
+
+    tbody
+      - @users.each_with_index do |user, i|
+        tr *odd_even(i)
+          td
+            span = value_more(user.username, 15)
+          td
+            span = value_more(user.name, 10)
+          - menu_names = user.menus.map(&:name).map { |menu_name| t(menu_name) }.to_split
+          td
+            span = user.admin? ? t(:all) : value_more(menu_names, 200)
+          td
+            span = user.admin? ? t(:all) : value_more(user.groups.state_ok.order(:created_at).map(&:name).to_split, 50)
+          td
+            span = user.admin? ? t(:all) : value_more(user.teams.order(:id).map(&:name).to_split, 30)
+          td
+            span = enabled_or_disabled(user)
+          td
+            div *css_ops
+              - unless user.admin?
+                = edit edit_user_path(user)
+
+                a> class='orange2' href=menus_user_path(user) *tip('user.menus')
+                  = icon :sitemap
+
+                a> class='grey' href=change_password_user_path(user) *tip('user.change_password')
+                  = icon :user
+
+                /TODO: Disable the user feature.
+                /a> *delete(user_path(user))
+                  = icon :off
+
+  = pagination @users

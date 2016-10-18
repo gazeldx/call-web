@@ -1,0 +1,21 @@
+= content_for :form do
+  = form_for [:admin, @number], form_options do |f|
+    = error_msg @number
+
+    = input_text :number, { required: true, digits: true, class: 'col-sm-3' }.merge(edit_or_update? ? { readonly: true } : {})
+
+    - if new_or_create? or @number.company.nil?
+      = render 'admin/shared/select_company', { f: f, selected_company: @number.company, required: false }
+    - else
+      .form-group
+        = labeled t(:company_name)
+        .col-sm-9
+          = f.select(:company_id, options_for_select([["#{@number.company.id} #{@number.company.name}", @number.company.id]].unshift([t(:please_select), nil]), @number.company.try(:id)), {})
+
+    .form-group#form_group_inbound_max_lines
+      = labeled t('number.inbound_max_lines'), required: true
+      .col-sm-9
+        = text_field_tag :inbound_max_lines, @number.inbound_max_lines || InboundConfig::DEFAULT_MAX_INBOUND, class: 'col-sm-1', required: true, maxlength: 3, digits: true
+        = help_tip('0表示不限制，在选中了企业的情况下才有意义')
+
+    = submit_form

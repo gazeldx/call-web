@@ -1,0 +1,110 @@
+= content_for :form do
+  = form_for @group, form_options do |f|
+    = error_msg @group
+
+    = input_text :name, required: true, class: 'col-sm-2'
+
+    .form-group
+      = labeled 'inbound_or_outbound', required: true
+      .col-sm-9
+        - if edit_or_update?
+          = f.hidden_field :outbound
+          = t("group.outbound_#{@group.outbound}")
+        - else
+          - if current_user.admin?
+            - [true, false].each do |bool|
+              div
+                label
+                  = f.radio_button :outbound, bool, checked: bool == @group.outbound, class: 'ace'
+                  span.lbl for="group_outbound_#{bool}"
+                    |  #{t("group.#{bool ? 'outbound' : 'inbound'}")}
+          - else
+            div
+              label
+                = f.radio_button :outbound, true, checked: true, class: 'ace'
+                span.lbl
+                  |  #{t("group.outbound")}
+
+    .form-group
+      = labeled :agents
+      .col-sm-9
+        - agents = current_company.agents.ok.order(:id).includes(:groups, :extensions, :salesman).to_a
+        / TODO: 这里存在查询效率问题.
+        - agents.reject! { |agent| ChargeAgent.manual_charge_ids.include?(agent.charge_agent.try(:charge_id)) } if (@group.outbound? && edit_or_update?) # 手拨包月的座席不允许被加入到呼出组
+        = agents_checkbox_for_group(agents)
+
+    = users_checkbox(f)
+
+    - unless @group.outbound? && edit_or_update?
+      #inbound_groups
+        hr
+        = radios_for_boolean :timeout, required: true, 'data-title' => t('group.timeout_title'), 'data-content' => t('group.timeout_content')
+
+        #timeout_group
+          = input_text :max_wait_time, digits: true, required: true, range: [20, 60], help_text: t('group.timeout_help')
+
+          = radios_for_boolean :play_timeout_voice
+
+          .form-group
+            = labeled :timeout_ivr, required: true
+            .col-sm-9
+              = f.select :timeout_ivr_id, options_for_select(current_company.ivrs.timeout.map { |ivr| [ivr.name, ivr.id] }.unshift(Ivr.where(company_id: Company::DEFAULT_COMPANY_ID).timeout.map { |ivr| [ivr.name, ivr.id] }.flatten(1)), @group.timeout_ivr_id), {}, {class: 'required'}
+
+          = input_text :max_loop_times, digits: true, required: true, range: [0, 3], 'data-title' => t('group.max_loop_times_title'), 'data-content' => t('group.max_loop_times_content'), help_text: t(:times)
+
+        hr
+        = radios_for_boolean :spill, required: true, 'data-title' => t('group.spill_title'), 'data-content' => t('group.spill_content')
+
+        #spill_group
+          = input_text :spill_count, digits: true, required: true, range: [1, 20], help_text: t('group.spill_count_help')
+
+          = radios_for_boolean :play_spill_voice
+
+          .form-group
+            = labeled :spill_ivr, required: true
+            .col-sm-9
+
+              = f.select :spill_ivr_id, options_for_select(current_company.ivrs.spill.map { |ivr| [ivr.name, ivr.id] }.unshift(Ivr.where(company_id: Company::DEFAULT_COMPANY_ID).spill.map { |ivr| [ivr.name, ivr.id] }.flatten(1)), @group.spill_ivr_id), {}, {class: 'required'}
+
+    = submit_form
+
+    coffee:
+      $ ->
+        if $('input[name="group[outbound]"]:checked').val() == 'true'
+          $('#inbound_groups').hide()
+
+        if $('input[name="group[spill]"]:checked').val() == 'false'
+          $('#spill_group').hide()
+
+        if $('input[name="group[timeout]"]:checked').val() == 'false'
+          $('#timeout_group').hide()
+
+      $('input[name="group[outbound]"]:radio').change () ->
+        if $(this).val() == 'true'
+          $('#inbound_groups').hide()
+        else
+          $('#inbound_groups').show()
+
+      $('input[name="group[spill]"]:radio').change () ->
+        if $(this).val() == 'false'
+          $('#spill_group').hide()
+        else
+          $('#spill_group').show()
+
+      $('input[name="group[timeout]"]:radio').change () ->
+        if $(this).val() == 'false'
+          $('#timeout_group').hide()
+        else
+          $('#timeout_group').show()
+
+    javascript:
+      var customized_validation = {
+        rules: {
+          'group[agent_ids][]': {
+            required: true
+          },
+          'group[user_ids][]': {
+            required: true
+          }
+        }
+      };

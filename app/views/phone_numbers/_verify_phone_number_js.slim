@@ -1,0 +1,18 @@
+javascript:
+  function applyForHoldNumber() {
+    $('#' + $(this).attr('id')).hide();
+    $('#' + $(this).attr('id') + '_message').html(' 正在验证中，请接听');
+
+    //Notice: 由于浏览器通用写法不支持跨域名的Ajax，所以通过走Rails接口在后台调用“号码延期检测”接口
+    $.ajax({
+      url: $(this).attr('data-url'),
+      data: 'number=' + $(this).attr('data-number'),
+      type: 'POST',
+      success: function (data) {
+        alert(data['message']);
+      },
+      error: function (jqXHR) {
+        alert('操作失败！' + $.parseJSON(jqXHR.responseText));
+      }
+    });
+  }

@@ -1,0 +1,81 @@
+= content_for :form do
+  = form_for [:admin, @charge_change], form_options(url: (new_or_create? ? admin_charge_changes_path : admin_charge_change_path)) do |f|
+    = error_msg @charge_change
+
+    = render 'admin/shared/select_company', { f: f, selected_company: @charge_change.company }.merge(params[:kind] == 'agent' ? { select_agents: true } : {})
+
+    - if params[:kind] == 'agent'
+      .form-group
+        = labeled t(:agent_), required: true
+        .col-sm-9
+          select id='agent_id' name='charge_change[agent_id]' class='required'
+
+      .form-group
+        = labeled t('charge_change.charge_id'), required: true
+        .col-sm-9
+          = f.select(:charge_id,
+                     options_for_select((ChargeAgentMonthly.all + ChargeAgentExceedFree.all + ChargeAgentMinutely.all + ChargeAgentShareMinfee.all).sort_by(&:id).map { |charge| ["#{charge.id} - #{charge.name}（#{t("charge_agent_monthly.kind_#{charge.kind}")}）", charge.id] }.unshift([t(:please_select), nil])),
+                     {},
+                     class: 'required')
+
+    - else
+      = f.hidden_field :charge_id, required: true
+
+      .form-group
+        = labeled '变更套餐类型', required: true
+        .col-sm-9
+          div
+            label
+              = radio_button_tag :change_type, 1, checked: true
+              span class='lbl' for='change_type_1'
+                |  变更呼出费率
+          div
+            label
+              = radio_button_tag :change_type, 2
+              span class='lbl' for='change_type_2'
+                |  变更400呼入费率
+
+      .form-group#form_group_outbound_charge
+        = labeled t('charge_company.charge_company_outbound'), required: true
+        .col-sm-9
+          = select_tag :outbound_charge_id, options_for_select(ChargeCompanyOutbound.where("id <> #{ChargeCompanyOutbound::TRIAL_ID}").map { |charge_company_outbound| [charge_company_outbound.name, charge_company_outbound.id] }.unshift([t(:unselected), nil]), nil), { class: 'required' }
+
+      .form-group#form_group_inbound_charge.collapse
+        = labeled t('charge_company.charge_company400'), required: true
+        .col-sm-9
+          = select_tag :inbound_charge_id, options_for_select(ChargeCompany400.all.map { |charge_company400| [charge_company400.name, charge_company400.id] }.unshift([t(:unselected), nil]), nil), { class: 'required' }
+
+      = input_text :min_fee, number: true, help_text: '不填写意味着保底不变更'
+
+    = input_text :remark
+
+    .form-group
+      .col-sm-3
+      .col-sm-9
+        | （注：下个月一号生效）
+
+    = submit_form
+
+    - unless params[:kind] == 'agent'
+      coffee:
+        $('input[name="change_type"]:radio').change () ->
+          if $(this).val() == '1'
+            $('#form_group_outbound_charge').show()
+            $('#form_group_inbound_charge').hide()
+          else
+            $('#form_group_inbound_charge').show()
+            $('#form_group_outbound_charge').hide()
+
+      javascript:
+        var customized_validation = {
+          submitHandler: function (form) {
+            if ($('input[name="change_type"]:checked').val() == '1') {
+              $('#charge_change_charge_id').val($('#outbound_charge_id').val())
+            } else {
+              $('#charge_change_charge_id').val($('#inbound_charge_id').val())
+            }
+
+            $('#submit_button').attr('disabled', true);
+            form.submit();
+          }
+        };

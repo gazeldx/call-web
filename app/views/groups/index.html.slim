@@ -1,0 +1,54 @@
+= titled
+
+= content_for :header do
+  = faq_header
+
+  = link_to t('group.new'), new_group_path, css_new
+
+= content_for :grid do
+  table *css_table width='100%'
+    thead
+      tr
+        th width='10%' = t('group.name')
+        th width='5%' = t('group.inbound_or_outbound')
+        th width='15%' = t('group.users')
+        th width='64%' = t('group.agents')
+        th width='6%'
+
+    tbody
+      - @groups.each_with_index do |group, i|
+        tr *odd_even(i)
+          td
+            span title="ID:#{group.id}" = group.name
+          td = inbound_or_outbound(group.outbound)
+          td = value_more(group.users.map(&:name).to_split, 15)
+          td
+            - group.agents.order(:id).each_with_index do |agent, i|
+              - if group.outbound
+                = agent_shown(agent)
+              - else
+                | [
+                // TODO: 关注这里的效率问题，查询会有很多次
+                - agent_group = AgentsGroups.find_by_agent_id_and_group_id(agent.id, group.id)
+                - color_and_title = (case agent_group.level when AgentsGroups::LEVEL_HIGH then ['orange', '呼入时优先接听']; when AgentsGroups::LEVEL_LOW  then ['grey', '呼入时最后接听']; else ['green', '中等接听级别']; end)
+
+                - if [AgentsGroups::LEVEL_LOW, AgentsGroups::LEVEL_MEDIUM].include?(agent_group.try(:level))
+                  = link_to small_icon('chevron-up'), "up_agent_inbound_level/#{agent.id}/#{group.id}", title: '提升呼入接听优先级', 'data-rel' => 'tooltip'
+
+                span class=color_and_title[0] title="#{color_and_title[1]}<br>#{extension_tooltip(agent)}" data-rel='tooltip' data-html='true'
+                  = agent.extension_names
+
+                - if [AgentsGroups::LEVEL_HIGH, AgentsGroups::LEVEL_MEDIUM].include?(agent_group.try(:level))
+                  = link_to small_icon('chevron-down'), "down_agent_inbound_level/#{agent.id}/#{group.id}", title: '调低呼入接听优先级', 'data-rel' => 'tooltip'
+                | ]
+
+              - unless i == group.agents.length - 1
+                = ', '
+          td
+            div *css_ops
+              = edit edit_group_path(group)
+
+              a> class='red' href=group_path(group) data-method='delete' data-confirm=t(:delete_confirm) *tip(:delete)
+                = icon :trash
+
+  = pagination @groups

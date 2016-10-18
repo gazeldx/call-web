@@ -1,0 +1,27 @@
+= titled
+
+= content_for :header do
+  = faq_header
+
+  = link_to t('valid_ip.new'), new_valid_ip_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('valid_ip.ip')
+        th = t('valid_ip.remark')
+        th
+
+    tbody
+      - @valid_ips.each_with_index do |valid_ip, i|
+        tr *odd_even(i)
+          td = valid_ip.ip
+          td = valid_ip.remark
+          td
+            div *css_ops
+              = edit edit_valid_ip_path(valid_ip)
+              a> class='red' href=valid_ip_path(valid_ip) data-method='delete' data-confirm=t(:delete_confirm) *tip(:delete)
+                = icon :trash
+
+  = pagination @valid_ips

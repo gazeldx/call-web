@@ -1,0 +1,33 @@
+= content_for :form do
+  = form_for @column, form_options do |f|
+    = error_msg @column
+
+    = input_text :title, required: true, class: 'col-sm-2'
+
+    - if new_or_create?
+      .form-group
+        = labeled :type, required: true
+        .col-sm-9
+          = select_tag :type, options_from_collection_for_select({s: t('column.string'), t: t('column.enum'), d: t('column.date')}, :first, :last, (params[:type] || 's'))
+          |  设置后不可改
+
+    - if new_or_create? || @column.text?
+      .form-group#column_width
+        = labeled :width, required: true
+        .col-sm-9
+          = f.select :width, [1, 2, 3, 4]
+
+    - if ['s1', 's2'].include?(@column.name)
+      = input_radios :target, [Column::TARGET_BOTH], required: true
+    - else
+      = input_radios :target, [Column::TARGET_CUSTOMER, Column::TARGET_CLUE, Column::TARGET_BOTH], required: true
+      = radios_for_boolean :active
+
+    = submit_form
+
+    coffee:
+      $('#type').change () ->
+        if $(this).val() == 's'
+          $('#column_width').show()
+        else
+          $('#column_width').hide()

@@ -1,0 +1,23 @@
+= title t('logo.customize')
+= banner({ t('logo.customize') => nil })
+= header t('logo.customize')
+
+= content_for :form do
+  = form_for @company_config, form_options do |f|
+    = error_msg @company_config
+
+    .form-group
+      = labeled t('company_config.please_choose_logo')
+      .col-sm-9
+        = f.file_field :logo
+        - if @company_config.logo.present?
+          /img> src=record_full_url(@company_config.logo.url)
+          img src=record_full_url(@company_config.logo.small.url)
+
+    = input_text :web_name, required: true
+
+    = input_text :login_title_first, required: true
+
+    = input_text :login_title_second, required: true
+
+    = submit_form

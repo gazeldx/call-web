@@ -1,0 +1,180 @@
+= render '/shared/javascript/datepicker'
+
+- if act_clue?
+  - @columns = clue_columns
+  - @act_name_reverse = t('customer.self')
+  - title_ = t('clue.management')
+  - new_text = t('clue.new')
+- else
+  - show_vip = policy(:menu2).vip?
+  - @columns = customer_columns
+  - @act_name_reverse = t('clue.self')
+  - title_ = t('customer.management')
+  - new_text = t('customer.new')
+
+  - colors = ['orange', 'green', 'blue', 'pink', 'pink2', 'purple', 'orange2', 'light-green', 'red', 'light-blue', 'light-red'];
+  - vip_colors = {}
+  - current_company.vips.active.order(:id).pluck(:id).each_with_index { |vip, i| vip_colors[vip] = colors[i] }
+
+= title title_
+
+= content_for :header do
+  = title_
+
+  a< href="#{import_customers_path}#{act_param}" class='hidden_when_submit btn btn-sm btn-warning'
+    = t(:batch_import)
+
+  = link_to new_text, "#{customers_new_path}#{act_param}", css_new
+
+= content_for :grid do
+  .row
+    = form_tag "#{request.path.sub('/search', '')}/search", method: :get
+      = hidden_field_tag(:act, (params[:act] || Customer::ACT_CUSTOMER))
+      = hidden_field_tag(:target_method, '')
+      = hidden_field_tag(:orderBy, params[:orderBy])
+      = salesman_container
+      = render '/shared/customer/search_columns_input'
+      = render '/shared/customer/search_created_at_updated_at'
+      = search_button
+
+      - if session[:administrator_id].nil? && action_name == 'search'
+        - if @customers.present?
+          = package_customers_records
+          = render '/cdrs/shared_naming_and_package_records'
+
+          - if policy(:user2).export_customers?
+            = export_customer_button
+
+          - if current_user.admin?
+            a< href="#modal-batch-delete" role='button' class='hidden_when_submit btn btn-danger btn-sm' data-toggle='modal'
+              = t(:batch_delete)
+            = render 'batch_delete_confirm'
+
+          a< href="#modal-assign_to_salesman" role='button' class='hidden_when_submit btn btn-primary btn-sm' data-toggle='modal'
+            = t('customer.assign_to_salesman')
+          = render 'assign_to_salesman'
+
+          a< href="#modal-switch-act" role='button' class='hidden_when_submit btn btn-success btn-sm' data-toggle='modal'
+            = t('customer.switch_act', w: @act_name_reverse)
+          = render 'switch_act'
+
+  table.nowrap *css_table
+    thead
+      tr
+        - if policy(:customer2).delete?
+          th ID
+        th
+          = @columns.find_by_name('s2').title
+          = checkbox_for_search(:s2)
+        - if show_vip
+          th 呼入VIP
+        th
+          = t(:salesman_)
+          = checkbox_for_search(:salesman_id)
+        - @columns.reject { |column| column.name == 's2' }.each do |column|
+          th class=ColumnsHelper::TARGET_CSS[column.target]
+            = column.title
+            = column_checkbox_for_search(column)
+        th
+          = t(:created_at)
+          = checkbox_for_search_with_value(:created_at_start, Time.now.strftime(t(:date_format_)))
+        th
+          = orderIcon(:updated_at)
+          a href='#_' onclick='sortByUpdatedAt()' *tip(:click_for_sorting)
+            = t(:updated_at)
+          = checkbox_for_search_with_value(:updated_at_start, Time.now.strftime(t(:date_format_)))
+
+    tbody
+      - @customers.each_with_index do |customer, i|
+        tr id="customer_#{customer.id}" *odd_even(i)
+          - if policy(:customer2).delete?
+            td
+              - if session[:administrator_id].nil?
+                a> class='red' href='#_' onclick='delete_this_row.call(this)' data-url="/customers/#{customer.id}" *tip(:delete)
+                  = icon :trash
+
+              = customer.id
+          td
+            span data-content=customer_contacts_tip(customer) data-rel='popover' data-trigger='hover' data-placement='bottom' data-html='true'
+              = link_to (customer.s2.blank? ? t('customer.no_name') : customer.s2[0..11]), "/buyers/#{customer.id}/edit#{act_param}"
+
+          - if show_vip
+            td
+              div *css_ops
+                a> class=(customer.vip_id ? vip_colors[customer.vip_id] : 'grey') href="#_" id="vip_#{customer.id}" onclick='setVipLevel.call(this)' data-url="/set_vip_level/#{customer.id}" data-html='true' *tip('点击可修改呼入VIP级别')
+                  = icon :star
+                  span
+                    = customer.vip.try(:name)
+
+          td = customer.salesman.try(:name)
+
+          - @columns.reject { |column| column.name == 's2' }.each do |column|
+            - value = customer.try(column.name.to_sym) || ''
+
+            td
+              - if column.text?
+                - if column.name == 's1'
+                  = refined_phone(value)
+                - else
+                  = value
+
+              - elsif column.select?
+                = column.options.find_by_value(value).try(:text)
+
+              - elsif column.date?
+                = value
+
+          td
+            span title=customer.created_at.strftime(t(:time_format)) data-rel='tooltip'
+              = customer.created_at.strftime(t(:no_year))
+
+          td
+            span title=customer.updated_at.strftime(t(:time_format)) data-rel='tooltip'
+              = customer.updated_at.strftime(t(:no_year))
+
+  = pagination @customers
+
+  - if show_vip
+    javascript:
+      var vip_colors = JSON.parse('#{raw(vip_colors.to_json)}');
+
+      function setVipLevel() {
+        $.ajax({
+          url: $(this).attr('data-url'),
+          type: 'POST',
+          success: function(data) {
+            $('#vip_' + data['customer_id']).find('span').html(data.name || '');
+
+            if (data.name) {
+              $('#vip_' + data['customer_id']).attr('class', vip_colors[data['id']]);
+            } else {
+              $('#vip_' + data['customer_id']).attr('class', 'grey');
+            }
+          },
+          error: function(jqXHR) {
+            alert('Failed!');
+          }
+        });
+      }
+
+  javascript:
+    function delete_this_row() {
+      $.ajax({
+        url: $(this).attr('data-url'),
+        type: 'DELETE',
+        success: function (data) {
+          $('#customer_' + data['id']).hide();
+        },
+        error: function () {
+          alert('删除失败!');
+        }
+      });
+    }
+
+  coffee:
+    this.sortByUpdatedAt = () ->
+      if _.isEmpty($('#orderBy').val())
+        $('#orderBy').val('updated_at_desc')
+      else
+        reverseSort($('#orderBy').val())
+      $('#search_button').click()

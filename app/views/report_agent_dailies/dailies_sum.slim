@@ -1,0 +1,36 @@
+= title t('report_agent_daily.daily_report_sum')
+
+= content_for :header do
+  = t('report_agent_daily.daily_report_sum')
+
+  a< href=report_agent_dailies_path class='btn btn-sm btn-primary'
+    = t('report_agent_daily.return_daily_report')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('report_agent_daily.target_date')
+        th = t('report_agent_daily.trigger_count')
+        th = t('report_agent_daily.talk_count')
+        th = t('report_agent_daily.talk_duration')
+        th = t('report_agent_daily.average_duration')
+        th = t('report_agent_daily.talk_minutes')
+        th = t('report_agent_daily.cost')
+        th = checkin_duration_and_average
+        th = t('report_agent_daily.checkin_count')
+
+    tbody
+      - @dailies.each_with_index do |daily, i|
+        tr *odd_even(i)
+          td = "#{daily.target_date.strftime(t(:date_format))}（#{daily.target_date.wday_name}）"
+          td == "#{daily.talk_count} / #{ratio(daily.talk_count, daily.trigger_count)}"
+          td = daily.talk_count
+          td = DateTime.seconds_to_words(daily.talk_duration)
+          td = DateTime.seconds_to_words(daily.talk_count.to_i == 0 ? 0 : daily.talk_duration.to_i / daily.talk_count)
+          td = "#{daily.talk_minutes}#{t(:minute)}"
+          td = "#{daily.cost}#{t(:yuan)}"
+          td = checkin_duration_average(daily.checkin_duration, daily.checkin_count)
+          td = daily.checkin_count
+
+  = pagination @dailies

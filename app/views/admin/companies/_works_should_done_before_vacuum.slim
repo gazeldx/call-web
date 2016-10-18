@@ -1,0 +1,18 @@
+div id="modal-vacuum-#{company.id}" class="modal fade" tabindex="-1" aria-hidden="true" style="display: none;"
+  div class="modal-dialog"
+    div class="modal-content"
+      div class="modal-header no-padding"
+        div class="table-header"
+          button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+            span class="white"
+              | ×
+          | 下线（#{company.name_and_id}）步骤
+
+      div class="modal-body no-padding"
+        |  第一步：VOS座席清理 + VOS账户清理
+        br
+        br
+        a> class='btn btn-purple btn-sm' href=apply_for_vacuum_admin_company_path(company) data-method='patch' data-confirm=t('company.apply_for_vacuum_confirm') *tip('company.apply_for_vacuum')
+          | 已完成上述操作，立刻申请下线
+        br
+        br

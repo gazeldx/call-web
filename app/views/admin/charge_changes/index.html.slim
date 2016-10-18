@@ -1,0 +1,51 @@
+= title t('charge_change.management')
+
+= content_for :header do
+  = t('charge_change.management')
+
+  = link_to t('charge_change.new_company'), new_admin_charge_change_path, css_new
+
+  = link_to t('charge_change.new_agent'), new_admin_charge_change_path + '?kind=agent', { class: 'btn btn-sm btn-purple pull-right' }
+
+= content_for :grid do
+  .row
+    = form_tag admin_charge_changes_path, method: :get
+      = company_container
+      = search_button
+  table *css_table
+    thead
+      tr
+        th = t('charge_change.id')
+        th
+          = t('charge_change.company_name')
+          = checkbox_for_search(:company_id)
+        th = t('charge_change.agent_or_company')
+        th = t('charge_change.charge_id')
+        th = t('charge_change.effective_at')
+        th = t('charge_change.min_fee')
+        th = t(:remark)
+        th = t('charge_change.processed')
+        th = t('charge_change.operator_id')
+        th = t(:created_at)
+        th
+
+    tbody
+      - @charge_changes.each_with_index do |charge_change, i|
+        tr *odd_even(i)
+          td = charge_change.id
+          td = charge_change.company.name
+          td = charge_change.agent_id || charge_change.company_id
+          td = charge_change.charge_id
+          td = charge_change.effective_at.try(:strftime, t(:date_format))
+          td = charge_change.min_fee
+          td = charge_change.remark
+          td = boolean_value(charge_change, :processed)
+          td = charge_change.operator.try(:name)
+          td = charge_change.created_at.strftime(t(:time_without_year))
+          td
+            div *css_ops
+              - unless charge_change.processed
+                a> *{ class: 'red', href: admin_charge_change_path(charge_change), 'data-method' => 'delete', data: { confirm: t('confirm_delete') } }
+                  = icon :trash
+
+  = pagination @charge_changes

@@ -1,0 +1,60 @@
+= title(t("#{customer_or_clue}.import"))
+
+= header(t("#{customer_or_clue}.import"))
+
+= content_for :form do
+  = form_tag({action: :do_import}, multipart: true, class: 'form-horizontal') do
+    = hidden_field_tag(:act, params[:act])
+
+    .form-group#form_group_task_phones_file
+      = labeled '请选择要导入的csv文件', required: true
+      .col-sm-9
+        = file_field_tag 'customers_file', required: true
+        br
+        = customers_add_only_checkbox
+        br
+        br
+        span.text-muted
+          | (1) 请先#{link_to t(:download_template), download_export_customers_template_path}。
+          span.text-danger
+            | 务必删掉模板中本次导入不涉及的列，以防止有价值的数据被误替换。
+          | 您也可以调整列顺序。
+          br
+          - mobile = current_company.columns.find_by_name('s1').title
+          | (2) 在模板中添加#{t("#{customer_or_clue}.self")}，每#{t("#{customer_or_clue}.self")}占一行，内容以英文逗号','分隔。#{mobile}是必填项。
+          br
+          | (3) #{mobile}在系统中是唯一的。
+          span.green
+            | 如果不存在该#{mobile}，系统将进行插入；如果已经存在，系统将修改该手机对应的数据。
+          br
+          | 因此，您可以进行
+          span.orange
+            | 批量修改
+          | 操作（只要列出#{mobile}和需要修改的列，其它列不要出现）。
+          br
+          | 在修改时，如果本行列内容为：(1)空字符串，表示内容不做修改；(2)英文中划线“-”，表示将内容修改为空值。
+          br
+          | (4) 建议先少量导入，导入成功后逐渐加大每次导入数量。建议一次导入的数据
+          span.text-warning
+            | 不超过一万条
+          | ，防止文件过大导致服务器处理超时，所以需要你把大文件拆成若干小文件后逐个导入。
+          br
+          | (5) #{t(:quote_ignored)} #{import_csv_tool_description}
+
+    = submit_form
+
+    /javascript:
+    //  var customized_validation = {
+    //    rules: {
+    //      customers_file: {
+    //        required: true,
+    //        extension: 'csv'
+    //      }
+    //    },
+    //
+    //    messages: {
+    //      customers_file: {
+    //        extension: '您要导入的文件不是csv文件，请重新选择！'
+    //      }
+    //    }
+    //  };

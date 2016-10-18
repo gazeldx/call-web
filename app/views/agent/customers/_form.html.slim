@@ -1,0 +1,9 @@
+= content_for :form do
+  = form_for @customer, form_options(new_or_create? ? { url: customer_path } : { url: "/customer/#{@customer.id}", method: 'patch' }) do |f|
+    = error_msg @customer
+
+    = customer_form_groups(f)
+
+    = customer_submits unless @customer.errors.any?
+
+    = render '/shared/javascript/datepicker'

@@ -1,0 +1,9 @@
+= content_for :form do
+  = form_for @valid_ip, form_options do |f|
+    = error_msg @valid_ip
+
+    = input_text :ip, required: true, class: 'col-sm-2'
+
+    = input_text :remark
+
+    = submit_form

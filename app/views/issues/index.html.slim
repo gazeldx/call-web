@@ -1,0 +1,66 @@
+= titled
+
+= content_for :header do
+  = faq_header
+
+  = link_to t('issue.new'), new_issue_path, css_new
+
+= content_for :grid do
+  .row
+    = form_tag issues_path, method: :get
+      span#id_container class=hide_or_show_css(:id)
+        = text_field_tag :id, params[:id], placeholder: t('issue.id'), style: 'vertical-align: middle; width: 50px'
+
+      span#title_container class=hide_or_show_css(:title)
+        = text_field_tag :title, params[:title], placeholder: t('issue.title'), style: 'vertical-align: middle; width: 80px'
+
+      span#state_container class=hide_or_show_css(:state)
+        = select_tag :state, options_for_select(Issue::STATES.map { |state| [t("issue.state_#{state}"), state] }.unshift([t('issue.state'), nil]), params[:state])
+
+      span#handler_id_container class=hide_or_show_css(:handler_id)
+        = select_tag :handler_id, options_for_issue_handler_search
+
+      span#creator_id_container class=hide_or_show_css(:creator_id)
+        = select_tag :creator_id, options_for_issue_creator_search
+
+      = search_button
+  table *css_table
+    thead
+      tr
+        th
+          = t('issue.id')
+          = checkbox_for_search(:id)
+        th
+          = t('issue.title')
+          = checkbox_for_search(:title)
+        th
+          = t('issue.state')
+          = checkbox_for_search(:state)
+        th
+          = t('issue.handler')
+          = checkbox_for_search(:handler_id)
+        th
+          = t('issue.creator')
+          = checkbox_for_search(:creator_id)
+        /th = t('issue.customer')
+
+    tbody
+      - @issues.each_with_index do |issue, i|
+        tr *odd_even(i)
+          td = issue.id
+          td
+            - replies = ''
+            - issue.issue_items.each do |issue_item|
+              - replies = replies + issue_item.creator.name + ': ' + issue_item.body + ' (' + time_ago_in_words(issue_item.created_at) + ')<br>'
+            span data-content="#{issue.body}<br>#{issue.created_at.strftime(t(:time_format))}创建<br><br>#{replies}" data-rel='popover' data-trigger='hover' data-placement='bottom' data-html='true'
+              = link_to issue.title, issue
+          td = issue_state(issue.state)
+          td
+            span class="#{issue.handler.is_a?(Salesman) ? 'green' : nil}" data-content="#{issue.handler_type_name}" data-rel='popover' data-trigger='hover' data-placement='bottom'
+              = issue.handler.name
+          td
+            span class="#{issue.creator.is_a?(Salesman) ? 'green' : nil}" data-content="#{issue.creator_type_name}" data-rel='popover' data-trigger='hover' data-placement='bottom'
+              = issue.creator.name
+          /th = issue.customer.try(:name)
+
+  = pagination @issues

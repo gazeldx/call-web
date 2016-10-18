@@ -1,0 +1,13 @@
+= title t(:message_box)
+
+| 工作期间，本页请保持打开（只打开一个），用于接收实时工单弹屏消息。
+br
+br
+span#messages
+
+script type='text/javascript' src="http://#{Settings.faye.domain}:#{Settings.faye.port}/faye/client.js"
+
+javascript:
+  var client = new Faye.Client("http://#{Settings.faye.domain}:#{Settings.faye.port}/faye", { timeout: 120 });
+
+  #{render 'subscribe_popup_issue' if current_company.have_menu?('issue.management')}

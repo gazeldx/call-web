@@ -1,0 +1,25 @@
+= title t('task.import_numbers')
+
+= header t('task.import_numbers')
+
+= content_for :form do
+  = form_tag({action: :do_import_numbers}, multipart: true, class: 'form-horizontal', id: 'task_form') do
+    = render 'import_csv_file'
+
+    = submit_form
+
+    javascript:
+      var customized_validation = {
+        submitHandler: function (form) {
+          if ($('input[name="extract_method"]:checked').val() == 'full_detail') {
+            $('#task_form').attr('action', '/customers/do_import');
+            $('#task_phones_file').attr('name', 'customers_file');
+          } else {
+            $('#task_form').attr('action', "#{do_import_numbers_bundle_task_path(@bundle, @task)}");
+            $('#task_phones_file').attr('name', 'task_phones_file');
+          }
+
+          $('#submit_button').attr('disabled', true);
+          form.submit();
+        }
+      };

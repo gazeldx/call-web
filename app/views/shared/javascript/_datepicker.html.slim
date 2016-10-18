@@ -1,0 +1,13 @@
+- width = width
+
+javascript:
+  jQuery(function ($) {
+    $('.date-picker').css('width','#{width.nil? ? "85px" : width}').css('vertical-align', 'middle').datepicker({
+      language: 'cn',
+      //todayBtn: true,
+      autoclose: true,
+      format: "yyyy-mm-dd"
+    }).next().on(ace.click_event, function() {
+      $(this).prev().focus();
+    });
+  });

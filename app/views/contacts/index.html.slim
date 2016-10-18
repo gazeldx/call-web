@@ -1,0 +1,35 @@
+/TODO: 可能已经不用了，可以清理掉
+= title t('contact.management')
+
+= content_for :header do
+  = t('contact.management')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='12%' = t('contact.customer')
+        th width='8%' = t(:salesman_)
+        th = t('contact.remark')
+        th width='10%' = t(:time_)
+        th width='5%' = t(:agent_)
+
+    tbody
+      - @contacts.each_with_index do |contact, i|
+        tr *odd_even(i)
+          td
+            - if policy(contact.customer).edit?
+              = link_to contact.customer.s2.present? ? contact.customer.s2 : '_', "/buyers/#{contact.customer.id}/edit"
+            - else
+              = contact.customer.try(:s2)
+
+          td = contact.operator_name
+
+          td = contact.remark
+
+          td title=contact.updated_at.strftime(t(:time_format)) data-rel='tooltip'
+            = contact.updated_at.strftime(t(:no_year))
+
+          td = contact.agent.try(:code)
+
+  = pagination @contacts

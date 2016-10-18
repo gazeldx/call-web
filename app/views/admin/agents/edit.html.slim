@@ -1,0 +1,28 @@
+= titled
+
+= header
+
+= content_for :form do
+  = form_for [:admin, @agent], form_options do |f|
+    = error_msg @agent
+
+    = input_text :code, readonly: true
+
+    = radios_for_boolean :transfer
+
+    /TODO: 这里的号码应该是合法的电话号码（需要加验证）
+    = input_text :private_phone, digits: true, required: true, class: 'col-sm-2'
+
+    = submit_form
+
+    coffee:
+      $ ->
+        if $('input[name="agent[transfer]"]:checked').val() == 'false'
+          $('#form_group_private_phone').hide()
+
+        $('input[name="agent[transfer]"]:radio').change () ->
+          if $(this).val() == 'false'
+            $('#form_group_private_phone').hide()
+            $('#agent_private_phone').val('')
+          else
+            $('#form_group_private_phone').show()

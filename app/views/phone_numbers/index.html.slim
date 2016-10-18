@@ -1,0 +1,53 @@
+= titled
+
+= content_for :header do
+  = t('phone_number.management')
+  = link_to t('phone_number.new'), '#', css_new.merge(id: 'new_phone_number', target: '_blank')
+
+= content_for :grid do
+  .blue
+    | 您还可以通过
+    span.red
+      | 发短信完成号码延期
+    | ：请用要延期的主叫号码手机发送短信（#{t('phone_number.sms_verify_message')}），短信内容为“
+    span.purple
+      | 1472
+    | ”。
+  table *css_table
+    thead
+      tr
+        th = t('phone_number.number')
+        th = t('phone_number.for_task')
+        th = t('phone_number.for_agent')
+        th = t('phone_number.expire_at')
+        th = t('phone_number.remain_hours')
+
+    tbody
+      - @phone_numbers.each_with_index do |number, i|
+        tr *odd_even(i)
+          td
+            span = number.number
+            == " #{number_expired_or_not(number)} "
+            span id="apply_for_hold_#{number.number}_message"
+            - if !number.number.start_with?('400', '0')
+              a<> id="apply_for_hold_#{number.number}" class='btn btn-minier btn-success' href='#' data-url=verify_phone_number_path onclick='applyForHoldNumber.call(this)' data-number=number.number *tip('点击后，请手机保持开机并接听系统的电话，按照电话中的语言提示完成本号码延期。')
+                = t('phone_number.apply_for_hold')
+          td = boolean_value(number, :for_task)
+          td = boolean_value(number, :for_agent)
+          td = number.expire_at.strftime(t(:time_format))
+          td = remain_period(number.expire_at)
+
+  = render 'verify_phone_number_js'
+
+javascript:
+  var nbms_web_url = "#{nbms_web_url}";
+
+coffee:
+  $(document).ready () ->
+    $.ajax
+      url: '/nbms/query_need_evaluate_issues_count'
+      type: 'GET'
+      success: (data) ->
+        if data['code'] == 200
+          console.log(data)
+          $('#new_phone_number').attr('href', nbms_web_url + '/user/evaluate_issues?secret=' + data['secret'])

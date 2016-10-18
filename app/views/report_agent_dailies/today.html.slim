@@ -1,0 +1,156 @@
+= title t('report_agent_daily.today')
+
+= content_for :header do
+  = t('report_agent_daily.today')
+  = report_agent_dailies_header_links
+
+  = content_for :grid do
+    table *css_table
+      thead
+        tr
+          th = t(:salesman_)
+          th = t(:agent_)
+          th = t('report_agent_daily.call_type')
+          th = t('report_agent_daily.trigger_count')
+          - if policy(:menu2).has_ivr?
+            th = t('report_agent_daily.answer_count')
+          th = t('report_agent_daily.talk_count')
+          th = t('report_agent_daily.talk_duration')
+          th = t('report_agent_daily.average_duration')
+          th = t('report_agent_daily.talk_minutes')
+          th = t('report_agent_daily.cost')
+          th = checkin_duration_and_average
+          th = t('report_agent_daily.checkin_count')
+
+      tbody#tbody
+        - unless @cached_reports.blank?
+          = "#{Time.at(@cached_reports['created_at'].to_i).strftime(t(:h_m_s))}统计，#{DateTime.seconds_to_words(@cached_reports['created_at'].to_i + ReportAgentDaily::CACHED_MINUTES * 60 + 20 - Time.now.to_i)}后可刷新。"
+          - JSON.parse(@cached_reports['reports']).select { |report| current_user.admin? || @salesmen.any? { |salesman| salesman.id == report['salesmanId'].to_i } }.sort_by { |report| report['talkCount'] }.reverse.each_with_index do |report, i|
+            tr *odd_even(i)
+              td = (@salesmen.detect { |salesman| salesman.id == report['salesmanId'].to_i }).try(:name)
+              td = report['agentId'].to_s.slice(5, 4)
+              td = report_call_type(report['callType'])
+              td = report['triggerCount']
+              td == "#{report['talkCount'].to_i > 0 ? (link_to report['talkCount'], "/cdrs/filter/#{Time.now.strftime(t(:date_digits))}/#{report['agentId']}/#{report['salesmanId']}/#{report['callType']}") : report['talkCount']} / #{ratio(report['talkCount'], report['triggerCount'])}"
+              td = DateTime.seconds_to_words(report['talkDuration'])
+              td = DateTime.seconds_to_words(report['talkCount'].to_i == 0 ? 0 : report['talkDuration'] / report['talkCount'])
+              td = "#{report['talkMinutes']}#{t(:minute)}"
+              td = "#{report['cost']}#{t(:yuan)}"
+              td = "#{DateTime.seconds_to_words(report['checkinDuration'])} / #{DateTime.seconds_to_words(report['checkinCount'].to_i == 0 ? 0 : report['checkinDuration'].to_i / report['checkinCount'])}"
+              td = report['checkinCount']
+
+script type='text/javascript' src="http://#{Settings.faye.domain}:#{Settings.faye.port}/faye/client.js"
+
+javascript:
+  var salesmen = JSON.parse('#{raw(@salesmen.to_json)}');
+  var client = new Faye.Client("http://#{Settings.faye.domain}:#{Settings.faye.port}/faye", { timeout: 120 });
+
+  client.subscribe("/report_agent_today_#{current_company.id}", function (originalReports) {
+    var reports = JSON.parse(originalReports);
+    console.log('==== Received response of reports ====');
+
+    if ("#{current_user.admin? ? true : false}" === 'false') {
+      reports = _.filter(reports, function (report) {
+        return _.contains(_.pluck(salesmen, 'id'), report.salesmanId);
+      });
+    }
+
+    reports = _.map(reports, function (report) {
+      return _.extend(report, {
+        salesmanName: salesmanName(report.salesmanId),
+        agentCode: (report.agentId + '').slice(5, 9),
+        callTypeName: (report.callType == 1 ? '呼入' : '呼出'),
+        talkCountWithUrl: talkCountWithUrl(report),
+        talkRatio: talkRatio(report),
+        talkDuration: secondsToWordsGlobal(report.talkDuration),
+        talkMinutes: report.talkMinutes + '分钟' ,
+        averageDuration: secondsToWords(report.averageDuration),
+        cost: report.cost + '元',
+        checkinDuration: secondsToWordsGlobal(report.checkinDuration)
+      });
+    });
+
+    reports = _.sortBy(reports, function (report) {
+      return report.talkCount;
+    });
+    reports.reverse();
+
+    var source = "{{#items}}<tr><td>{{salesmanName}}</td><td>{{agentCode}}</td><td>{{callTypeName}}</td><td>{{triggerCount}}</td><td>{{talkCountWithUrl}} / {{talkRatio}}</td><td>{{talkDuration}}</td><td>{{averageDuration}}</td><td>{{talkMinutes}}</td><td>{{cost}}</td><td>{{checkinDuration}}</td><td>{{checkinCount}}</td></tr>{{/items}}";
+    var template = Handlebars.compile(source);
+    var reportsHtml = template({items: reports});
+
+    $('#tbody').html(reportsHtml);
+  });
+
+  function salesmanName(salesmanId) {
+    var salesman = _.find(salesmen, function (salesman) {
+      return salesman.id == salesmanId;
+    });
+
+    if (_.isEmpty(salesman)) {
+      return '';
+    } else {
+      return salesman.name;
+    }
+  }
+
+  function zeroFill(num) {
+    return (num < 10 ? '0' : '') + num
+  }
+
+  function currentDate() {
+    var date = new Date();
+    return date.getFullYear() + '' +
+      zeroFill(date.getMonth() + 1) + '' +
+      zeroFill(date.getDate())
+  }
+
+  function talkCountWithUrl(report) {
+    if (report.talkCount > 0) {
+      return new Handlebars.SafeString('<a href=' + "'/cdrs/filter/" + currentDate() + '/' + report.agentId + '/' + report.salesmanId + '/' + report.callType + "'>" + report.talkCount + '</a>');
+    } else {
+      return report.talkCount;
+    }
+  }
+
+  function talkRatio(report) {
+    if (report.triggerCount > 0) {
+      return ((report.talkCount / report.triggerCount) * 100).toFixed(1) + '%';
+    } else {
+      return '0%';
+    }
+  }
+
+  function secondsToWords(seconds) {
+    if (seconds >= 3600) {
+      return Math.floor((seconds / 3600)) + '小时' + Math.floor((seconds % 3600) / 60) + '分钟' + Math.floor(seconds % 60) + '秒'
+    } else if (seconds >= 60) {
+      return Math.floor((seconds % 3600) / 60) + '分钟' + Math.floor(seconds % 60) + '秒'
+    } else {
+      return Math.floor(seconds % 60) + '秒'
+    }
+  }
+
+  function secondsToWordsGlobal(seconds) {
+    if (seconds >= 3600) {
+      return Math.floor((seconds / 3600)) + ':' + Math.floor((seconds % 3600) / 60) + ':' + Math.floor(seconds % 60)
+    } else if (seconds >= 60) {
+      return Math.floor((seconds % 3600) / 60) + ':' + Math.floor(seconds % 60)
+    } else {
+      return Math.floor(seconds % 60)
+    }
+  }
+
+- if @cached_reports.blank?
+  javascript:
+    $(document).ready(function () {
+      setTimeout(function () {
+        $.ajax({
+          url: '/report_agent_today/publish_message',
+          type: 'POST',
+          success: function (data) {
+            $('#tbody').html("<tr><td colspan='50'>" + data.result + "</td></tr>");
+          }
+        });
+      }, 100);
+    });

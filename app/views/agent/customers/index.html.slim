@@ -1,0 +1,115 @@
+= render '/shared/javascript/datepicker'
+
+- if act_clue?
+  - @columns = clue_columns
+  - title_ = t('clue.management')
+  - new_text = t('clue.new')
+- else
+  - @columns = customer_columns
+  - title_ = t('customer.management')
+  - new_text = t('customer.new')
+
+= title title_
+
+= content_for :header do
+  = title_
+  = link_to new_text, "#{customer_new_path}#{act_param}", css_new
+
+= content_for :grid do
+  .row
+    = form_tag "#{request.path.sub('/search', '')}/search", method: :get
+      = hidden_field_tag :act, (params[:act] || Customer::ACT_CUSTOMER)
+      = hidden_field_tag(:call_time_is_null, params[:call_time_is_null])
+      = render '/shared/customer/search_columns_input'
+      span#call_time_start_container class=hide_or_show_css(:call_time_start)
+        = " #{t('customer.call_time')}：从"
+        = text_field_tag(:call_time_start, (params[:call_time_start] ? params[:call_time_start] : nil), class: 'date-picker')
+        = time_select("call_time", "start", include_seconds: true, default: params[:call_time] ? {hour: params[:call_time]['start(4i)'], minute: params[:call_time]['start(5i)'], second: params[:call_time]['start(6i)']} : Time.now)
+        | 至&nbsp;
+        = text_field_tag(:call_time_end, (params[:call_time_end] ? params[:call_time_end] : Time.now.strftime(t(:date_format_))), class: 'date-picker')
+        = time_select("call_time", "end", include_seconds: true, default: params[:call_time] ? {hour: params[:call_time]['end(4i)'], minute: params[:call_time]['end(5i)'], second: params[:call_time]['end(6i)']} : Time.now)
+      = render '/shared/customer/search_created_at_updated_at'
+      = search_button
+
+  table.nowrap *css_table
+    thead
+      tr
+        th
+          = @columns.find_by_name('s2').title
+          = checkbox_for_search(:s2)
+
+        - @columns.reject { |column| column.name == 's2' }.each do |column|
+          th class=ColumnsHelper::TARGET_CSS[column.target]
+            = column.title
+            = column_checkbox_for_search(column)
+            - if column.name == 's1'
+              |  点呼时间
+              = checkbox_for_search_with_value(:call_time_start, Time.now.strftime(t(:date_format_)))
+              | &nbsp;
+              = check_box_tag('call_time_null_checkbox', 1, params[:call_time_is_null] == 'true', onchange: 'callTimeIsNullChanged.call(this)', 'data-content' => '勾选后，将筛选出“尚未点击呼叫过”的数据', 'data-trigger' => 'hover', 'data-rel' => 'popover')
+              coffee:
+                this.callTimeIsNullChanged = ->
+                  if $(this).prop('checked')
+                    $('#call_time_is_null').val('true')
+                  else
+                    $('#call_time_is_null').val('false')
+        th
+          = t(:created_at)
+          = checkbox_for_search_with_value(:created_at_start, Time.now.strftime(t(:date_format_)))
+
+        th
+          = t(:updated_at)
+          = checkbox_for_search_with_value(:updated_at_start, Time.now.strftime(t(:date_format_)))
+
+      tbody
+        - @customers.each_with_index do |customer, i|
+          tr *odd_even(i)
+            td
+              span data-content=customer_contacts_tip(customer) data-rel='popover' data-trigger='hover' data-placement='bottom' data-html='true'
+                = link_to (customer.s2.blank? ? t('customer.no_name') : customer.s2[0..11]), "/buyer/#{customer.id}/edit#{act_param}"
+
+            - @columns.reject { |column| column.name == 's2' }.each do |column|
+              - value = customer.try(column.name.to_sym) || ''
+
+              td
+                - if column.text?
+                  - if column.name == 's1'
+                    = refined_phone(value)
+                    | &nbsp;
+                    span id="customer_phone_#{customer.id}" title='点击呼叫' data-rel='tooltip'
+                      = link_to t(:call_now), '#', onclick: 'callPhone.call(this)', 'data-url' => "/call_phone/#{customer.id}", class: 'green'
+                    | &nbsp;
+                    - if customer.call_time.present?
+                      span title="#{customer.call_time.strftime(t(:time_format))} 发起点击呼叫" data-rel='tooltip'
+                        = distance_of_time_in_words(Time.now, customer.call_time)
+                  - else
+                    = value
+
+                - elsif column.select?
+                  = column.options.find_by_value(value).try(:text)
+
+                - elsif column.date?
+                  = value
+            td
+              span title=customer.created_at.strftime(t(:time_format)) data-rel='tooltip'
+                = customer.created_at.strftime(t(:no_year))
+
+            td
+              span title=customer.updated_at.strftime(t(:time_format)) data-rel='tooltip'
+                = customer.updated_at.strftime(t(:no_year))
+
+  = pagination @customers
+
+  javascript:
+    function callPhone() {
+      $.ajax({
+        url: $(this).attr('data-url'),
+        type: 'POST',
+        success: function (data) {
+          $('#customer_phone_' + data['customer_id']).append('已呼 ');
+        },
+        error: function (jqXHR) {
+          alert('拨打失败！' + $.parseJSON(jqXHR.responseText)['result']);
+        }
+      });
+    }

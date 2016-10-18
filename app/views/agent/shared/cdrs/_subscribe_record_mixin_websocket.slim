@@ -1,0 +1,39 @@
+script type='text/javascript' src="http://#{Settings.faye.domain}:#{Settings.faye.port}/faye/client.js"
+javascript:
+  var client = new Faye.Client("http://#{Settings.faye.domain}:#{Settings.faye.port}/faye", {timeout: 120});
+  client.subscribe("/record_mixin_#{current_company.id}", function (message) {
+    console.log(message);
+    $('#play_button_' + message.uuid).attr('data-audio-url', "http://#{Settings.ucweb.domain}:#{Settings.ucweb.port}" + message.record_path);
+    $('#play_button_' + message.uuid).attr('class', 'blue');
+    var audioUrl = $('#play_button_' + message.uuid).attr('data-audio-url');
+    var audioType = 'mpeg';
+    if ((audioUrl || '').slice(-3) === 'wav') {
+      audioType = 'wav'
+    }
+    var playerHtml = "<span class='text-danger'>" + messageErrorInfo(message) + "</span>";
+    var downloadHtml = '';
+    if (message.result == 'success') {
+      playerHtml += "<audio controls='controls'><source src='" + audioUrl + "' type='audio/" + audioType + "'></audio>";
+      downloadHtml += "<a class='pink2' data-original-title='下载录音' data-rel='tooltip' href='/cdr/download_record/" + message.uuid + "' rel='nofollow'><i class='icon-cloud-download bigger-130'></i></a>";
+      $('#download_record_' + message.uuid).html(downloadHtml);
+    }
+    $('#player_' + message.uuid).html(playerHtml);
+    $('#player_' + message.uuid).show();
+  });
+
+  function messageErrorInfo(message) {
+    if (message.result == 'fail') {
+      if (message.error_code == 'original_file_not_exist') {
+        message.remark = '最新录音5分钟后才能合成，请稍等';
+      } else if (message.error_code == 'fs_encode_in_error') {
+        message.remark = '处理录音输入编码失败';
+      } else if (message.error_code == 'fs_encode_out_error') {
+        message.remark = '处理录音输出编码失败';
+      } else if (message.error_code == 'sox_error') {
+        message.remark = '初步合成录音失败';
+      } else if (message.error_code == 'lame_error') {
+        message.remark = '最终合成录音失败';
+      }
+    }
+    return message.remark;
+  }

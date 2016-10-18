@@ -1,0 +1,36 @@
+= title t('company.batch_config_vos')
+= header t('company.batch_config_vos')
+
+= content_for :form do
+  = form_tag admin_do_batch_config_vos_path, method: :post, class: 'form-horizontal'
+    .form-group
+      = labeled '起始企业编号', required: true
+      .col-sm-9
+        = text_field_tag :company_id_begin, nil, required: true, class: 'col-sm-3', digits: true, minlength: 5, maxlength: 5
+
+    .form-group
+      = labeled '结束企业编号', required: true
+      .col-sm-9
+        = text_field_tag :company_id_end, nil, required: true, class: 'col-sm-3', digits: true, minlength: 5, maxlength: 5
+
+    hr
+    .form-group
+      = labeled '线路类型', required: true
+      .col-sm-9
+        .col-sm-2
+          = select_tag :vos_type, options_for_select([:manual_call, :callback, :task].map { |vos_type| [t("company.#{vos_type}_vos_id"), vos_type] }.unshift([t(:please_select), nil]), nil), required: true
+
+    - voses = options_for_select(ServerIp.voses.map { |server_ip| [server_ip.name, server_ip.id] }.unshift([t(:please_select), nil]), nil)
+    .form-group
+      = labeled '当前VOS线路', required: true
+      .col-sm-9
+        .col-sm-2
+          = select_tag :current_vos_id, voses, required: true
+
+    .form-group
+      = labeled '切换至VOS线路', required: true
+      .col-sm-9
+        .col-sm-2
+          = select_tag :new_vos_id, voses, required: true
+
+    = submit_form

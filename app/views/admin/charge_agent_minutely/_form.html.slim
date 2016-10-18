@@ -1,0 +1,17 @@
+= content_for :form do
+  = form_for [:admin, @charge_agent_minutely], form_options(url: (new_or_create? ? admin_charge_agent_minutely_index_path : admin_charge_agent_minutely_path)) do |f|
+    = error_msg @charge_agent_minutely
+
+    = input_text :id, {digits: true, required: true, range: [1001, 1999], help_text: "#{t(:charge_id_tip, min: 1001, max: 1999)}，#{t(:can_not_be_changed)}" }.merge(new_or_create? ? {} : {readonly: true})
+
+    = input_radios :kind, [ChargeAgentMinutely::KIND_MANUAL, ChargeAgentMinutely::KIND_TASK, ChargeAgentMinutely::KIND_MANUAL_AND_TASK], required: true
+
+    = input_text :name, required: true
+
+    = input_text :fee, number: true, required: true
+
+    = input_text :minutes, digits: true, required: true
+
+    = input_text :price, number: true, required: true
+
+    = submit_form

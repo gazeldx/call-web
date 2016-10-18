@@ -1,0 +1,31 @@
+= titled
+
+= content_for :header do
+  = t('server_ip.management')
+  
+  = link_to t('server_ip.new'), new_admin_server_ip_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th ID
+        th = t('server_ip.name')
+        th = t('server_ip.server_type')
+        /th = t('server_ip.external_ip')
+        th = t('server_ip.internal_ip')
+        th = t('server_ip.port')
+        th
+
+    tbody
+      - @server_ips.each_with_index do |server_ip, i|
+        tr *odd_even(i)
+          td = server_ip.id
+          td = server_ip.name
+          td = t("server_ip.server_type_#{server_ip.server_type}")
+          /td = server_ip.external_ip
+          td = server_ip.internal_ip
+          td = server_ip.port
+          td
+            div *css_ops
+              = edit edit_admin_server_ip_path(server_ip)

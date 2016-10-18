@@ -1,0 +1,41 @@
+span
+  = text_field_tag(:start_stamp_day_begin, (params[:start_stamp_day_begin] ? params[:start_stamp_day_begin] : Time.now.strftime(t(:date_format_))), class: 'date-picker')
+span
+  = select_tag :start_stamp_moment_begin, options_for_select((0..23).to_a.map { |num| hour = (num.to_s.size == 1 ? "0#{num}" : num.to_s); num_show = [hour + ':00', hour + ':30']; [[num_show[0], num_show[0]],[num_show[1], num_show[1]]] }.flatten(1), params[:start_stamp_moment_begin])
+| 至
+
+span
+  = text_field_tag(:start_stamp_day, (params[:start_stamp_day] ? params[:start_stamp_day] : Time.now.strftime(t(:date_format_))), class: 'date-picker')
+span
+  = select_tag :start_stamp_moment, options_for_select((0..22).to_a.map { |num| hour = (num.to_s.size == 1 ? "0#{num}" : num.to_s); num_show = [hour + ':29', hour + ':59']; [[num_show[0], num_show[0]],[num_show[1], num_show[1]]] }.flatten(1).push(["23:29", "23:29"]).unshift(['23:59', '23:59']), params[:start_stamp_moment])
+
+span#call_type_container class=hide_or_show_css(:call_type)
+  = select_tag :call_type, options_for_select(Cdr::CALL_TYPES.map { |call_type| [t("cdr.call_type_#{call_type}"), call_type] }.unshift([t('cdr.call_type'), nil]), params[:call_type])
+
+- if current_user.is_a?(User)
+  = task_container
+
+span#caller_number_container class=hide_or_show_css(:caller_number)
+  = text_field_tag :caller_number, params[:caller_number], placeholder: t(:caller_number), style: 'vertical-align: middle; width: 110px'
+
+span#callee_number_container class=hide_or_show_css(:callee_number)
+  = text_field_tag :callee_number, params[:callee_number], placeholder: t(:callee_number), style: 'vertical-align: middle; width: 110px'
+
+span#duration_container class="green #{hide_or_show_css(:duration)}"
+  | 时长 > #{text_field_tag :duration, params[:duration], number: true, style: 'vertical-align: middle; width: 40px'}#{t(:second)}
+
+= agent_container
+
+javascript:
+  function showOrHideMoment() {
+    var column_name = 'start_stamp_moment';
+    var column = $('#' + column_name);
+    var container = $('#' + column_name + '_container');
+
+    if (container.hasClass('hidden')) {
+      container.removeClass('hidden');
+    } else {
+      column.val('');
+      container.addClass('hidden');
+    }
+  }

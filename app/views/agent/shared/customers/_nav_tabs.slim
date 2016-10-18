@@ -1,0 +1,19 @@
+= content_for :grid do
+  .tabbable
+    ul class='nav nav-tabs'
+      li.active
+        a data-toggle='tab' href='#contacts'
+          i class='green icon-file-text-alt bigger-110'
+          = t('contact.history')
+
+      li
+        a data-toggle='tab' href='#cdrs' id='tab_cdrs' onclick='javascript: showCustomerCdrs();'
+          i class='blue icon-phone bigger-110'
+          | 历史通话（三个月内）
+
+    .tab-content
+      div id='contacts' class='tab-pane active'
+        = render 'agent/shared/customers/contact_list'
+
+      div id='cdrs' class='tab-pane'
+        = render 'agent/shared/customers/cdr_list'

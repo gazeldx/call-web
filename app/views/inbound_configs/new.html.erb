@@ -1,0 +1,58 @@
+<% content_for :javascript do%>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $(".select2").css('width','200px').select2({allowClear:true});
+            $("#inbound_config_config_type").change(function(){
+                changeAction($("#inbound_config_config_type").val());
+            });
+            changeAction("0");
+        });
+        function changeAction(value){
+            if(value=="0"){
+                $('#ivr_div').fadeIn('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeOut('slow');
+            }else if(value=="1"){
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeIn('slow');
+                $('#strategy_div').fadeOut('slow');
+            }else if(value=="2"){
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeIn('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeOut('slow');
+            }else if(value=="3"){
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeIn('slow');
+            }else{
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeOut('slow');
+            }
+        }
+    </script>
+<%end%>
+
+<div class="page-content">
+  <div class="page-header">
+    <h1>
+      添加呼入配置
+      <small>
+        <i class="icon-double-angle-right"></i>
+        填写基本配置信息
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+  <div class="row">
+    <div class="col-xs-12">
+      <%= render 'form' %>
+    </div>
+  </div>
+</div>
+
+

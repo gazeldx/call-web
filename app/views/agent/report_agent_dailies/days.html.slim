@@ -1,0 +1,47 @@
+= render '/shared/javascript/datepicker'
+
+= title t('report_agent_daily.days_header')
+
+= content_for :header do
+  = t('report_agent_daily.days_header')
+  = salesman_report_agent_dailies_header_links
+
+= content_for :grid do
+  .row
+    = form_tag report_agent_day_path, method: :get
+    span
+      = text_field_tag(:start_date, (params[:start_date] ? params[:start_date] : (Time.now - 1.day).strftime(t(:date_format_))), class: 'date-picker')
+    | 至
+    span
+      = text_field_tag(:end_date, (params[:end_date] ? params[:end_date] : (Time.now - 1.day).strftime(t(:date_format_))), class: 'date-picker')
+    = agent_container
+    = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t(:agent_)
+          = checkbox_for_search(:agent_id)
+        th = t('report_agent_daily.trigger_count')
+        th = t('report_agent_daily.talk_count')
+        th = t('report_agent_daily.talk_duration')
+        th = t('report_agent_daily.average_duration')
+        th = t('report_agent_daily.talk_minutes')
+        th = t('report_agent_daily.cost')
+        th = checkin_duration_and_average
+        th = t('report_agent_daily.checkin_count')
+
+    tbody
+      - if @report_agent_days.present?
+        - @report_agent_days.each_with_index do |day, i|
+          tr *odd_even(i)
+            td = day.agent.extension_names
+            td = day.trigger_count
+            td = "#{day.talk_count} / #{ratio(day.talk_count, day.trigger_count)}"
+            td = DateTime.seconds_to_words(day.talk_duration)
+            td = DateTime.seconds_to_words(day.talk_count.to_i == 0 ? 0 : day.talk_duration / day.talk_count)
+            td = "#{day.talk_minutes}#{t(:minute)}"
+            td = "#{day.cost}#{t(:yuan)}"
+            td = "#{DateTime.seconds_to_words(day.checkin_duration)} / #{DateTime.seconds_to_words(day.checkin_count.to_i == 0 ? 0 : day.checkin_duration.to_i / day.checkin_count)}"
+            td = day.checkin_count

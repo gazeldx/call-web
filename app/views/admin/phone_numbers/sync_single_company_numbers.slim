@@ -1,0 +1,25 @@
+= title(t('phone_number.single_company_title', w: @result[:company_info]))
+
+= content_for :header do
+  = t('phone_number.single_company_title', w: @result[:company_info])
+
+h1 共获取到#{@result[:all_numbers_count]}个号码，成功同步了#{@result[:number_success_count]}个。
+
+- unless @result[:error_numbers].blank?
+  h1
+    | 没有同步成功的号码共#{@result[:error_numbers].size}个。如下
+
+  = content_for :grid do
+    table *css_table
+      thead
+        tr
+          th 号码数据
+          th
+
+      tbody
+        - @result[:error_numbers].each_with_index do |number, i|
+          tr *odd_even(i)
+            td
+              = number.inspect
+
+            h1 共获取到#{@result[:all_numbers_count]}个号码，成功同步了#{@result[:number_success_count]}个。

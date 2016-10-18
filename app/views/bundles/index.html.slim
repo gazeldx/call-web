@@ -1,0 +1,167 @@
+= title t("bundle.kind_#{bundle_kind}")
+
+= content_for :header do
+  = faq_header(t("bundle.kind_#{bundle_kind}"), {title: t("bundle.faq_title_#{bundle_kind}"), 'data-content' => t("bundle.faq_content_#{bundle_kind}"), 'data-placement' => 'bottom'})
+
+  - current_company.bundle_kind = bundle_kind
+  - if policy(current_company).create_bundle?
+    = link_to t(:new, w: t("bundle.kind_#{bundle_kind}")), "#{new_bundle_path}?kind=#{bundle_kind}", css_new
+
+  a< href="#{request.env['PATH_INFO']}/history" class='btn btn-sm btn-muted'
+    | 历史任务
+
+  a<> href=test_numbers_path class='btn btn-sm btn-primary'
+    = t('task.test_numbers')
+
+  - if current_company.outbound_groups.blank?
+    span.btn-sm.pull-right
+      | 创建呼出座席组后，才可创建#{t("bundle.kind_#{bundle_kind}")}
+
+.row
+  .col-xs-12
+    .task-grid
+      - @bundles.sort_by { |bundle| Time.now - bundle.created_at }.each_with_index do |bundle, i|
+        .row
+          .col-xs-1
+            span *bundle_title_hash(bundle)
+              = "#{bundle.name[0..5]}"
+              br
+
+              - if policy(bundle).update?
+                a> class='green' href="#{edit_bundle_path(bundle)}?kind=#{bundle_kind}" *tip(:edit)
+                  = icon :pencil
+
+              - if policy(bundle).stash?
+                a> *stash(stash_bundle_path(bundle))
+                  = icon :remove
+
+          .col-xs-5
+            - if bundle.tasks.running.count == 0
+              .row
+                .col-xs-12
+                  span
+                    = t('bundle.no_running_task')
+
+            - bundle.tasks.running.order(:started_at).each do |task|
+              .row
+                .col-xs-12
+                  = render '/tasks/task_status', task: task
+
+                  - if policy(task).pause?
+                    span.pull-right
+                      a<> class='orange2' href='#' data-url=pause_bundle_task_path(bundle, task) onclick='pause_task.call(this)' *tip('暂停呼叫')
+                        = icon 'pause'
+
+          .col-xs-6
+            - bundle.tasks.before_running.order(:state).each do |task|
+              .row
+                .col-xs-9
+                  - if task.paused?
+                    = render '/tasks/task_status', task: task
+                  - else
+                    = task_name_content(task)
+                    | &nbsp;
+                    span data-original-title=t('task.phone_count') data-rel='tooltip'
+                      | 总#{task.phone_count}
+                    | &nbsp;
+
+                  = task_state(task.state)
+
+                .col-xs-3
+                  span
+                    - if policy(task).start?
+                      a<> class='blue' href='#' data-url=start_bundle_task_path(bundle, task) onclick='start_task.call(this)' *tip('启动呼叫')
+                        = icon 'play-circle'
+                    - elsif !bundle.task_numbers_not_expired_if_predict? || !bundle.agents_number_not_expired_if_automatic?
+                      a<> class='orange2' href=caller_numbers_path *tip(t('phone_number.number_expired'))
+                        = icon 'play-circle'
+
+                    - if policy(task).stash?
+                      a> *{ class: 'red', href: stash_bundle_task_path(bundle, task), 'data-method' => 'post', data: { confirm: t('task.confirm_stash') } }.merge(tip(:delete))
+                        = icon :remove
+
+                    - if policy(task).update?
+                      a> class='green' href=edit_bundle_task_path(bundle, task) *tip('edit')
+                        = icon :pencil
+
+                    - if policy(task).import_numbers?
+                      a> class='purple' href=import_numbers_bundle_task_path(bundle, task) *tip('task.import_numbers')
+                        = icon 'sort-by-order'
+
+                    = export_task_phones_button(task)
+
+            .row
+              .col-xs-12
+                span
+                  - if policy(bundle).create_task?
+                    a<> class='brown' href=new_bundle_task_path(bundle) *tip(t(:new, w: t("bundle.library")))
+                      = icon 'plus-sign-alt'
+                  - elsif bundle.tasks.running_and_before.count >= Bundle::MAX_TASKS
+                    = t('bundle.reach_the_max_tasks', w: Bundle::MAX_TASKS)
+                  - elsif bundle.tasks.count >= Bundle::MAX_TASKS_MOST
+                    = t('bundle.reach_the_max_tasks_most', w: Bundle::MAX_TASKS_MOST)
+
+
+        h3 class='header smaller lighter brown'
+
+coffee:
+  this.start_task = ->
+    $(this).closest('span').hide()
+    $.ajax
+      url: $(this).attr('data-url')
+      type: 'POST'
+      success: (data) ->
+        alert data['result']
+
+      error: (jqXHR) ->
+        data = $.parseJSON(jqXHR.responseText)
+        alert '启动任务失败！原因如下：\n' + data['result']
+
+  this.pause_task = ->
+    $(this).closest('span').hide()
+    $.ajax
+      url: $(this).attr('data-url')
+      type: 'POST'
+      success: (data) ->
+        alert data['result']
+
+      error: (jqXHR) ->
+        data = $.parseJSON(jqXHR.responseText)
+        alert '暂停任务失败！原因如下：\n' + data['result']
+
+css:
+  .task-grid {
+    text-align:left;
+  }
+  .task-grid [class*="col-"] {
+    margin-top:2px;
+    margin-bottom:2px;
+    padding-top:4px;
+    padding-bottom:4px;
+    position:relative;
+    text-overflow:ellipsis;
+  }
+  .task-grid [class*="col-"]  span{
+    position:relative;
+    z-index:2;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    /*width: 100%;*/
+  }
+  .task-grid [class*="col-"]:before {
+    position:absolute;
+    top:0; bottom:0;
+    left:2px; right:2px;
+    content:"";
+    display:block;
+    border:1px solid #DDD;
+    z-index: 1;
+  }
+
+  .task-grid [class*="col-"]:hover:before {
+    background-color:#FCE6A6;
+    border-color:#EFD27A;
+  }

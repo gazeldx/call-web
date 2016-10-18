@@ -1,0 +1,30 @@
+= title t('agent.batch_config')
+= banner({ t('agent.management') => agents_path, t('agent.batch_config') => nil })
+= content_for :header do
+  = t('agent.batch_config')
+
+= content_for :form do
+  = form_tag('/agents/do_batch_config', method: :patch, class: 'form-horizontal')
+    .form-group
+      div class='col-sm-3 control-label no-padding-right'
+        = red_star
+        = t(:agent_)
+        br
+        = select_tag :filter_group_id, options_for_select(current_user.groups_.state_ok.includes(:agents).order(:id).map { |group| [group.name, group.agents.pluck(:id)] }.unshift(['按座席组筛选', nil]), nil)
+      .col-sm-9
+        = agents_checkboxes(current_user.agents.ok.order(:id))
+
+    = display_show_number
+
+    = submit_form
+
+    coffee:
+      $('#filter_group_id').change () ->
+        agents_checkbox = $('input[type=checkbox][name*=agent_ids]')
+        agents_checkbox.prop('checked', false)
+        agents_checkbox.each () ->
+          if _.include(JSON.parse($('#filter_group_id').val()), parseInt($(this).val()))
+            $(this).prop('checked', true)
+
+
+

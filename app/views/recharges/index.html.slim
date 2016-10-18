@@ -1,0 +1,28 @@
+= titled
+
+= content_for :header do
+  = faq_header
+
+  a< href=bills_path class='btn btn-sm btn-success'
+    = t('fee.record')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th width='10%' = t('recharge.amount')
+        th width='10%' = t('recharge.balance')
+        th width='54%' = t('recharge.remark')
+        th width='10%' = t('recharge.operator_id')
+        th width='16%' = t('recharge.created_at')
+
+    tbody
+      - @recharges.each_with_index do |recharge, i|
+        tr *odd_even(i)
+          td #{recharge.amount}#{t(:yuan)}
+          td #{recharge.balance.try(:round, 2)}#{t(:yuan)}
+          td = value_more(recharge.remark, 200)
+          td = recharge.operator.try(:name)
+          td = recharge.created_at.strftime(t(:time_format))
+
+  = pagination @recharges

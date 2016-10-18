@@ -1,0 +1,41 @@
+= title t('task.history')
+
+= content_for :header do
+  = t('task.history')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('bundle.name')
+        th = t('task.detail')
+        th = t('task.deleted_at')
+        th
+
+    tbody
+      - @tasks.each_with_index do |task, i|
+        tr *odd_even(i)
+          td
+            span *bundle_title_hash(task.bundle)
+              = "#{task.bundle.name}#{"（#{t('bundle.automatic')}）" if task.bundle.kind == Bundle::KIND_AUTOMATIC}"
+          td
+            = render 'task_status', task: task
+            - if policy(task).resume?
+              /TODO: 启用再删除太麻烦了, 最好让客户一键延期到7天。
+              br
+              span.red
+                | #{((task.updated_at + 7.days - Time.now) / (3600 * 24)).round(1)}天后剩余的#{task.phone_count - task.executed_count}个号码将被清理掉，届时将无法恢复。您可以在点击
+                a> *{ class: 'green', href: resume_bundle_task_path(task.bundle, task), 'data-method' => 'post', data: { confirm: t('task.confirm_resume') } }.merge(tip('task.resume'))
+                  = icon 'hand-up'
+                | 后，再删除该号码库，以实现把剩余的#{task.phone_count - task.executed_count}个号码保留时长延长至#{Task::MAX_PHONE_NUMBERS_KEPT_DAYS}天
+          td = task.updated_at.strftime(t('time_without_year'))
+          td
+            - if policy(task).destroy?
+              a> *{ class: 'red', href: bundle_task_path(task.bundle, task), 'data-method' => 'delete', data: { confirm: t('confirm_delete') } }.merge(tip(:permanent_delete))
+                = icon :trash
+            - if policy(task).resume?
+              a> *{ class: 'green', href: resume_bundle_task_path(task.bundle, task), 'data-method' => 'post', data: { confirm: t('task.confirm_resume') } }.merge(tip('task.resume'))
+                = icon 'hand-up'
+            = export_task_phones_button(task)
+
+  = pagination @tasks

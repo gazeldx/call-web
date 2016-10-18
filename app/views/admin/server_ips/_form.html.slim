@@ -1,0 +1,15 @@
+= content_for :form do
+  = form_for [:admin, @server_ip], form_options do |f|
+    = error_msg @server_ip
+
+    = input_text :name, required: true
+
+    = input_radios :server_type, [ServerIp::SERVER_TYPE_VOS, ServerIp::SERVER_TYPE_FREESWITCH], required: true
+
+    = input_text :internal_ip, required: true
+
+    /= input_text :external_ip
+
+    = input_text :port, digits: true, required: true
+
+    = submit_form

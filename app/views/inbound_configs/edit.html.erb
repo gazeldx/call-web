@@ -1,0 +1,67 @@
+<% content_for :javascript do%>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $("#inbound_config_config_type option[value='<%= @inbound_config.config_type %>']").attr("selected", true);
+            <% if @inbound_config.config_type == 0 %>
+              $("#inbound_config_ivr_id option[value='<%= @inbound_config.ivr_id %>']").attr("selected", true);
+            <% elsif @inbound_config.config_type == 1 %>
+               $("#exchange option[value='<%= @inbound_config.ivr_id %>']").attr("selected", true);
+            <% elsif @inbound_config.config_type == 2 %>
+               $("#color_ring option[value='<%= @inbound_config.ivr_id %>']").attr("selected", true);
+            <% elsif @inbound_config.config_type == 3 %>
+               $("#strategy_group_id option[value='<%= @inbound_config.ivr_id %>']").attr("selected", true);
+            <% end %>
+            $(".select2").css('width','200px').select2({allowClear:true});
+            $("#inbound_config_config_type").change(function(){
+                changeAction($("#inbound_config_config_type").val());
+            });
+            changeAction("<%= @inbound_config.config_type %>");
+        });
+        function changeAction(value){
+            if(value=="0"){
+                $('#ivr_div').fadeIn('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeOut('slow');
+            }else if(value=="1"){
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeIn('slow');
+                $('#strategy_div').fadeOut('slow');
+            }else if(value=="2"){
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeIn('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeOut('slow');
+            }else if(value=="3"){
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeIn('slow');
+            }else{
+                $('#ivr_div').fadeOut('slow');
+                $('#exchange_div').fadeOut('slow');
+                $('#CRBT_div').fadeOut('slow');
+                $('#strategy_div').fadeOut('slow');
+            }
+        }
+    </script>
+<%end%>
+
+<div class="page-content">
+  <div class="page-header">
+    <h1>
+      修改呼入配置
+      <small>
+        <i class="icon-double-angle-right"></i>
+        编辑基本配置信息
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+  <div class="row">
+    <div class="col-xs-12">
+      <%= render 'form' %>
+    </div>
+  </div>
+</div>
+

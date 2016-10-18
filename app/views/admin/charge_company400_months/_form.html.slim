@@ -1,0 +1,15 @@
+= content_for :form do
+  = form_for [:admin, @charge_company400_month], form_options(url: (new_or_create? ? admin_charge_company400_months_path : admin_charge_company400_month_path)) do |f|
+    = error_msg @charge_company400_month
+
+    = input_text :id, {digits: true, required: true, help_text: t(:can_not_be_changed)}.merge(new_or_create? ? {} : {readonly: true})
+
+    = input_text :name, required: true
+
+    = input_text :fee, number: true, required: true
+
+    = input_text :months, digits: true, required: true
+
+    = input_text :agent_count, digits: true, required: true
+
+    = submit_form

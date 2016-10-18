@@ -1,0 +1,2 @@
+class HistoryCdrsController < CdrsBaseController
+end

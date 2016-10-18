@@ -1,0 +1,31 @@
+- select_agents = select_agents
+- required = required.nil? ? true : required
+
+.form-group
+  = labeled t(:company_name), required: required
+  .col-sm-9
+    = f.select(:company_id,
+               options_for_select(Company.all.map { |company| ["#{company.id} #{company.name}", company.id] }.unshift([t(:please_select), nil]), selected_company.try(:id)),
+               {},
+               { id: 'company_id', class: "#{ required ? 'required' : nil } select2" }.merge(select_agents.nil? ? {} : { onchange: 'switch_agents_options()' }))
+
+    javascript:
+      jQuery(function ($) {
+        $('.select2').css('width', '280px').select2({allowClear: true});
+      });
+
+    - unless select_agents.nil?
+      javascript:
+        function switch_agents_options() {
+          var company_id = $('#company_id').val();
+
+          if (company_id > 0) {
+            $.ajax({
+              url: '/admin/switch_agents_options',
+              data: 'company_id=' + company_id,
+              success: function (data) {
+                $('#agent_id').html(data['result']);
+              }
+            });
+          }
+        }

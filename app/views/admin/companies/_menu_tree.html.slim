@@ -1,0 +1,55 @@
+.form-group
+  = labeled t('company.menus'), required: true
+  .col-sm-9
+    div.tree.tree-unselectable
+      - company_menu_names = @company.menus.map(&:name)
+      - default_menus = ['bundle.automatic', 'bundle.predict', 'cdr.list', 'invalid_cdr.list', 'monitor.agents', 'report.agent', 'sales_clue', 'customer.management', 'customer.column_define', 'issue.management', 'account_info', 'fee.record', 'group.management', 'agent.management', 'team.management', 'salesman.management', 'logo.customize', 'cdr.export', 'record.download', 'cdr.view_fee', 'customer.view_phone_number']
+      - if @company.menus.blank?
+        h4.red
+          | 尚未授权任何功能给该企业！
+        - company_menu_names = default_menus
+        span.purple
+          | 系统给出的默认值适合外呼企业，如有呼入需求请酌情勾选“#{t('ivr.management')}”和“#{t('report.satisfaction_statistics')}”。
+      .tree-folder style='cursor: default'
+        - all_menus.merge({ 'menus.other' => { 'customer.view_phone_number' => "#" } }).each_with_index do |(top_menu, second_menus), i|
+          - second_menus.except!(:icon)
+          .tree-folder-header
+            input type='checkbox' id="top_menu_#{i}"
+            | &nbsp;&nbsp;
+            i class='green icon-folder-open'
+            .tree-folder-name
+              |  #{t(top_menu)}
+
+          .tree-folder-content id="menus_#{i}"
+            - second_menus.each do |menu_name, redirect_path|
+              .tree-item style='cursor: default'
+                .tree-item-name
+                  input type='checkbox' name='menus[]' value=menu_name checked=company_menu_names.include?(menu_name)
+                  | &nbsp;&nbsp;
+                  i class='icon-file-text red'
+                  - if redirect_path.include?('under_construction_')
+                    span.red
+                      |  #{t(menu_name)}（未开放，不要勾选！）
+                  - elsif redirect_path.include?('download-records-packages')
+                    span.red
+                      |  #{t(menu_name)}（只在企业主动提出需要时，才开通！）
+                  - else
+                    |  #{t(menu_name)}
+
+              - if inner_menus[menu_name].present?
+                - inner_menus[menu_name].each do |inner_menu_name|
+                  .tree-item style='cursor: default'
+                    .tree-item-name
+                      | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      input type='checkbox' name='menus[]' value=inner_menu_name checked=company_menu_names.include?(inner_menu_name)
+                      | &nbsp;&nbsp;
+                      i class='icon-file-text blue'
+                      span.blue
+                        |  #{t(inner_menu_name)}
+
+
+    /TODO: 1. Top menu unchecked when not all checked 2. Top menu checked when all checked 3. Edit action top menu checked should show correctly. 4. At least one menu should be checked.
+    coffee:
+      $(document).ready () ->
+        $('.tree-folder-header input[type="checkbox"]').click (e) ->
+          $('#menus_' + parseInt(event.target.id.replace(/[^\d.]/g, '')) + " :checkbox").prop('checked', this.checked)

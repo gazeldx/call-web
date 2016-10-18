@@ -1,0 +1,26 @@
+= content_for :form do
+  = form_for @team, form_options do |f|
+    = error_msg @team
+
+    = input_text :name, required: true, class: 'col-sm-2'
+
+    = salesmen_checkbox(f)
+
+    = users_checkbox(f)
+
+    = help_info(t('team.tip_before_create')) unless edit_or_update?
+
+    = submit_form
+
+    javascript:
+      var customized_validation = {
+        rules: {
+          'team[user_ids][]': {
+            required: true
+          },
+
+          'team[salesman_ids][]': {
+            required: true
+          }
+        }
+      };

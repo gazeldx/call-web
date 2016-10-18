@@ -1,0 +1,26 @@
+= title t('issue.show')
+
+= bannered
+
+= content_for :header do
+  = t('issue.show')
+
+= content_for :form do
+  h1 = @issue.title
+
+  h4
+    | 由
+    span.green
+      = @issue.creator.name
+    | 创建于
+    span title=@issue.created_at.strftime(t(:time_format)) data-rel='tooltip'
+      = @issue.created_at.strftime(t(:time_without_year))
+    | ，#{issue_state(@issue.state)}，当前处理人：
+    span.green
+      = @issue.handler.name
+
+  p.lead = @issue.body
+
+  = render 'issue_items'
+
+  = render 'issue_item_form'

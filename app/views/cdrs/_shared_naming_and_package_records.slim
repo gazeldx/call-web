@@ -1,0 +1,22 @@
+div id="modal-naming_and_package_records" class="modal fade" tabindex="-1" aria-hidden="true" style="display: none;"
+  div class="modal-dialog"
+    div class="modal-content"
+      div class="modal-header no-padding"
+        div class="table-header"
+          button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+            span class="white"
+              | ×
+          = t('record_package.naming')
+
+      div class="modal-body no-padding"
+        .row
+          .col-xs-12
+            .form-group
+              = labeled t('record_package.title'), required: true
+              .col-sm-9
+                = text_field_tag :title, nil, required: true
+            br
+            .form-group
+              .col-sm-3
+              .col-sm-9
+                = content_tag(:button, t('record.package'), type: 'submit', class: 'hidden_when_submit btn btn-pink btn-sm', id: 'package_records_button', onclick: "$('#target_method').val('package_records');")

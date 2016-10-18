@@ -1,0 +1,2 @@
+class CdrsController < CdrsBaseController
+end

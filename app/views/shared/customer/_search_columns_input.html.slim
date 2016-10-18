@@ -1,0 +1,9 @@
+- @columns.each do |column|
+  span id="#{column.name}#{column.date? ? '_start' : ''}_container" class=hide_or_show_css((column.name + (column.date? ? '_start' : '')).to_sym)
+    - if column.text?
+      = text_field_tag column.name.to_sym, params[column.name.to_sym], placeholder: column.title, style: 'vertical-align: middle; width: 110px'
+    - elsif column.select?
+      select id=column.name name=column.name
+        == column_options_html(column)
+    - elsif column.date?
+      == column_date_search(column)

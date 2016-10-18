@@ -1,0 +1,17 @@
+= content_for :form do
+  = form_for [:admin, @voice], form_options(multipart: true) do |f|
+    = error_msg @voice
+
+    = render 'admin/shared/select_company', f: f, selected_company: @voice.company
+
+    = input_text :name, required: true
+
+    .form-group
+      = labeled t('voice.please_choose_file'), required: true
+      .col-sm-9
+        = f.file_field :file, required: true
+        = "服务器文件地址：#{@voice.file.url}" if edit_or_update?
+
+    = input_text :duration, required: true, digits: true, maxlength: 3, help_text: t(:second)
+
+    = submit_form

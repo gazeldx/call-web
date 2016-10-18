@@ -1,0 +1,56 @@
+= titled
+
+= content_for :header do
+  = faq_header
+
+  = link_to t('salesman.new'), new_salesman_path, css_new
+
+= content_for :grid do
+  .row
+    = form_tag salesmen_path, method: :get
+      span#name_container class=hide_or_show_css(:name)
+        = text_field_tag :name, params[:name], placeholder: t('salesman.name'), style: 'vertical-align: middle; width: 90px'
+      span#username_container class=hide_or_show_css(:username)
+        = text_field_tag :username, params[:username], placeholder: t('salesman.username'), style: 'vertical-align: middle; width: 90px'
+      = team_container
+      span#active_container class=hide_or_show_css(:active)
+        = select_tag :active, options_for_select([true, false].map { |active| [t("salesman.active_#{active}"), active] }, params[:active])
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t('salesman.name')
+          = checkbox_for_search(:name)
+        th
+          = t('salesman.username')
+          = checkbox_for_search(:username)
+        th
+          = t('salesman.team')
+          - if policy(:user2).manage_many_teams?
+            = checkbox_for_search(:team_id)
+        th = t('salesman.agent')
+        th = t('salesman.show_numbers')
+        th
+          = t('salesman.active')
+          = checkbox_for_search(:active)
+        th width='8%'
+
+    tbody
+      - @salesmen.each_with_index do |salesman, i|
+        tr *odd_even(i)
+          td
+            span title="ID:#{salesman.id}" = salesman.name
+          td = salesman.username
+          td = salesman.team.try(:name)
+          td = agent_shown(salesman.agent) if salesman.agent
+          td = value_more((salesman.sales_numbers.map(&:show_number) & current_company.phone_numbers.agent_numbers.pluck(:number)).to_split, 50)
+          td = salesman_active(salesman)
+          td
+            div *css_ops
+              = edit edit_salesman_path(salesman)
+              a> class='grey' href=change_password_salesman_path(salesman) *tip('salesman.change_password')
+                = icon :user
+
+  = pagination @salesmen

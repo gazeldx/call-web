@@ -1,0 +1,46 @@
+javascript:
+  function playAudio() {
+    var audioType = 'mpeg';
+    if (($(this).attr('data-audio-url') || '').slice(-3) === 'wav') {
+      audioType = 'wav'
+    }
+    var audioId = $(this).attr('data-audio-id');
+    $('#player_' + audioId).html("<audio controls='controls'><source src='" + $(this).attr('data-audio-url') + "' type='audio/" + audioType + "'></audio>");
+    $('#player_' + audioId).show();
+    $(this).attr('class', 'red');
+  }
+
+  function playUnknownAudio() {
+    var audioId = $(this).attr('data-audio-id');
+    var audioUrl = $(this).attr('data-audio-url');
+    var audioPath = $(this).attr('data-audio-path');
+    $(this).attr('class', 'red');
+    var current_play_button = $(this);
+
+    if (audioUrl.endsWith('.mp3') || audioUrl.endsWith('.wav')) {
+      var audioType = 'mpeg';
+      if (($(this).attr('data-audio-url') || '').slice(-3) === 'wav') {
+        audioType = 'wav'
+      }
+      $('#player_' + audioId).html("<audio controls='controls'><source src='" + audioUrl + "' type='audio/" + audioType + "'></audio>");
+      $('#player_' + audioId).show();
+    } else {
+      $.ajax({
+        url: '/record_mixin/mixin_record',
+        data: 'record_file_without_extension=' + audioPath + '&uuid=' + audioId,
+        type: 'POST',
+        success: function (data) {
+          current_play_button.hide();
+          if (data['result'] == 'success') {
+            $('#player_' + audioId).html("<span class='text-primary'>录音正在合成...</span>");
+            $('#player_' + audioId).show();
+          } else {
+            $('#player_' + audioId).html("<span class='text-danger'>合成录音出错！如仍想听取，请联系客服</span>");
+            $('#player_' + audioId).show();
+          }
+        }, error: function (jqXHR) {
+          alert('调用录音合成接口失败！' + $.parseJSON(jqXHR.responseText));
+        }
+      });
+    }
+  }

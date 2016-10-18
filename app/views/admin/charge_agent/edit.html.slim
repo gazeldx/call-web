@@ -1,0 +1,40 @@
+= title t('charge_agent.settings')
+
+= banner({ t('agent.management') => admin_company_agents_path(@charge_agent.agent.company), t('charge_agent.settings') => nil })
+
+= header t('charge_agent.settings_for_agnet', w: @charge_agent.agent.id)
+
+= content_for :form do
+  = form_for [:admin, @charge_agent], form_options(url: (@charge_agent.try(:charge_id).present? ? charge_agent_update_monthly_rent_admin_agent_path : charge_agent_update_admin_agent_path), method: :patch) do |f|
+    = error_msg @charge_agent
+
+    = help_info("#{t('charge_company.current_balance')}：#{@charge_agent.agent.company.charge_company.balance_shown}元")
+
+    - unless @charge_agent.try(:charge_id).present?
+      .form-group
+        = labeled t('agent.charge'), required: true
+        .col-sm-9
+          = f.select :charge_id, options_for_select((@charge_agent.agent.company.charge_company.available_agent_charges).map { |charge| ["#{charge.id} - #{charge.name}（#{t("charge_agent_monthly.kind_#{charge.kind}")}）", charge.id] }.unshift([t(:please_select), nil])), {}, { class: 'required' }
+
+    .form-group
+      = labeled t('charge_agent.monthly_rent'), required: true
+      .col-sm-9
+        = f.text_field :monthly_rent, class: 'col-sm-1', required: true, range: [0, 99999], maxlength: 3, number: true
+        = help_info(t(:unit_yuan))
+
+    - if @charge_agent.agent.company.charge_company.balance.to_f > 0
+      = submit_form
+    - else
+      | 该企业已经欠费，不允许设置座席计费方案！
+
+    javascript:
+      var customized_validation = {
+        submitHandler: function (form) {
+          if (confirm('确定提交？')) {
+            $('#submit_button').attr('disabled', true);
+            form.submit();
+          } else {
+            return false;
+          }
+        }
+      };

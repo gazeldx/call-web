@@ -1,0 +1,27 @@
+th = t(:time_)
+
+th
+  = t('cdr.call_type')
+  = checkbox_for_search(:call_type)
+  | &nbsp;
+  = t('task.short_name')
+  - if current_user.is_a?(User)
+    = checkbox_for_search(:task_id)
+
+th
+  = t(:caller_number)
+  = checkbox_for_search(:caller_number)
+
+th title='搜被叫不受时间限制' data-rel='tooltip'
+  = t(:callee_number)
+  = checkbox_for_search(:callee_number)
+
+th
+  = t('cdr.duration')
+  = checkbox_for_search(:duration)
+  - if current_user.is_a?(Salesman) || policy(:cdr2).view_fee?
+    |  -&nbsp;#{t('cdr.fee')}
+
+th
+  = t(:agent_)
+  = checkbox_for_search(:agent_id)

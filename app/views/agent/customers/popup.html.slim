@@ -1,0 +1,39 @@
+= title (params[:callType].to_i == 2 ? "客户呼入 - #{"#{@customer.s2.to_s}"}" : t('customer.popup', w: @customer.s2 || '新客户'))
+
+= content_for :header do
+  = (params[:callType].to_i == 2 ? "客户#{@customer.s2.to_s}呼入" : "呼叫客户#{@customer.s2.to_s}")
+  span#click_call_customer
+    a< href='#' onclick='callPhone.call(this)' data-url="/call_phone/#{@customer.id.present? ? @customer.id : CGI.escape(Base64.encode64(@customer.s1))}" title='点击呼叫该客户' data-rel='tooltip' data-placement='bottom'
+      i class="icon-phone-sign green"
+    javascript:
+      function callPhone() {
+        $.ajax({
+          url: $(this).attr('data-url'),
+          type: 'POST',
+          success: function (data) {
+            $('#click_call_customer').append('已呼 ');
+          },
+          error: function (jqXHR) {
+            alert('拨打失败！' + $.parseJSON(jqXHR.responseText)['result']);
+          }
+        });
+      }
+
+  a< href='#' onclick='javascript:window.close()' class='btn btn-sm btn-grey pull-right'
+    i class="icon-remove bigger-125"
+    | 关闭本页
+
+= form_for @customer, form_options(@customer.id ? { url: "/customer/#{@customer.id}", method: 'patch' } : { url: customer_path }) do |f|
+  = error_msg @customer
+  = f.hidden_field(:s1) unless @customer.id
+
+  = customer_form_groups(f)
+
+  - unless @customer.errors.any?
+    - tip = "&nbsp;&nbsp;&nbsp;&nbsp;无价值的客户请不要保存，直接<a href='#' onclick='javascript:window.close()'> 关闭本页 </a>就好。"
+    = content_tag(:div, content_tag(:div, content_tag(:button, raw("#{content_tag(:i, nil, class: 'icon-ok bigger-110')} #{t('save')}"), type: 'submit', class: 'btn btn-info') + raw(tip), class: 'col-md-offset-3 col-md-9'), class: 'clearfix form-actions')
+
+  = render '/shared/javascript/datepicker'
+
+- if @customer.id
+  = render 'agent/shared/customers/nav_tabs'

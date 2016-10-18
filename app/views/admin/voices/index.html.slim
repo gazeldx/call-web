@@ -1,0 +1,51 @@
+= titled
+
+= content_for :header do
+  = t('voice.management')
+  = link_to t('voice.new'), new_admin_voice_path, css_new
+  #player
+
+= content_for :grid do
+  .row
+    = form_tag admin_voices_path, method: :get
+      = company_container
+      = search_button
+
+  table *css_table
+    thead
+      tr
+        th
+          = t('company.id')
+          = checkbox_for_search(:company_id)
+        th = t('company_name')
+        th = t('voice.name')
+        th = t('voice.file')
+        th = t('voice.duration')
+        th = t('voice.checker')
+        th = t(:created_at)
+        th
+
+    tbody
+      - @voices.each_with_index do |voice, i|
+        tr *odd_even(i)
+          td = voice.company_id
+          td = voice.company.name
+          td
+            span title="ID:#{voice.id}" = voice.name
+          td
+            = voice.file
+            | &nbsp;
+            = play_record(record_full_url(voice.file), voice.id)
+            = audio_player(voice.id)
+          td = "#{voice.duration}#{t(:second)}"
+          td = voice.checker.name
+          td
+            span title=voice.created_at.strftime(t(:time_format)) data-rel='tooltip'
+              = voice.created_at.strftime(t(:date_without_year))
+          td
+            div *css_ops
+              = edit edit_admin_voice_path(voice)
+
+      = render '/shared/javascript/play_audio'
+
+  = pagination @voices

@@ -1,0 +1,21 @@
+{
+  "name": "ucweb",
+  "version": "0.0.0",
+  "authors": [
+    "Lane <mail_zlj@163.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor/assets/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "handlebars": "~3.0.3",
+    "underscore": "~1.8.3",
+    "bootstrap": "3.0.0"
+  }
+}

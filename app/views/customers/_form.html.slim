@@ -1,0 +1,14 @@
+= content_for :form do
+  = form_for @customer, form_options(new_or_create? ? { url: customers_path } : { url: "/customers/#{@customer.id}", method: 'patch' }) do |f|
+    = error_msg @customer
+
+    = customer_form_groups(f)
+
+    = customer_submits unless @customer.errors.any?
+
+    = render '/shared/javascript/datepicker', width: ''
+
+    javascript:
+      jQuery(function ($) {
+        $('.select2').css('width', '160px').select2({allowClear: true});
+      });

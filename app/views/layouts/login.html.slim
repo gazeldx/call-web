@@ -1,0 +1,65 @@
+doctype html
+html
+  head
+    meta charset='utf-8'
+    meta name='viewport' content='width=device-width, initial-scale=1.0'
+
+    - page_title = controller_path.include?('admin') ? t('site.admin_title') : (session[:login_title_second] ? session[:login_title_second] : t('company_config.default_login_title_second'))
+    title #{t('login')} - #{page_title}
+
+    = stylesheet_link_tag 'portal', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'portal', 'data-turbolinks-track' => true
+    = csrf_meta_tags
+
+  body.login-layout
+    .main-container
+      .main-content
+        .row
+          div class='col-sm-10 col-sm-offset-1'
+            .login-container
+              .center
+                h1
+                  - if session[:logo_path]
+                    img src=record_full_url(session[:logo_path].sub('small', 'middle'))
+                  - else
+                    i class='icon-phone green'
+                  span.red  #{controller_path.include?('admin') ? t('login') : (session[:login_title_first] ? session[:login_title_first] : t('company_config.default_login_title_first'))}
+                  span.white  #{page_title}
+              .space-6
+
+              .position-relative
+                #login-box class='login-box visible widget-box no-border'
+                  .widget-body
+                    .widget-main
+                      = notice_info
+
+                      h4 class='header blue lighter bigger'
+                        i class='icon-coffee green'
+                        |  #{controller_path.include?('admin') ? 'UC管理员' : (controller_path.include?('user') ? t(:user_) : t(:salesman_))}，请输入
+                      .space-6
+
+                      = form_tag controller_path.include?('admin') ? admin_login_login_path : (controller_path.include?('user') ? user_login_path : login_login_path) do
+                        = error_info
+
+                        fieldset
+                          label class='block clearfix'
+                            span class='block input-icon input-icon-right'
+                              input.form-control type='text' name='username' value=flash[:username] placeholder=t('username') autofocus='' required='' title=t('required')
+                              i.icon-user
+
+                          label class='block clearfix'
+                            span class='block input-icon input-icon-right'
+                              input.form-control type='password' name='passwd' placeholder=t('password') required='' title=t('required')
+                              i.icon-lock
+                          .space
+
+                          .clearfix
+                          label.inline
+                            = rucaptcha_input_tag(class: 'col-xs-2', placeholder: '验证码', required: true)
+                            | &nbsp;
+                            = rucaptcha_image_tag(alt: 'Captcha')
+                            button type='submit' class='width-35 pull-right btn btn-sm btn-primary'
+                              i.icon-key
+                              |  登 陆
+                          .space-4
+

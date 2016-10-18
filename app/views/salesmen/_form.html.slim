@@ -1,0 +1,31 @@
+= content_for :form do
+  = form_for @salesman, form_options do |f|
+    = error_msg @salesman
+
+    = input_text :username, {required: true, placeholder: '用于登录，设置后还可以修改'}
+
+    = render '/shared/person/login_inputs', f: f
+
+    .form-group
+      = labeled :team
+      .col-sm-9
+        = f.select :team_id, options_for_select(current_company.teams.order(:id).map { |team| [team.name, team.id] }.unshift([t(:none), nil]), @salesman.team_id)
+
+    .form-group
+      = labeled :agent
+      .col-sm-9
+        = select_tag :agent_id, options_for_select(current_company.agents.ok.order(:id).map { |agent| ["#{t('agent.code')}：#{agent.code}（#{t('agent.extension')}：#{agent.extension_names}，#{t(:salesman_)}：#{agent.salesman.try(:name) || t(:none) + '，可以绑定'}）", agent.id] }.unshift([t(:no_bound), nil]), @salesman.agent.try(:id)), { class: 'select2' }
+
+    .form-group
+      = labeled 'show_numbers'
+      .col-sm-9
+        = phone_numbers_checkbox_for_salesman
+
+    = radios_for_boolean :active unless new_or_create?
+
+    = submit_form
+
+    javascript:
+      jQuery(function ($) {
+        $('.select2').css('width', '420px').select2({allowClear: true});
+      });

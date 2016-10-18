@@ -1,0 +1,9 @@
+| 单个座席的状态监控
+
+script type='text/javascript' src="http://#{Settings.nodesl.domain}:#{Settings.nodesl.port}/faye/client.js"
+
+javascript:
+  var client = new Faye.Client("http://#{Settings.nodesl.domain}:#{Settings.nodesl.port}/faye", { timeout: 120 });
+  client.subscribe("/monitor_agent_#{@agent.id}", function (message) {
+    console.log(message);
+  });

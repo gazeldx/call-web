@@ -1,0 +1,21 @@
+div id='modal-table' class='modal fade' tabindex='-1' aria-hidden='true' style='display: none;'
+  div class='modal-dialog'
+    div class='modal-content'
+      div class='modal-header no-padding'
+        div class='table-header'
+          button type='button' class='close' data-dismiss='modal' aria-hidden='true'
+            span class='white'
+              | ×
+          | 今日接通：
+          span#answered_count
+          | 个，通话时长：
+          span#duration
+
+coffee:
+  this.querySalesmanToday = () ->
+    $.ajax
+      url: '/cdr/salesman_today'
+      type: 'GET'
+      success: (data) ->
+        $('#answered_count').html data['answered_count']
+        $('#duration').html data['duration']

@@ -1,0 +1,139 @@
+= title t(:call_center)
+
+.row
+  .col-xs-12
+    .error-container
+      .well
+        #uc_issues style='display: none'
+          h4 class='green lighter smaller'
+            span class='purple bigger-125'
+              i.icon-heart
+              |  您有
+              span#uc_issues_count
+              | 个统一通信工单未评价&nbsp;
+            | ，#{link_to raw("<i class='icon-thumbs-up bigger-125'></i> 立刻去评价"), box_path, id: 'uc_issues_link', target: '_blank', class: 'btn btn-primary btn-sm'}
+
+        h1 class='green lighter smaller'
+          span class='red bigger-125'
+            i.icon-home
+            |  #{current_company.name}&nbsp;
+          | #{session[:name]}，欢迎您！
+
+        .space
+        h3
+          - if current_company.have_menu?('issue.management')
+            = link_to raw("<i class='icon-inbox bigger-125'></i> #{t(:message_box)}"), box_path, target: 'Message_Box', class: 'btn btn-pink btn-sm'
+          = nbsp(3)
+          = link_to raw("<i class='icon-phone bigger-125'></i> 主叫号码延期"), caller_numbers_path, class: 'btn btn-warning btn-sm'
+          - if current_user.admin?
+            = nbsp(3)
+            = link_to raw("<i class='icon-cog bigger-125'></i> 录音格式设置"), record_formats_path, class: 'btn btn-success btn-sm'
+            - if current_company.company_config.obtain_records_limit_ip?
+              = nbsp(3)
+              = link_to raw("<i class='icon-volume-up bigger-125'></i> #{t('valid_ip.management')}"), valid_ips_path, class: 'btn btn-primary btn-sm'
+        - unless current_user.admin?
+          .space
+          | 管理的团队：
+          - teams = current_user.teams.includes(:salesmen).order(:id)
+          - if teams.present?
+            - teams.each do |team|
+              = "#{team.name}（#{team.salesmen.pluck(:name).sort.to_split}）"
+          - else
+            = t(:none)
+          br
+          | 管理的座席组：
+          - group_names = current_user.groups.pluck(:name)
+          - if group_names.present?
+            = group_names.to_split
+          - else
+            = t(:none)
+
+        .space
+        - if current_user.admin?
+          = link_to t(:company_config_info), '#', onMouseOver: "$('#company_config_box').removeClass('hidden');", onClick: "$('#company_config_box').addClass('hidden');"
+          = nbsp(3)
+        = link_to t(:view_web_upgrade_info), news_path
+        = render 'company_configs_info'
+
+        - if Time.now < current_company.created_at + 1.month
+          .space
+          h3.pink
+            | 使用教程
+          - step = 1
+
+          - menu_name = 'salesman.management'
+          - if current_user.have_menu?(menu_name)
+            p
+              | 第#{step}步：创建#{link_to t(:salesman_), query_path_by_menu_name(menu_name)}。
+            - step = step + 1
+
+          - menu_name = 'team.management'
+          - if current_user.have_menu?(menu_name)
+            p
+              | 第#{step}步：创建#{link_to t(:team_), query_path_by_menu_name(menu_name)}。
+            - step = step + 1
+
+          - menu_name = 'group.management'
+          - if current_user.have_menu?(menu_name)
+            p
+              | 第#{step}步：创建#{link_to t(:group_), query_path_by_menu_name(menu_name)}。
+            - step = step + 1
+
+          - menu_name = 'account_info'
+          - if current_user.have_menu?(menu_name)
+            p
+              | 第#{step}步：创建#{link_to t(:user_), query_path_by_menu_name(menu_name)}。
+            - step = step + 1
+
+          - menu_name = 'customer.column_define'
+          - if current_user.have_menu?(menu_name)
+            p
+              | 第#{step}步：定义#{link_to t(:column_), query_path_by_menu_name(menu_name)}。
+            - step = step + 1
+
+          - if current_user.have_menu?('ivr.inbound_config')
+            p
+              | 第#{step}步：点开 “#{t('ivr.management')}” 菜单，把所有子功能全部设置完成。
+            - step = step + 1
+
+          - if current_user.admin?
+            | 上述操作除了“创建外呼座席组”外，只有你一个人可以做，其他人帮不了你。而且如果你不把这几步先做了，其他人都没办法开展工作。所以你的责任最大啊！
+            br
+            | 不过呢，如果你想少干点活，可以把其他事情交给别的管理员去做。
+            br
+            br
+            h4.pink 功能设计简述
+            | 管理员可管理多个团队、多个座席组，并可以登录系统。
+            br
+            | 团队是多个销售员组成的，销售员可以登录系统。
+            br
+            | 销售员隶属于团队，座席隶属于座席组。
+            br
+            | 销售员和座席可以随时绑定和解绑定。
+            br
+            | 管理员对客户信息、报表、话单的权限取决于管理员能够管理的团队，
+            br
+            | 管理员对任务、座席监控的权限取决于管理员能够管理的座席组。
+
+        .space
+        h4.orange
+          | 小贴士：请尝试用手机访问本系统！
+
+javascript:
+  var nbms_web_url = "#{nbms_web_url}";
+
+coffee:
+  $(document).ready () ->
+    $.ajax
+      url: '/nbms/query_need_evaluate_issues_count'
+      type: 'GET'
+      success: (data) ->
+        if data['code'] == 200
+          if data['count'] > 0
+            $('#uc_issues_count').html(data['count'])
+            $('#uc_issues_link').attr('href', nbms_web_url + '/user/evaluate_issues?secret=' + data['secret'], '_blank')
+            $('#uc_issues').show()
+            window.open(nbms_web_url + '/user/evaluate_issues?secret=' + data['secret'], '_blank')
+
+    queryUCWorkersForThisCompany()
+    $('#uc_workers').show()

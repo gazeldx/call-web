@@ -1,0 +1,61 @@
+= title t('fee.record')
+
+= content_for :header do
+  = faq_header(t('fee.record'))
+
+  a< href=recharges_path class='btn btn-sm btn-success'
+    = t('recharge.management')
+
+.col-sm-12
+  p
+    - balance = current_company.charge_company.try(:balance_shown)
+    | 余额：#{Company::BANK_UNION_DATA_IDS.include?(current_company.id) ? balance - 1000000 : balance }元
+    - if ChargeAgent.where(agent_id: current_company.agents.pluck(:id)).pluck(:charge_id).any? { |charge_id| ChargeAgent.get_class_name_by_charge_id(charge_id) == ChargeAgentShareMinfee }
+      | ；保底共享余额：#{$redis.get("charge:share:fee:#{current_company.id}").to_f.round(2)}元
+  p
+    | 计费方案（呼出：#{current_company.charge_company.charge_company_outbound_id}-#{ChargeCompanyOutbound.find(current_company.charge_company.charge_company_outbound_id).name}，呼出保底：#{current_company.charge_company.outbound_min_fee}元，码号月租费：#{current_company.charge_company.number_fee}元
+    - if current_company.charge_company.charge_company_400_id.present?
+      | ，呼入：#{current_company.charge_company.charge_company_400_id}-#{ChargeCompany400.find(current_company.charge_company.charge_company_400_id).name}，呼入保底：#{current_company.charge_company.min_fee_400}元
+    | ）
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('bill.agent_or_company')
+        th width='20%'
+          = t('bill.fee_type_id')
+        th = t('bill.charge_id')
+        th = t('bill.fee')
+        th = t('bill.balance')
+        th = t('bill.month')
+        th = t('bill.remark')
+        th = t('bill.created_at')
+
+    tbody
+      - @bills.each_with_index do |bill, i|
+        tr *bill_tr_props(bill) *odd_even(i)
+          td
+            - if bill.agent
+              == "#{t(:agent_)}#{agent_shown(bill.agent)}"
+            - else
+              | 企业扣费
+          td
+            - if bill.fee_type.id == FeeType::ID_FREEZE
+              span.text-primary data-content='金额被冻结，冻结的金额在本月依然是贵公司的，计费程序会优先扣冻结的金额；<br>到下月一号零点，未用完的冻结金额将被清零' data-rel='popover' data-trigger='hover' data-html='true'
+                = bill.fee_type.try(:name)
+            - elsif bill.fee_type.id == FeeType::ID_OUT_CHARGE
+              span.text-success data-content='是超出座席套餐外的、直接从企业余额中不断扣掉的话费的总和。' data-rel='popover' data-trigger='hover' data-html='true'
+                = bill.fee_type.try(:name)
+                br
+                | （注：本项费用不是在月底扣的，是在使用系统过程中持续扣掉的）
+            - else
+              = bill.fee_type.try(:name)
+          td = bill.charge_id
+          td = "#{bill.fee.round(2)}#{t(:yuan)}"
+          td = "#{bill.balance.try(:round, 2)}#{t(:yuan)}"
+          td = bill.month
+          td = bill.remark
+          td = bill.created_at.strftime(t(:time_without_year))
+
+  = pagination @bills

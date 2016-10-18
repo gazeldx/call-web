@@ -1,0 +1,20 @@
+- ['datepicker', 'play_audio'].each do |js_name|
+  = render "/shared/javascript/#{js_name}"
+
+= title t('cdr.list_current')
+
+= content_for :header do
+  = t('cdr.list_current')
+  a< href=history_cdr_path class='btn btn-sm btn-success'
+    = t('cdr.list_history')
+
+= content_for :grid do
+  - unless action_name == 'filter'
+    .row
+      = form_tag cdr_path, method: :get
+        = render '/shared/cdr/search_inputs'
+        span#call_loss_container class=hide_or_show_css(:call_loss)
+          = select_tag :call_loss, options_for_select([[t(:call_loss), 1], [t(:not_call_loss), 0]].unshift([t(:call_loss_or_not), nil]), params[:call_loss])
+        = search_button
+
+  = render '/agent/cdrs/cdr_list'

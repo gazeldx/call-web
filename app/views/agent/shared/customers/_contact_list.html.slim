@@ -1,0 +1,47 @@
+table#contact_table *css_table
+  thead
+    tr
+      th
+        = t('contact.remark')
+        = notice_info_inner
+      th width='6%' = t('salesman_')
+      th width='10%'
+
+  tbody
+    tr
+      td colspan=2
+        = text_field_tag 'remark', nil, class: 'col-xs-12', maxlength: 255
+      td
+        button class="btn btn-sm btn-danger" onclick='createContact.call(this)'
+          i class="icon-save bigger-125"
+          = t(:save)
+
+    - @customer.contacts.order(:id).includes(:salesman).each_with_index do |contact, i|
+      tr *odd_even(i)
+        td title="客户号码: #{refined_phone(contact.phone)}" data-rel='tooltip'
+          - if contact.result == 1
+            span.orange2
+              = '有意向 '
+
+          = contact.remark
+
+        td = contact.operator_name
+
+        td title=contact.updated_at.strftime(t(:time_format)) data-rel='tooltip'
+          = contact.updated_at.strftime(t(:no_year))
+
+    javascript:
+      function createContact() {
+        $.ajax({
+          url: "/#{current_user.is_a?(User) ? 'user_' : ''}create_contact",
+          data: 'remark=' + encodeURIComponent($(this).closest('tr').find(':text').val()) + '&customer_id=#{@customer.id}',
+          type: 'POST',
+          success: function (data) {
+            $('#notice_inner').html(data['result']);
+            $('#notice_inner').show();
+            setTimeout(function (){ $('#notice_inner').fadeOut() }, 1000);
+            $('#contact_table > tbody tr:last').after('<tr><td>' + $('#remark').val() + '</td><td>#{session[:name]}</td><td>#{t(:now)}</td></tr>');
+            $('#remark').val('');
+          }
+        });
+      }

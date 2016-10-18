@@ -1,0 +1,51 @@
+= title t('agent.batch_new')
+
+= banner({ index_i18_text => "/#{controller_path}", t('agent.management') => admin_company_agents_path(@company), t('agent.batch_new') => nil })
+
+= header "#{t('agent.batch_new')} - #{@company.name}"
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: batch_create_agents_admin_company_path, method: :post) do |f|
+    = error_msg @company
+
+    .form-group
+      = labeled 'agent.show_number', required: true
+      .col-sm-9
+        /TODO: 最好可以显示外显号码是否已经过期
+        = select_tag :show_number, options_for_select(@company.phone_numbers.agent_numbers.map { |number| [number.number, number.number] }.unshift(['无', nil])), { class: 'required' }
+
+    .form-group
+      = labeled t('agent.agent_code_start'), required: true
+      .col-sm-9
+        = text_field_tag :agent_code_start, nil, class: 'col-sm-1', required: true, range: [1001, 1999], maxlength: 4, digits: true
+        = help_info('座席编号是四位数字，以“1”开头。如：1001。')
+
+    .form-group
+      = labeled t('agent.batch_new_count'), required: true
+      .col-sm-9
+        = text_field_tag :agent_count, 0, class: 'col-sm-1', required: true, range: [1, 999], maxlength: 3, digits: true
+
+    hr
+
+    = help_info("#{t('charge_company.current_balance')}：#{@company.charge_company.balance_shown}元")
+
+    .form-group
+      = labeled t('agent.charge')
+      .col-sm-9
+        = select_tag :charge_id, options_for_select((@company.charge_company.available_agent_charges).map { |charge| ["#{charge.id} - #{charge.name}", charge.id] }.unshift([t(:please_select), nil])), {}
+
+    .form-group
+      = labeled t('charge_agent.monthly_rent'), required: true
+      .col-sm-9
+        = text_field_tag :monthly_rent, 0, class: 'col-sm-1', required: true, range: [0, 999], maxlength: 3, number: true
+        = help_info(t(:unit_yuan))
+
+    /.form-group
+    /  = labeled :expire_date
+    /  .col-sm-9
+    /    = f.date_select :expire_date
+
+    - if @company.charge_company.balance.to_f > 0
+      = submit_form
+    - else
+      | 该企业已经欠费，不允许新增座席！

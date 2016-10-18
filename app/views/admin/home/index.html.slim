@@ -1,0 +1,14 @@
+= title t('uc')
+
+.row
+  .col-xs-12
+    .error-container
+      .well
+        h1 class='green lighter smaller'
+          span class='red bigger-125'
+            i.icon-home
+            |  管理员&nbsp;
+          | #{session[:name]}，欢迎您！
+
+        .space
+        = link_to t(:view_web_upgrade_info), news_path

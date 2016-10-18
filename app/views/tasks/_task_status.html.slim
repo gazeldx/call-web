@@ -1,0 +1,20 @@
+= task_name_content(task)
+
+span data-original-title=t('task.phone_count') data-rel='tooltip'
+  | &nbsp;总#{task.phone_count}&nbsp;
+
+span data-original-title=t('task.left_count') data-rel='tooltip'
+  | 剩#{task.phone_count - task.executed_count}&nbsp;
+
+span.text-warning data-original-title="已拨打：#{task.executed_count}" data-rel='tooltip'
+  | 完成#{ratio(task.executed_count, task.phone_count)}&nbsp;
+
+- if task.bundle.ivr?
+  span.text-info data-original-title="应答数：#{task.answered_count}" data-rel='tooltip'
+    | 应答#{ratio(task.answered_count, task.executed_count)}&nbsp;
+
+span.text-success data-original-title="接通数：#{task.contacted_count}" data-rel='tooltip'
+  | 接通#{ratio(task.contacted_count, task.executed_count)}&nbsp;
+
+span.text-danger data-original-title="呼损数：#{task.missed_count}" data-rel='tooltip'
+  | 呼损#{ratio(task.missed_count, task.executed_count)}&nbsp;

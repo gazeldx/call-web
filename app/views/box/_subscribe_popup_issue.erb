@@ -1,0 +1,9 @@
+client.subscribe("/popup_issue_<%= user? ? Issue::HANDLER_TYPE_USER : Issue::HANDLER_TYPE_SALESMAN %>_<%= current_user.id %>", function (message) {
+  console.log(message);
+  if (message.message_key == 'popup_issue') {
+    var issue_path = '/issues/' + message.issue_id;
+    $('#messages').append(new Date().toLocaleTimeString().slice(0, 8) + "  工单 <a href='" + issue_path + "' target='_blank'>" + message.issue_id + '</a> 需要您处理下。<br>');
+  }
+
+  window.open("/popup_issue/" + message['issue_id'], '_blank');
+});

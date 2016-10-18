@@ -1,0 +1,13 @@
+= title(t('user.menus'))
+
+= banner({ t('user.management') => users_path, t('user.menus') => nil })
+
+= header(t('user.menus_for_who', w: @user.name))
+
+= content_for :form do
+  = form_for @user, form_options(url: update_menus_user_path) do |f|
+    = error_msg @user
+
+    = render 'menu_tree'
+
+    = submit_form

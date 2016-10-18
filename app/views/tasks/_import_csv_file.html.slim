@@ -1,0 +1,72 @@
+= hidden_field_tag(:bundle_id, @bundle.id)
+= hidden_field_tag(:task_id, @task.id)
+= hidden_field_tag(:act, Customer::ACT_CLUE)
+= hidden_field_tag(:state, Customer::STATE_POPUP)
+
+.form-group#form_group_extract_method
+  = labeled t('task.extract_method'), required: true
+  .col-sm-9
+    div
+      label
+        = radio_button_tag :extract_method, 'only_phone', checked: true
+        span< class='lbl' for='import_method_only_phone'
+          = t('task.extract_only_phone')
+
+    div
+      label
+        = radio_button_tag :extract_method, 'full_detail'
+        span< class='lbl' for='import_method_full_detail'
+          = t('task.extract_full_detail')
+        br
+        span#full_detail_checkbox.purple style='display: none;'
+          | 紫色内容只影响导入到号码库中的号码数量
+          br
+          span title='勾选后，文件中的老客户的号码也将允许被加入到号码库中。如不勾选，所有老客户号码都不会被导入到号码库中，也就意味着老客户号码不会被拨打。' data-rel='tooltip'
+            | #{nbsp(6)}#{check_box_tag(:include_customers, true, false)}包括已在销售线索和客户名单中的号码（默认是不包括的）
+          br
+          span title="" data-rel='tooltip'
+            | #{nbsp(6)}#{check_box_tag(:reject_customers, true, false)}剔除所有已导入的客户号码（如不勾选，系统只剔除销售线索和客户名单中的号码；勾选后，不仅销售线索和客户名单中的号码会被剔除，供弹屏用的隐藏的共#{popup_customers_count}个客户号码和已经被删除但尚未被系统清理掉的客户号码，也将被剔除）
+          br
+          span.green
+            | 绿色内容只影响销售线索和客户名单的数据
+          br
+          = nbsp(6)
+          = customers_add_only_checkbox
+          br
+          br
+          span.text-muted
+            | #{nbsp(6)}(1) 请先#{link_to t(:download_template), download_export_customers_template_path}；
+            span.text-danger
+              | 务必删掉模板中本次导入不涉及的列，以防止有价值的数据被误替换。
+            | 您也可以调整列顺序。
+            br
+            | #{nbsp(6)}(2) 建议一次导入的数据
+            span.text-warning
+              | 不超过一万条
+            | ，防止文件过大导致服务器处理超时，所以需要您把大文件拆成若干小文件后逐个导入。
+            br
+            | #{nbsp(6)}(3) #{t(:quote_ignored)} #{import_csv_tool_description}
+            br
+            | #{nbsp(6)}(4) 导入后，一个月以内支持弹屏；一个月内允许导入#{current_company.company_config.import_popup_customers_count}个号码，目前
+            span.text-danger
+              | 已导入#{popup_customers_count}个
+            | ，导入的客户信息仅供弹屏使用，在客户名单和销售线索页面不显示。弹屏并保存后，客户信息才会在销售线索页面显示
+            a<> class='text-default' href=test_numbers_path
+              = t('task.test_numbers')
+            | ）
+
+.form-group#form_group_task_phones_file
+  = labeled '请选择要导入的csv或txt文件', required: true
+  .col-sm-9
+    = file_field_tag 'task_phones_file', required: true
+    span.text-muted
+      | * 文件中每个号码占一行
+      br
+      | * 系统会去除重复的、无效的号码
+
+coffee:
+  $('input[name="extract_method"]:radio').change () ->
+    if $(this).val() == 'full_detail'
+      $('#full_detail_checkbox').show()
+    else
+      $('#full_detail_checkbox').hide()

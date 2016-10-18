@@ -1,0 +1,25 @@
+= title t('charge_company400.management')
+
+= content_for :header do
+  = t('charge_company400.management')
+  
+  = link_to t(:new_), new_admin_charge_company400_path, css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('charge_company400.id')
+        th = t('charge_company400.name')
+        th = t('charge_company400.price')
+        th
+
+    tbody
+      - @charges.each_with_index do |charge, i|
+        tr *odd_even(i)
+          td = charge.id
+          td = charge.name
+          td = charge.price
+          td
+            div *css_ops
+              = edit edit_admin_charge_company400_path(charge)

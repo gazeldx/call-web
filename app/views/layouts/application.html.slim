@@ -1,0 +1,371 @@
+doctype html
+html
+  head
+    meta charset='utf-8'
+    meta name='description' content=''
+    meta name='viewport' content='width=device-width, initial-scale=1.0'
+
+    title
+      = yield :title
+
+    = stylesheet_link_tag 'portal', media: 'all', 'data-turbolinks-track' => true
+    = yield :stylesheet
+    = javascript_include_tag 'portal', 'data-turbolinks-track' => true
+    = yield :javascript
+    = csrf_meta_tags
+
+  body
+    #navbar class='navbar navbar-default'
+      #navbar-container.navbar-container
+        div class='navbar-header pull-left'
+          a.navbar-brand href=(admin? ? admin_root_path : (user? ? a_path : root_path)) title='返回首页'
+            small
+              - if session[:logo_path]
+                img src=record_full_url(session[:logo_path])
+              - else
+                i class='icon-phone'
+              |  #{admin? ? t('site.admin_title') : (session[:web_name] ? session[:web_name] : t('company_config.default_web_name')) + "#{current_company.state == Company::STATE_OK ? nil : '（请注意，本企业已经被认定为即将下线，所有数据即将被永久删除！如仍在使用，请速联系统一通信客服。）' }"}
+
+        div class='navbar-header pull-right' role='navigation'
+          ul class='nav ace-nav'
+            - if @company_balance.present?
+              - if current_user.have_menu?('fee.record')
+                  li class="#{@company_balance < 300 ? 'red' : 'white'}" title='企业余额，点此查看消费记录'
+                    a href=bills_path
+                      == "剩#{@company_balance}元"
+              - else
+                - if @company_balance < 100
+                  li class="white" title='企业余额'
+                    == "剩#{@company_balance}元&nbsp;"
+            - unless admin?
+              li class='green' onclick='queryUCWorkersForThisCompany()'
+                a data-toggle='dropdown' class='dropdown-toggle' href='#'
+                  i class='icon-user' title='点击联系客服经理' data-rel='tooltip' data-placement='bottom'
+
+                ul#uc_workers class='pull-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close'
+                  li class='dropdown-header'
+                    i class='icon-phone'
+                    |  #{t(:uc)}：400-118-1178
+
+            li.light-blue
+              a#profile-settings href='#' onclick='showProfileSettings()'
+                = image_tag('/assets/avatars/user.jpg', class: 'nav-user-photo')
+                span.user-info
+                  - if salesman?
+                    - agent = Agent.find_by_salesman_id(session[:id])
+                    small title="#{t('agent.code')}:#{agent.nil? ? t(:none) : "#{agent.id}"}"
+                      = agent.nil? ? '未绑定座席' : "#{agent.code}"
+                  - elsif user?
+                    small title="#{t('company.id')}:#{current_company.id}"
+                      = current_company.id
+                  - elsif admin?
+                    small
+                      | &nbsp;
+                  = session[:name]
+                i.icon-caret-down
+
+              coffee:
+                this.showProfileSettings = ->
+                  $('.light-blue').toggleClass('open')
+
+              ul class='user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close'
+                /li
+                /  a href='#'
+                /    i.icon-cog
+                /    | 设置
+                li
+                  a href=(admin? ? admin_change_password_path : (user? ? user_change_password_path : change_password_path))
+                    i.icon-user
+                    = t(:change_password)
+                li.divider
+                li
+                  a href=(admin? ? admin_logout_path : (user? ? user_logout_path : logout_path))
+                    i.icon-off
+                    = t(:logout)
+
+    #main-container.main-container
+      .main-container-inner
+        a#menu-toggler.menu-toggler href='#'
+          span.menu-text
+
+        #sidebar.sidebar
+          ul class='nav nav-list'
+            /TODO: 下面的代码有些凌乱，需要重构下.
+            - if user?
+              - all_menus.each do |top_menu, second_menus|
+                - if (second_menus.except(:icon).keys & current_user.limited_menus.map(&:name)).any?
+                  - active = (second_menus.except(:icon).values.map {|value| value.sub(/\?.+/, '')}.include?(parse_controller_path(request.path_info))\
+                              || (second_menus.except(:icon).values.include?(automatic_calls_path) && "/#{controller_path}" == bundles_path))
+                  li class="#{'active open' if active}"
+                    a.dropdown-toggle
+                      i class="icon-#{second_menus[:icon]}"
+                      span.menu-text = t(top_menu)
+                      b class='arrow icon-angle-down'
+
+                    ul.submenu style="#{'display: block;' if active}"
+                      - second_menus.except(:icon).each do |menu_name, menu_url|
+                        - if current_user.limited_menus.map(&:name).include?(menu_name)
+                          /Notice: 这个target是是否要打开新窗口，目前其实没有用到
+                          - target = [].include?(menu_name) ? menu_name : nil
+
+                          /下面这一段是客户资料和销售线索的菜单显示，因为涉及到同action，靠url中act参数来控制选中的问题，所以单独写
+                          / TODO: 这里可以参考agent侧，在buyer的时候显示
+                          - if 'customer.management' == menu_name
+                            li class="#{'active' if parse_controller_path(request.path_info) == menu_url && !act_clue?}"
+                              a href=customers_path
+                                i.icon-double-angle-right
+                                = t('customer.management')
+
+                          - elsif 'sales_clue' == menu_name
+                            li class="#{'active' if act_clue? }"
+                              a href="#{customers_path}?act=#{Customer::ACT_CLUE}"
+                                i.icon-double-angle-right
+                                = t(:sales_clue)
+
+                          - else
+                            li class=active_menu_link(menu_url)
+                              a href=menu_url target=target class=under_construction_menu_link_css(menu_url)
+                                i.icon-double-angle-right
+                                = t(menu_name)
+
+            - elsif admin?
+              - all_points_flatten.each do |point_name, point_hash|
+                - if current_user.points.map(&:name).include?(point_name)
+                  li
+                    a href=point_hash[:url]
+                      i class="icon-#{point_hash[:icon]}"
+                      span.menu-text = t(point_name)
+
+              - if session[:username] == Administrator::USERNAME_ADMIN
+                li
+                  a href=admin_batch_config_vos_path
+                    i.icon-exchange
+                    span.menu-text = t('company.batch_config_vos')
+
+                li
+                  a href=admin_administrators_path
+                    i.icon-user
+                    span.menu-text = t('administrator.management')
+
+                - active = request.path_info.include?(admin_charge_agent_minutely_index_path) || \
+                           request.path_info.include?(admin_charge_agent_exceed_free_index_path) || \
+                           request.path_info.include?(admin_charge_agent_share_minfee_index_path) || \
+                           request.path_info.include?(admin_charge_agent_monthly_index_path) || \
+                           request.path_info.include?(admin_charge_company_outbound_index_path) || \
+                           request.path_info.include?(admin_charge_company400_index_path) || \
+                           request.path_info.include?(admin_charge_company400_months_path)
+                li class="#{'active open' if active}"
+                  a.dropdown-toggle
+                    i.icon-list-alt
+                    span.menu-text 套餐管理
+                    b class='arrow icon-angle-down'
+
+                  ul.submenu
+                    li class=active_admin_link(admin_charge_agent_minutely_index_path)
+                      a href=admin_charge_agent_minutely_index_path
+                        i.icon-double-angle-right
+                        = t('charge_agent_minutely.management')
+                    li class=active_admin_link(admin_charge_agent_exceed_free_index_path)
+                      a href=admin_charge_agent_exceed_free_index_path
+                        i.icon-double-angle-right
+                        = t('charge_agent_exceed_free.management')
+                    li class=active_admin_link(admin_charge_agent_share_minfee_index_path)
+                      a href=admin_charge_agent_share_minfee_index_path
+                        i.icon-double-angle-right
+                        = t('charge_agent_share_minfee.management')
+                    li class=active_admin_link(admin_charge_agent_monthly_index_path)
+                      a href=admin_charge_agent_monthly_index_path
+                        i.icon-double-angle-right
+                        = t('charge_agent_monthly.management')
+
+                    li class=active_admin_link(admin_charge_company_outbound_index_path)
+                      a href=admin_charge_company_outbound_index_path
+                        i.icon-double-angle-right
+                        = t('charge_company_outbound.management')
+                    li class=active_admin_link(admin_charge_company400_index_path)
+                      a href=admin_charge_company400_index_path
+                        i.icon-double-angle-right
+                        = t('charge_company400.management')
+                    li class=active_admin_link(admin_charge_company400_months_path)
+                      a href=admin_charge_company400_months_path
+                        i.icon-double-angle-right
+                        = t('charge_company400_month.management')
+
+                li
+                  a href='#'
+                    i.icon-desktop
+                    span.menu-text 充值扣费管理
+
+                li
+                  a.dropdown-toggle
+                    i.icon-list
+                    span.menu-text 报表
+                    b class='arrow icon-angle-down'
+
+                  ul.submenu
+                    li
+                      a href='#'
+                        i.icon-double-angle-right
+                        | 租户消费
+                    li
+                      a href='#'
+                        i.icon-double-angle-right
+                        | 使用情况
+                    li
+                      a href='#'
+                        i.icon-double-angle-right
+                        | 每月账单
+
+            - elsif salesman?
+              - active = [cdr_path, report_agent_daily_path].include?(parse_controller_path(request.path_info))
+
+              li class="#{'active open' if active}"
+                a.dropdown-toggle
+                  i.icon-headphones
+                  span.menu-text = t('menus.call')
+                  b class='arrow icon-angle-down'
+
+                ul.submenu
+                  li class=active_menu_link(cdr_path)
+                    a href=cdr_path
+                      i.icon-double-angle-right
+                      = t('cdr.list')
+
+                  li class=active_menu_link(report_agent_daily_path)
+                    a href=report_agent_daily_path
+                      i.icon-double-angle-right
+                      = t('report_agent_daily.management_agent')
+
+              - active = [customer_path, '/buyer', contact_path].include?(parse_controller_path(request.path_info))
+              li class="#{'active open' if active}"
+                a.dropdown-toggle
+                  i.icon-camera
+                  span.menu-text = t('menus.customer')
+                  b class='arrow icon-angle-down'
+
+                ul.submenu
+                  li class=(active_menu_link(customer_path) if act_clue?)
+                    a href="#{customer_path}?act=#{Customer::ACT_CLUE}"
+                      i.icon-double-angle-right
+                      = t('sales_clue')
+
+                  li class=(active_menu_link(customer_path) unless act_clue?)
+                    a href=customer_path
+                      i.icon-double-angle-right
+                      = t('customer.management')
+
+              - if current_company.have_menu?('issue.management')
+                li
+                  a href=issues_path
+                    i.icon-tasks
+                    span.menu-text = t('issue.management')
+
+          #sidebar-collapse.sidebar-collapse
+            i.icon-double-angle-left data-icon1='icon-double-angle-left' data-icon2='icon-double-angle-right'
+
+        .main-content
+          = yield :banner if content_for?(:banner)
+
+          .page-content
+            = notice_or_error
+
+            - if content_for?(:header)
+              .page-header
+                h1.orange
+                  = yield :header
+
+            = yield
+
+            - if content_for?(:grid) || content_for?(:form)
+              .row
+                .col-xs-12
+                  - if content_for?(:form)
+                    = yield :form
+
+                  - if content_for?(:grid)
+                    .table-responsive
+                      .dataTables_wrapper role='grid'
+                        = yield :grid
+
+      a#btn-scroll-up href='#' class='btn-scroll-up btn btn-sm btn-inverse'
+        i class='icon-double-angle-up icon-only bigger-110'
+
+    script src='/assets/js/ace.min.js'
+    javascript:
+      jQuery(function ($) {
+        $('[data-rel=tooltip]').tooltip({container: 'body'});
+        $('[data-rel=popover]').popover({container: 'body'});
+      });
+
+      var validation_params = {
+        errorClass: "my-error-class",
+        validClass: "my-valid-class",
+        submitHandler: function (form) {
+          $('.hidden_when_submit').attr('disabled', true);
+          $('#submit_button').attr('disabled', true);
+          form.submit();
+        }
+      };
+
+      jQuery.extend(validation_params, ((typeof customized_validation === 'undefined') ? {} : customized_validation));
+
+      $('form').validate(validation_params);
+
+    - unless admin?
+      javascript:
+        function queryUCWorkersForThisCompany() {
+          $('#uc_workers').css('display', '');
+
+          $.ajax({
+            url: '/nbms/query_uc_workers',
+            type: 'GET',
+            success: function (data) {
+              console.log(data);
+              $('#uc_workers').html("<li class='dropdown-header'><i class='icon-phone'></i> 统一通信：400-118-1178</li><li>有需求请告知我们。因你而变！</li>");
+
+              if (data['code'] == 200) {
+                var workersHtml = '';
+
+                _.each(['service', 'technician', 'salesman'], function(userType, i) {
+                  var user = data['data'][userType];
+
+                  workersHtml = workersHtml +  "<li><a href='#'><img class='msg-photo' src='/assets/avatars/avatar" + (i + 1) + ".png'><span class='msg-body'><span class='msg-title'><span class='blue'>" + workerTitle(userType) + "：" + user['name'] + "<br></span>";
+
+                  if (!_.isEmpty(user['telephone'])) {
+                    workersHtml = workersHtml + ("<span class='black'>" + ' 分机：' + user['telephone'] + '<br></span>');
+                  }
+
+                  if (!_.isEmpty(user['cellphone'])) {
+                    workersHtml = workersHtml + ("<span class='black'>" + ' 手机：' + user['cellphone'] + '<br></span>');
+                  }
+
+                  if (!_.isEmpty(user['qq'])) {
+                    workersHtml = workersHtml + ("<span class='black'>" + ' QQ：' + user['qq'] + '<br></span>');
+                  }
+
+                  if (!_.isEmpty(user['weixin'])) {
+                    workersHtml = workersHtml + ("<span class='black'>" + ' 微信：' + user['weixin'] + '<br></span>');
+                  }
+
+                  if (!_.isEmpty(user['email'])) {
+                    workersHtml = workersHtml + ("<span class='black'>" + ' Email：' + user['email'] + '<br></span>');
+                  }
+
+                  workersHtml = workersHtml + '</span></span></a></li>';
+                });
+
+                $('#uc_workers').append(workersHtml + '<li></li>');
+              }
+            }
+          });
+        }
+
+        function workerTitle(userType) {
+          if (userType == 'service') {
+            return '客服经理';
+          } else if (userType == 'technician') {
+            return '技术经理';
+          } else if (userType == 'salesman') {
+            return '业务经理';
+          }
+        }

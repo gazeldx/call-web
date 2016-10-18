@@ -1,0 +1,16 @@
+- if act_clue?
+  - index_text = t('clue.management')
+  - edit_text = t('clue.edit')
+- else
+  - index_text = t('customer.management')
+  - edit_text = t('customer.edit')
+
+= title edit_text
+
+= banner({ index_text => session[:return_to], edit_text => nil })
+
+= header edit_text
+
+= render 'form'
+
+= render 'agent/shared/customers/nav_tabs'

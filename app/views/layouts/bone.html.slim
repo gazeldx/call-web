@@ -1,0 +1,46 @@
+doctype html
+html
+  head
+    meta charset='utf-8'
+    meta name='description' content=''
+    meta name='viewport' content='width=device-width, initial-scale=1.0'
+
+    title = yield :title
+
+    = stylesheet_link_tag 'portal', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'portal', 'data-turbolinks-track' => true
+    = yield :javascript
+    = csrf_meta_tags
+
+  body
+    = yield :banner if content_for?(:banner)
+
+    .page-content
+      = notice_or_error
+
+      - if content_for?(:header)
+        .page-header
+          h1
+            = yield :header
+
+      = yield
+
+      - if content_for?(:grid) || content_for?(:form)
+        .row
+          .col-xs-12
+            - if content_for?(:grid)
+              .table-responsive
+                .dataTables_wrapper role='grid'
+                  = yield :grid
+
+            - if content_for?(:form)
+              = yield :form
+
+script src='/assets/js/ace.min.js'
+javascript:
+  jQuery(function ($) {
+    $('[data-rel=tooltip]').tooltip({container: 'body'});
+    $('[data-rel=popover]').popover({container: 'body'});
+  });
+
+  $('form').validate();

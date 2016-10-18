@@ -1,0 +1,36 @@
+- configuration_notice = @company.company_config.blank? ? t(:not_configured) : nil
+= title "#{t(:company_config_)}#{configuration_notice}"
+
+= banner({ t('company.management') => admin_companies_path, "#{t(:company_config_)}#{configuration_notice}" => nil })
+
+= header "#{t(:company_config_)} - #{@company.name} #{configuration_notice}"
+
+= content_for :form do
+  = form_for [:admin, @company_config], form_options(url: company_config_create_or_update_admin_company_path, method: :post) do |f|
+    = error_msg @company_config
+
+    = radios_for_boolean :popup
+
+    = radios_for_boolean :switch_salesman
+
+    = radios_for_boolean :salesman_can_see_numbers
+
+    .form-group
+      = labeled :import_customers_count, required: true
+      .col-sm-9
+        = f.select :import_customers_count, options_for_select([CompanyConfig::IMPORT_CUSTOMERS_COUNT_LEVEL_1, CompanyConfig::IMPORT_CUSTOMERS_COUNT_LEVEL_2, CompanyConfig::IMPORT_CUSTOMERS_COUNT_LEVEL_3, CompanyConfig::IMPORT_CUSTOMERS_COUNT_LEVEL_4].each_with_index.map { |count, i| [t("company_config.import_customers_count_level_#{i + 1}"), count] }, @company_config.import_customers_count), {}, {class: 'required'}
+
+    .form-group
+      = labeled :import_popup_customers_count, required: true
+      .col-sm-9
+        = f.select :import_popup_customers_count, options_for_select((1..4).to_a.each_with_index.map { |n| [t("#{n}百万#{"（默认）" if n == 1}"), n * Customer::MAX_STATE_POPUP_COUNT] }, @company_config.import_popup_customers_count), {}, {class: 'required'}
+        |  针对月消费达1万的弹屏企业，在企业主动提出扩容的前提下，逐级扩容（不要跳级扩，因为数据量过大会消耗系统性能）
+
+    .form-group
+      = labeled :record_kept_months, required: true
+      .col-sm-9
+        = f.select :record_kept_months, options_for_select([CompanyConfig::RECORD_KEPT_MONTHS_1, CompanyConfig::RECORD_KEPT_MONTHS_2].each_with_index.map { |months, i| [t("company_config.record_kept_months_level_#{i + 1}"), months] }, @company_config.record_kept_months), {}, {class: 'required'}
+
+    = radios_for_boolean :obtain_records_limit_ip
+
+    = submit_form

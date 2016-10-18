@@ -1,0 +1,38 @@
+= title t('agent.batch_charge_change')
+
+= banner({ index_i18_text => "/#{controller_path}", t('agent.management') => admin_company_agents_path(@company), t('agent.batch_charge_change') => nil })
+
+= header "#{t('agent.batch_charge_change')} - #{@company.name_and_id}"
+
+= content_for :form do
+  = form_for [:admin, @company], form_options(url: do_batch_charge_change_admin_company_path, method: :post) do |f|
+    = error_msg @company
+
+    .form-group
+      = labeled '请选择下个月套餐要变更的座席', required: true
+      .col-sm-9
+        - @company.can_charge_change_agent_ids.map do |agent_id|
+          = check_box_tag('agent_ids[]', agent_id, false, id: "agent_ids_#{agent_id}")
+          label for="agent_ids_#{agent_id}"
+            = " #{agent_id.to_s.slice(5..9)}"
+            = nbsp(2)
+        javascript:
+          var customized_validation = {
+            rules: {
+              'agent_ids[]': {
+                required: true
+              }
+            }
+          };
+
+    .form-group
+      = labeled t('agent.charge'), required: true
+      .col-sm-9
+        = select_tag :charge_id, options_for_select((@company.charge_company.available_agent_charges).map { |charge| ["#{charge.id} - #{charge.name}", charge.id] }.unshift([t(:please_select), nil])), {required: true}
+
+    .form-group
+      = labeled t(:remark)
+      .col-sm-9
+        = text_field_tag :remark, nil, class: 'col-sm-5'
+
+    = submit_form

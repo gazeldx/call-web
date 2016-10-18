@@ -1,0 +1,90 @@
+<% content_for :javascript do%>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $('#inbound_config-table').dataTable( {
+                "aoColumns": [ null,null,null,null,null, { "bSortable": false } ],
+                "oLanguage": {
+                    "sLengthMenu": '显示 <select>'+
+                    '<option value="10">10</option>'+
+                    '<option value="20">20</option>'+
+                    '<option value="30">50</option>'+
+                    '<option value="-1">All</option>'+
+                    '</select> 条记录',
+                    "sLoadingRecords": "正在为您准备数据...",
+                    "sEmptyTable": "表中没有可用的记录",
+                    "sZeroRecords": "没有符合条件的记录",
+                    "sSearch": "查询",
+                    "sInfoFiltered": " - 检索了 _MAX_ 条记录",
+                    "sInfoEmpty": "",
+                    "sInfo": "共 _TOTAL_ 条记录 (_START_ 到 _END_)"
+                }
+            } );
+        })
+    </script>
+<%end%>
+<div class="page-content">
+  <div class="page-header">
+    <h1>
+      <strong>企业呼入配置列表</strong>
+      <small class="pull-right">
+        <%= link_to '创建呼入配置', new_inbound_config_path, class: 'btn btn-sm btn-primary hide' %>
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="table-responsive">
+        <table id="inbound_config-table" class="table table-striped table-bordered table-hover">
+          <thead>
+          <tr>
+            <th>呼入号码</th>
+            <th>动作类型</th>
+            <th>动作对象</th>
+            <th>VIP特权</th>
+            <th>服务评价</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @inbound_configs.each do |inbound_config| %>
+              <tr>
+                <td><%= inbound_config.inbound_number %></td>
+                <td><%= inbound_config.type_name %></td>
+                <td><%= inbound_config.object_name %></td>
+                <th>
+                  <% if inbound_config.has_vip == 1 %>
+                      <span class="label label-success">允许</span>
+                  <% else %>
+                      <span class="label">不允许</span>
+                  <% end %>
+                </th>
+                <th>
+                  <% if inbound_config.has_rate == 1 %>
+                      <span class="label label-success">开启</span>
+                  <% else %>
+                      <span class="label">未开启</span>
+                  <% end %>
+                </th>
+                <td>
+                  <div class="action-buttons">
+                    <%= link_to(inbound_config, class: 'blue hide', "data-original-title" => '查看', "data-rel" => 'tooltip') do %>
+                        <i class="icon-zoom-in bigger-130"></i>
+                    <% end %>
+                    <%= link_to(edit_inbound_config_path(inbound_config), class: 'green', "data-original-title" => '修改', "data-rel" => 'tooltip') do %>
+                        <i class="icon-pencil bigger-130"></i>
+                    <% end %>
+                    <%= link_to(inbound_config, class: 'red hide', method: :delete, data: { confirm: '确定要删除么?' }, "data-original-title" => '删除', "data-rel" => 'tooltip') do %>
+                        <i class="icon-trash bigger-130"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+

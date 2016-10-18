@@ -1,0 +1,7 @@
+= titled
+
+= banner({ t('column.management') => columns_path, index_i18_text => "/column/#{@column.name.gsub(/[^0-9]/, '').to_i}/options", t('option.edit') => nil })
+
+= header t('option.edit')
+
+= render 'form'

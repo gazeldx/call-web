@@ -1,0 +1,13 @@
+- vos_id = "#{kind}_vos_id"
+
+.form-group
+  = labeled vos_id, required: true
+  .col-sm-9
+    .col-sm-2
+      = f.select vos_id, options_for_select(ServerIp.voses.map { |server_ip| [server_ip.name, server_ip.id] }, @company.try(vos_id))
+
+    .col-sm-7
+      .form-group
+        = labeled '前缀：'
+        .col-sm-7
+          = f.text_field "#{kind}_prefix".to_sym, class: 'col-sm-3', maxlength: 10, vosPrefix: true

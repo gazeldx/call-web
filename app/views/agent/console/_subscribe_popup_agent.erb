@@ -1,0 +1,30 @@
+client.subscribe("/popup_agent_<%= current_user.agent.try(:id) %>", function (message) {
+  var showFullNumber = false;
+  <% if current_company.company_config.salesman_can_see_numbers? %>showFullNumber = true;<% end %>
+  $('#messages').append(new Date().toLocaleTimeString().slice(0, 8) + '  ');
+  var popup_customer_path = "/popup_customer/";
+  if (showFullNumber) {
+    popup_customer_path += message['phone'];
+    $('#messages').append("<a href='" + popup_customer_path + "/" + (message['callType'] || 3) + "' target='_blank'>" + message.phone + '</a> ');
+  } else {
+    popup_customer_path += "<%= Customer::ENCODE_NUMBER_PREFIX %>" + encodeURIComponent(btoa(message['phone']));
+    $('#messages').append(message.phone.slice(0, 4) + "****" + message.phone.slice(9));
+  }
+  $('#messages').append((message.callType == 2 ? '呼入' : '外呼') + '弹屏<span id="click_call_customer_' + message.phone.slice(0, 4) + message.phone.slice(9) + '"> <a data-placement="bottom" data-rel="tooltip" data-url="/call_phone/' + encodeURIComponent(btoa(message['phone'])) + '" href="#" onclick="callPhone.call(this)" data-original-title="点击呼叫该客户">呼叫</a> </span><br>');
+  popup_customer_path += "/" + (message['callType'] || 3);
+  window.open(popup_customer_path, '_blank');
+});
+
+function callPhone() {
+  var currentCalledId = $(this).closest('span').attr('id');
+  $.ajax({
+    url: $(this).attr('data-url'),
+    type: 'POST',
+    success: function (data) {
+      $('#' + currentCalledId).append('已呼 ');
+    },
+    error: function (jqXHR) {
+      alert('拨打失败！' + $.parseJSON(jqXHR.responseText)['result']);
+    }
+  });
+}

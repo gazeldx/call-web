@@ -1,0 +1,53 @@
+= content_for :form do
+  = form_for @bundle, form_options do |f|
+    = error_msg @bundle
+
+    = hidden_field_tag :kind, params[:kind]
+
+    - if @bundle.kind == Bundle::KIND_IVR
+      .form-group
+        = labeled 'ivr_type', required: true
+        .col-sm-9
+          = f.select :kind, options_for_select(Bundle::IVR_MENUS.select{ |k, v| current_company.menus.map(&:name).include?(v) }.map { |k, v| [t(v), k] }, @bundle.kind)
+    - else
+      = hidden_field_tag('bundle[kind]', @bundle.kind)
+
+    = input_text :name, required: true
+
+    - unless @bundle.kind == Bundle::KIND_AUTOMATIC
+      = input_text :ratio, { required: true, number: true, maxlength: 3, range: [0.1, current_company.task_config.predict_max_ratio], title: "请输入0.1到#{current_company.task_config.predict_max_ratio}之间的数值" }
+
+    .form-group
+      = labeled 'group', required: true
+      .col-sm-9
+        - current_user.outbound_groups.each do |group|
+          div
+            label
+              = f.radio_button :group_id, group.id, required: true
+              span class='lbl' for="bundle_group_#{group.id}"
+                |  #{group.name}
+
+    - unless @bundle.kind == Bundle::KIND_AUTOMATIC
+      .form-group
+        = labeled 'phone_number.number', required: true
+        .col-sm-9
+          = phone_numbers_checkbox_for_bundle
+      = help_info(t('bundle.please_donot_choose_expired_number'))
+
+    .form-group
+      = labeled 'manager', required: true
+      .col-sm-9
+        = f.select :manager_id, options_for_select(current_company.users.order(:name).map { |user| [user.name, user.id] }, @bundle.manager.try(:id))
+
+    = input_text :remark
+
+    = submit_form
+
+    javascript:
+      var customized_validation = {
+        rules: {
+          'numbers[]': {
+            required: true
+          }
+        }
+      };

@@ -1,0 +1,23 @@
+| hello pure with faye
+
+script type="text/javascript" src="http://127.0.0.1:8012/faye/client.js"
+
+javascript:
+  var client = new Faye.Client('http://127.0.0.1:8012/faye', {
+    timeout: 120
+    //,endpoints: { websocket: 'http://127.0.0.1:8012/' }
+  });
+
+  //client.setHeader('Authorization', 'OAuth abcd-1234');
+  var subscription = client.subscribe('/hello_baby_pure', function (message) {
+    console.log('hello, received: ' + message['text']);
+    //alert('received')
+  });
+
+  //client.publish('/foo', {text: 'Hi Lane12'});
+//
+//  publication.then(function () {
+//    alert('Message received by server!');
+//  }, function (error) {
+//    alert('There was a problem: ' + error.message);
+//  });

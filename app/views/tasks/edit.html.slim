@@ -1,0 +1,13 @@
+= title t(:edit_, w: t('bundle.library'))
+
+= header t(:edit_, w: t('bundle.library'))
+
+= content_for :form do
+  = form_for [@bundle, @task], form_options do |f|
+    = error_msg @task
+
+    = input_text :name, required: true
+
+    = input_text :remark
+
+    = submit_form

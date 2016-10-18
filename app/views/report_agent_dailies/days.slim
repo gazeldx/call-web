@@ -1,0 +1,62 @@
+= render '/shared/javascript/datepicker'
+
+= title t('report_agent_daily.days')
+
+= content_for :header do
+  = t('report_agent_daily.days')
+
+  = report_agent_dailies_header_links
+
+= content_for :grid do
+  .row
+    = form_tag report_agent_days_path, method: :get
+      = hidden_field_tag(:target_method, '')
+      span
+        = text_field_tag(:start_date, (params[:start_date] ? params[:start_date] : (Time.now - 1.day).strftime(t(:date_format_))), class: 'date-picker')
+      | 至
+      span
+        = text_field_tag(:end_date, (params[:end_date] ? params[:end_date] : (Time.now - 1.day).strftime(t(:date_format_))), class: 'date-picker')
+      = salesman_container
+      = team_container
+      = agent_container
+      = search_button
+      = export_button
+
+  table *css_table
+    .row
+      - if @sum.present? && @sum.trigger_count.present?
+        == "<b>汇总</b> #{t('report_agent_daily.trigger_count')}: #{@sum.trigger_count}, #{t('report_agent_daily.answer_count')}: #{@sum.answer_count} / #{@sum.trigger_count > 0 ? ((@sum.answer_count.to_f / @sum.trigger_count) * 100).round(1) : 0}%, #{t('report_agent_daily.talk_duration')}: #{DateTime.seconds_to_words(@sum.talk_duration)}, #{t('report_agent_daily.average_duration')}: #{DateTime.seconds_to_words(@sum.talk_count.to_i == 0 ? 0 : @sum.talk_duration.to_i / @sum.talk_count)}, #{t('report_agent_daily.talk_minutes')}: #{@sum.talk_minutes}#{t(:minute)}, #{t('report_agent_daily.cost')}: #{@sum.cost.to_f.round(2)}#{t(:yuan)}"
+    thead
+      tr
+        th
+          = t(:salesman_)
+          = checkbox_for_search(:salesman_id)
+        = search_teams_checkbox
+        th
+          = t(:agent_)
+          = checkbox_for_search(:agent_id)
+        th = t('report_agent_daily.trigger_count')
+        th = t('report_agent_daily.talk_count')
+        th = t('report_agent_daily.talk_duration')
+        th = t('report_agent_daily.average_duration')
+        th = t('report_agent_daily.talk_minutes')
+        th = t('report_agent_daily.cost')
+        th = checkin_duration_and_average
+        th = t('report_agent_daily.checkin_count')
+
+    tbody
+      - if @report_agent_days.present?
+        - @report_agent_days.each_with_index do |day, i|
+          tr *odd_even(i)
+            td = day.salesman.try(:name)
+            - if current_user.manage_many_teams?
+              td = day.salesman.try(:team).try(:name)
+            td = day.agent.try(:code)
+            td = day.trigger_count
+            td = "#{day.talk_count} / #{ratio(day.talk_count, day.trigger_count)}"
+            td = DateTime.seconds_to_words(day.talk_duration)
+            td = DateTime.seconds_to_words(day.talk_count.to_i == 0 ? 0 : day.talk_duration / day.talk_count)
+            td = "#{day.talk_minutes}#{t(:minute)}"
+            td = "#{day.cost}#{t(:yuan)}"
+            td = checkin_duration_average(day.checkin_duration, day.checkin_count)
+            td = day.checkin_count

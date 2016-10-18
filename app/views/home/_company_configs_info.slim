@@ -1,0 +1,65 @@
+.space
+div#company_config_box class="col-xs-6 col-sm-3 pricing-box hidden"
+  .widget-box
+    div class="widget-header header-color-dark"
+      h5 class="bigger lighter" 企业系统参数
+
+    .widget-body
+      .widget-main
+        ul class="list-unstyled spaced2"
+          li data-content='弹屏功能是指在电话接通后，自动弹出客户信息页面，方便销售员更好的和客户沟通。' data-rel='popover' data-trigger='hover' data-placement='top' data-html='true'
+            i class="icon-ok green"
+            | 弹屏：
+            - if current_company.company_config.popup?
+              | 已开通
+            - else
+              | 未开通
+          - if current_company.company_config.popup?
+            li data-content='可选设置有“销售员更新成当前销售员”或“销售员保持为原销售员”' data-rel='popover' data-trigger='hover' data-placement='top' data-html='true'
+              i class="icon-ok green"
+              | 弹屏页面点保存，该客户已经绑定了销售员时：
+              - if current_company.company_config.switch_salesman?
+                | 销售员更新成当前销售员
+              - else
+                | 销售员保持为原销售员
+          li title='导出销售线索（或客户名单）' data-rel='tooltip'
+            i class="icon-ok green"
+            | 导出销售线索：
+            - if current_company.have_menu?('customer.export')
+              | 允许
+            - else
+              | 不允许
+          li
+            i class="icon-ok green"
+            | 销售员查看客户手机号：
+            - if current_company.company_config.salesman_can_see_numbers?
+              | 允许查看
+            - else
+              | 不允许
+          li title='可以创建的销售线索（或客户名单）的数量上限' data-rel='tooltip'
+            i class="icon-ok green"
+            | 客户数量上限：#{current_company.company_config.import_customers_count}
+          - if current_company.company_config.popup
+            li
+              i class="icon-ok green"
+              | 弹屏用的销售线索上限：#{current_company.company_config.import_popup_customers_count}
+          li
+            i class="icon-ok green"
+            | 话单保留时长：#{current_company.company_config.record_kept_months}个月
+          li title="#{'可设置为“只有经过授权的合法IP才可以访问录音”' unless current_company.company_config.obtain_records_limit_ip? }" data-rel='tooltip'
+            i class="icon-ok green"
+            | 录音访问：
+            - if current_company.company_config.obtain_records_limit_ip?
+              | 只有经过授权的合法IP才可以访问
+            - else
+              | 不限制，任何IP都可以访问
+
+        hr
+        .price
+          small
+            | 如需变更系统参数
+            = icon('long-arrow-down')
+      div
+        a href="#" class="btn btn-block btn-inverse"
+          i class="icon-female bigger-110"
+          span 请联系客服

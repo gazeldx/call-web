@@ -1,0 +1,31 @@
+= task_container
+
+span#start_stamp_start_container class=hide_or_show_css(:start_stamp_start)
+  = text_field_tag(:start_stamp_start, (params[:start_stamp_start] ? params[:start_stamp_start] : nil), class: 'date-picker')
+  = time_select("start_stamp", "start", include_seconds: true, default: params[:start_stamp] ? {hour: params[:start_stamp]['start(4i)'], minute: params[:start_stamp]['start(5i)'], second: params[:start_stamp]['start(6i)']} : Time.now)
+  | 至&nbsp;
+  = text_field_tag(:start_stamp_end, (params[:start_stamp_end] ? params[:start_stamp_end] : Time.now.strftime(t(:date_format_))), class: 'date-picker')
+  = time_select("start_stamp", "end", include_seconds: true, default: params[:start_stamp] ? {hour: params[:start_stamp]['end(4i)'], minute: params[:start_stamp]['end(5i)'], second: params[:start_stamp]['end(6i)']} : Time.now)
+
+span#caller_number_container class=hide_or_show_css(:caller_number)
+  = text_field_tag :caller_number, params[:caller_number], placeholder: t(:caller_number), style: 'vertical-align: middle; width: 110px'
+
+span#callee_number_container class=hide_or_show_css(:callee_number)
+  = text_field_tag :callee_number, params[:callee_number], placeholder: t(:callee_number), style: 'vertical-align: middle; width: 110px'
+
+span#kind_container class=hide_or_show_css(:kind)
+  = select_tag :kind, options_for_select(InvalidCdr::KINDS.map { |kind| [t("invalid_cdr.kind_#{kind}"), kind] }.unshift([t('invalid_cdr.kind'), nil]), params[:kind])
+
+javascript:
+  function showOrHideMoment() {
+    var column_name = 'start_stamp_moment';
+    var column = $('#' + column_name);
+    var container = $('#' + column_name + '_container');
+
+    if (container.hasClass('hidden')) {
+      container.removeClass('hidden');
+    } else {
+      column.val('');
+      container.addClass('hidden');
+    }
+  }

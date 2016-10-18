@@ -1,0 +1,7 @@
+= title_banner_header
+
+= content_for :form do
+  = form_for @record_package, form_options do |f|
+    = error_msg @record_package
+    = input_text :title, required: true
+    = submit_form

@@ -1,0 +1,74 @@
+- can_obtain_records = obtain_records?
+
+table *css_table
+  thead
+    tr
+      = render '/shared/cdr/search_checkboxes'
+      th
+        = t(:salesman_)
+        = checkbox_for_search(:salesman_id)
+      - if policy(:user2).manage_many_teams?
+        th
+          = t(:team_)
+          = checkbox_for_search(:team_id)
+      th
+        = t(:call_loss)
+        = checkbox_for_search(:call_loss)
+
+  - if @cdrs.present?
+    - if can_obtain_records && exist_need_mixin_record?(@cdrs.pluck(:record_url))
+      = render 'agent/shared/cdrs/subscribe_record_mixin_websocket'
+
+    tbody
+      - @cdrs.each_with_index do |cdr, i|
+        tr *odd_even(i).merge(cdr.call_loss? ? { class: 'text-danger' } : {})
+          = cdr_time_info(cdr)
+
+          td
+            = call_type_name(cdr)
+            span title="#{t('task.name')}：#{cdr.task.try(:name)}" data-rel='tooltip'
+              = (cdr.task.try(:name).present? ? cdr.task.try(:name)[0, 4] : t('task.is_deleted')) if cdr.task_id.to_i > 0
+
+          - if session[:administrator_id].nil?
+            td = cdr.caller_number
+          - else
+            td title=cdr.caller_number data-rel='tooltip'
+              = hide_middle_digits(cdr.caller_number)
+
+          td = refined_phone(cdr.callee_number)
+
+          td
+            = DateTime.seconds_to_words(cdr.duration)
+            - if policy(:cdr2).view_fee?
+              |  - #{cdr.cost.to_f}#{t(:yuan)}
+            = audio_player(cdr.id)
+
+          td
+            - if cdr.agent_id.nil?
+              - if cdr.group_id.present?
+                = t('cdr.group_transferred', w: cdr.group.name)
+              - else
+                span title="由于客户早早挂断，没有按键，最终导致没有转组或座席；或者被系统挂断。" data-rel='tooltip'
+                  = t(:nobody_answer)
+            - else
+              = cdr.agent_id.to_s.slice(5, 9)
+
+          td = cdr.salesman.try(:name)
+
+          - if policy(:user2).manage_many_teams?
+            td = cdr.salesman.try(:team).try(:name)
+
+          td
+            div *css_ops
+              - if cdr.duration > 0 && can_obtain_records
+                = play_unknown_record(cdr.record_url, cdr.id)
+                - if audio_extension_file?(cdr.record_url)
+                  = download_audio(download_record_path(cdr.id)) if policy(:cdr2).download_record? && session[:administrator_id].nil?
+                - else
+                  span id="download_record_#{cdr.id}"
+
+              - if cdr.call_loss?
+                span.text-danger
+                  = t(:call_loss)
+
+= pagination @cdrs if @cdrs

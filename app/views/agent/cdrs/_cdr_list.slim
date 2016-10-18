@@ -1,0 +1,49 @@
+- can_obtain_records = obtain_records?
+
+#player
+
+table *css_table
+  thead
+    tr
+      = render '/shared/cdr/search_checkboxes'
+      th
+        = t(:call_loss)
+        = checkbox_for_search(:call_loss)
+
+  - if @cdrs.present?
+    - if can_obtain_records && exist_need_mixin_record?(@cdrs.pluck(:record_url))
+      = render 'agent/shared/cdrs/subscribe_record_mixin_websocket'
+
+    tbody
+      - @cdrs.each_with_index do |cdr, i|
+        tr *odd_even(i).merge(cdr.call_loss? ? { class: 'text-danger' } : {})
+          = cdr_time_info(cdr)
+          td
+            = call_type_name(cdr)
+            span title="#{t('task.name')}：#{cdr.task.try(:name)}" data-rel='tooltip'
+              = (cdr.task.try(:name).present? ? cdr.task.try(:name)[0, 4] : t('task.is_deleted')) if cdr.task_id.to_i > 0
+          td = cdr.caller_number
+          td = refined_phone(cdr.callee_number)
+          td
+            = "#{DateTime.seconds_to_words(cdr.duration)} - #{cdr.cost.to_f}#{t(:yuan)}"
+            = audio_player(cdr.id)
+          td
+            - if cdr.agent_id.nil?
+              span title="由于客户早早挂断，没有按键，最终导致没有转组或座席" data-rel='tooltip'
+                = t(:nobody_answer)
+            - else
+              = agent_shown(cdr.agent)
+          td
+            div *css_ops
+              - if cdr.duration > 0 && can_obtain_records
+                = play_unknown_record(cdr.record_url, cdr.id)
+                - if audio_extension_file?(cdr.record_url)
+                  = download_audio(download_record_path(cdr.id))
+                - else
+                  span id="download_record_#{cdr.id}"
+
+              - if cdr.call_loss?
+                span.text-danger
+                  = t(:call_loss)
+
+= pagination @cdrs if @cdrs

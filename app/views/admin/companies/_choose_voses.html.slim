@@ -1,0 +1,10 @@
+= render 'choose_vos', kind: :manual_call, f: f
+
+= render 'choose_vos', kind: :callback, f: f
+
+= render 'choose_vos', kind: :task, f: f
+
+javascript:
+  jQuery.validator.addMethod("vosPrefix", function (prefix, element) {
+    return this.optional(element) || prefix.match(/^[A-Za-z0-9]*$/);
+  }, jQuery.format("应为英文字母和数字组合！"));

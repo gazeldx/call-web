@@ -1,0 +1,35 @@
+- can_obtain_records = obtain_records?
+
+= title(t('record.list'))
+| 录音包保留一周，请及时下载存档。
+
+= content_for :header do
+  = t('record.list')
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th ID
+        th = t('record_package.title')
+        th = t('record_package.creator')
+        th = t('record_package.created_at')
+        th = t('record_package.download_url')
+
+    tbody
+      - @record_packages.each_with_index do |record_package, i|
+        tr *odd_even(i)
+          td = record_package.id
+          td
+            = record_package.title
+            - if policy(record_package).update?
+              a< href=edit_record_package_path(record_package)
+                | 改名
+          td = record_package.creator.try(:name)
+          td = record_package.created_at.strftime(t(:time_format))
+          td
+            - if can_obtain_records
+              a href=record_package.package_url
+                = t('record_package.download')
+
+  = pagination @record_packages

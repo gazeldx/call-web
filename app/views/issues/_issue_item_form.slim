@@ -1,0 +1,20 @@
+div class='widget-box'
+  div class='widget-header'
+    h4 发表回复
+
+  div class='widget-body'
+    div class='widget-main'
+      = form_for @issue_item, form_options do |f|
+        = f.hidden_field :issue_id
+        = f.text_area :body, size: '70x4', class: 'required'
+        | &nbsp;
+        = f.select :handler_id, options_for_issue_handler, {}, {class: 'select2 required'}
+        | &nbsp;
+        = f.select(:state, options_for_select([Issue::STATE_NOT_HANDLED, Issue::STATE_HANDLING, Issue::STATE_FINISHED].map { |state| [t("issue.state_#{state}"), state] }, @issue.state), {})
+        | &nbsp;
+        = content_tag(:button, raw("#{content_tag(:i, nil, class: 'icon-ok bigger-110')} #{t(:submit)}"), { type: 'submit', id: 'submit_button', class: 'btn btn-info btn-sm' })
+
+        javascript:
+          jQuery(function ($) {
+            $('.select2').css('width', '200px').select2({allowClear: true});
+          });

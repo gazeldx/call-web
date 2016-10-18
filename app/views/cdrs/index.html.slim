@@ -1,0 +1,30 @@
+- ['datepicker', 'play_audio'].each do |js_name|
+  = render "/shared/javascript/#{js_name}"
+
+= title t('cdr.list_current')
+
+= content_for :header do
+  = faq_header(t('cdr.list_current'))
+  a< href=history_cdrs_path class='btn btn-sm btn-success'
+    = t('cdr.list_history')
+
+= content_for :grid do
+  - unless action_name == 'filter'
+    .row
+      = form_tag cdrs_path, method: :get
+        = hidden_field_tag(:target_method, '')
+        = render '/shared/cdr/search_inputs'
+        = salesman_container
+        = team_container
+        span#call_loss_container class=hide_or_show_css(:call_loss)
+          = select_tag :call_loss, options_for_select([[t(:task_call_loss), 1], [t(:inbound_call_loss), 2], [t(:not_call_loss), 0]].unshift([t(:call_loss_or_not), nil]), params[:call_loss])
+        = search_button
+        - if @cdrs.present?
+          - if policy(:cdr2).export? && session[:administrator_id].nil?
+            = export_cdr_button
+          = group_report_cdrs
+          = package_cdrs_records
+          = render 'shared_naming_and_package_records'
+          = batch_mixin_records
+
+  = render '/cdrs/cdr_list'

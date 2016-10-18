@@ -1,0 +1,35 @@
+= titled
+
+= banner({ t('column.management') => columns_path, t('option.management') => nil })
+
+= content_for :header do
+  = t('option.management')
+
+  small
+    i.icon-double-angle-right
+    |  #{@column.title}
+
+  = link_to t('option.new'), "/column/#{params[:type_id]}/options/new", css_new
+
+= content_for :grid do
+  table *css_table
+    thead
+      tr
+        th = t('option.text')
+        th
+
+    tbody
+      - @options.each_with_index do |option, i|
+        tr *odd_even(i)
+          td
+            span title="ID:#{option.id}, Value:#{option.value}"
+              = option.text
+            /span.orange title='新增客户时，该选项默认被选中' data-rel='tooltip'
+            /  = '（默认选中）' if i == 0
+          td
+            div *css_ops
+              = edit "/column/#{params[:type_id]}/options/#{option.id}/edit"
+
+              - if i > 0
+                a> href="/column/#{params[:type_id]}/options/#{option.id}/up" class='red' *tip('up')
+                  = icon 'long-arrow-up'
